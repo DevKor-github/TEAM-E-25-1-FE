@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       // 경로 alias 설정: @components → src/components 등으로 매핑
       // 상대경로 지옥(../../../)을 피하고, 가독성 좋고 유지보수 쉬운 import 가능
+      "@": path.resolve(__dirname, "src"), 
       '@components': path.resolve(__dirname, 'src/components'),
       '@pages': path.resolve(__dirname, 'src/pages'),
       '@hooks': path.resolve(__dirname, 'src/hooks'),
