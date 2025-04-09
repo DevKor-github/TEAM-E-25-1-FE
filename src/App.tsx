@@ -1,5 +1,5 @@
 // src/App.tsx
-import EventUploadPage from "@pages/EventUploadPage"; 
+import EventUploadPage from "@pages/EventUploadPage";
 
 function App() {
   return (
