@@ -4,12 +4,18 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { useEffect } from "react";
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
 import { useAuthStore } from "@/stores/authStore";
 
 function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const checkExpiration = useAuthStore((state) => state.checkExpiration);
+
+  useEffect(() => {
+    checkExpiration(); // 애플리케이션 로드 시 만료 확인
+  }, [checkExpiration]);
 
   return (
     <Router>
