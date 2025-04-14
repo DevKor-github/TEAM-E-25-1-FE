@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
 import { useAuthStore } from "@/stores/authStore";
+import EventUploadPage from "./pages/EventUploadPage"; //
 
 function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -33,8 +34,10 @@ function App() {
         />
         {/* 관리자 로그인 페이지 */}
         <Route path="/admin-login" element={<AdminLogin />} />
-        {/* 행사 업로드 페이지 */}
+        {/* 어드민 홈홈 */}
         <Route path="/admin-home" element={<AdminHome />} />
+        {/* 행사 업로드 페이지 */}
+        <Route path="/admin-upload" element={<EventUploadPage />} />
       </Routes>
     </Router>
   );
