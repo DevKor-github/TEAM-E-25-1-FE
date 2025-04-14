@@ -9,6 +9,7 @@ import { useAuthStore } from "@/stores/authStore";
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
 import EventUploadPage from "./pages/EventUploadPage";
@@ -22,6 +23,10 @@ import AdminArticleEdit from "./pages/AdminArticleEdit";
 import EventUploadPage from "./pages/EventUploadPage";
 >>>>>>> 31d40d4 (feat: 행사 상세 페이지 구현)
 >>>>>>> 1bced03 (feat: 행사 상세 페이지 구현)
+=======
+import { useAuthStore } from "@/stores/authStore";
+import EventUploadPage from "./pages/ArticleUploadPage"; //
+>>>>>>> 06d4603 (feat: 업로드 페이지 라우팅 연결)
 
 function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -49,6 +54,7 @@ function App() {
         <Route path="/admin-login" element={<AdminLogin />} />
         {/* 관리자 홈 페이지 */}
         <Route path="/admin-home" element={<AdminHome />} />
+<<<<<<< HEAD
 <<<<<<< HEAD
         {/* 행사 업로드 페이지 */}
         <Route path="/admin-upload" element={<EventUploadPage />} />
@@ -89,9 +95,15 @@ function App() {
 =======
 >>>>>>> 31d40d4 (feat: 행사 상세 페이지 구현)
 >>>>>>> 1bced03 (feat: 행사 상세 페이지 구현)
+=======
+        <Route path="/admin/article-upload" element={<ArticleUploadPage />} />
+        <Route path="/admin/article/:articleId" element={<ArticleDetailPage />} />
+        <Route path="/admin/article/:articleId/edit" element={<ArticleEditPage />} />
+>>>>>>> 06d4603 (feat: 업로드 페이지 라우팅 연결)
       </Routes>
     </Router>
   );
 }
 
 export default App;
+``
