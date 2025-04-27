@@ -5,10 +5,11 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useEffect } from "react";
+import { useAuthStore } from "@/stores/authStore";
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
-import { useAuthStore } from "@/stores/authStore";
-import EventUploadPage from "./pages/EventUploadPage"; //
+import AdminArticleEdit from "./pages/AdminArticleEdit";
+import EventUploadPage from "./pages/EventUploadPage";
 
 function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -34,10 +35,12 @@ function App() {
         />
         {/* 관리자 로그인 페이지 */}
         <Route path="/admin-login" element={<AdminLogin />} />
-        {/* 어드민 홈홈 */}
+        {/* 관리자 홈 페이지 */}
         <Route path="/admin-home" element={<AdminHome />} />
         {/* 행사 업로드 페이지 */}
         <Route path="/admin-upload" element={<EventUploadPage />} />
+        {/* 행사 수정 페이지 */}
+        <Route path="/article/:articleId" element={<AdminArticleEdit />} />
       </Routes>
     </Router>
   );
