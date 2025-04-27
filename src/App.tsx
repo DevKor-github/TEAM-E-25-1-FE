@@ -8,9 +8,20 @@ import { useEffect } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
+<<<<<<< HEAD
 import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
 import EventUploadPage from "./pages/EventUploadPage";
+=======
+<<<<<<< HEAD
+import { useAuthStore } from "@/stores/authStore";
+import EventUploadPage from "./pages/EventUploadPage"; //
+=======
+import AdminArticleDetail from "./pages/AdminArticleDetail";
+import AdminArticleEdit from "./pages/AdminArticleEdit";
+import EventUploadPage from "./pages/EventUploadPage";
+>>>>>>> 31d40d4 (feat: 행사 상세 페이지 구현)
+>>>>>>> 1bced03 (feat: 행사 상세 페이지 구현)
 
 function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -54,16 +65,30 @@ function App() {
 =======
         {/* 행사 업로드 페이지 */}
         <Route path="/admin-upload" element={<EventUploadPage />} />
+<<<<<<< HEAD
 >>>>>>> d0db937 (chore: 행사 수정페이지에 태그 추가 및 App.jsx에 라우터 변경 반영(/admin/article/:articleId/edit))
+=======
+        {/* 행사 상세 페이지 */}
+        <Route
+          path="/admin/article/:articleId"
+          element={<AdminArticleDetail />}
+        />
+>>>>>>> 1bced03 (feat: 행사 상세 페이지 구현)
         {/* 행사 수정 페이지 */}
         <Route
           path="/admin/article/:articleId/edit"
           element={<AdminArticleEdit />}
         />
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 335ccd8 (chore: 행사 수정페이지에 태그 추가 및 App.jsx에 라우터 변경 반영(/admin/article/:articleId/edit))
 >>>>>>> d0db937 (chore: 행사 수정페이지에 태그 추가 및 App.jsx에 라우터 변경 반영(/admin/article/:articleId/edit))
+=======
+>>>>>>> 335ccd8 (chore: 행사 수정페이지에 태그 추가 및 App.jsx에 라우터 변경 반영(/admin/article/:articleId/edit))
+=======
+>>>>>>> 31d40d4 (feat: 행사 상세 페이지 구현)
+>>>>>>> 1bced03 (feat: 행사 상세 페이지 구현)
       </Routes>
     </Router>
   );
