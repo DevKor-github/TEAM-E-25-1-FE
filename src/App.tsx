@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
+import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
 import EventUploadPage from "./pages/EventUploadPage";
 
@@ -39,8 +40,16 @@ function App() {
         <Route path="/admin-home" element={<AdminHome />} />
         {/* 행사 업로드 페이지 */}
         <Route path="/admin-upload" element={<EventUploadPage />} />
+        {/* 행사 상세 페이지 */}
+        <Route
+          path="/admin/article/:articleId"
+          element={<AdminArticleDetail />}
+        />
         {/* 행사 수정 페이지 */}
-        <Route path="/article/:articleId" element={<AdminArticleEdit />} />
+        <Route
+          path="/admin/article/:articleId/edit"
+          element={<AdminArticleEdit />}
+        />
       </Routes>
     </Router>
   );
