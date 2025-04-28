@@ -96,29 +96,25 @@ export default function AdminArticleDetail() {
         </CardHeader>
         <CardContent>
           {/* 썸네일 이미지 */}
-          {articleData.imagePaths && (
-            <div className="mb-4">
-              <img
-                src={articleData.imagePaths[0]} // 첫번째 이미지를 썸네일로 사용
-                alt="썸네일 이미지"
-                className="w-full h-auto rounded"
-              />
-            </div>
-          )}
+          <div className="mb-4">
+            <img
+              src={articleData.thumbnail_path}
+              alt="썸네일 이미지"
+              className="w-full h-auto rounded"
+            />
+          </div>
 
           {/* 상세 이미지 */}
-          {articleData.imagePaths && articleData.imagePaths.length > 1 && (
+          {articleData.imagePaths && (
             <div className="grid grid-cols-2 gap-4 mb-4">
-              {articleData.imagePaths
-                .slice(1)
-                .map((url: string, index: number) => (
-                  <img
-                    key={index}
-                    src={url} // 나머지 이미지를 상세 이미지로 사용
-                    alt={`상세 이미지 ${index + 1}`}
-                    className="w-full h-auto rounded"
-                  />
-                ))}
+              {articleData.imagePaths.map((url: string, index: number) => (
+                <img
+                  key={index}
+                  src={url}
+                  alt={`상세 이미지 ${index + 1}`}
+                  className="w-full h-auto rounded"
+                />
+              ))}
             </div>
           )}
 
@@ -136,9 +132,24 @@ export default function AdminArticleDetail() {
             <strong>종료 일시:</strong>{" "}
             {new Date(articleData.endAt).toLocaleString()}
           </p>
-          <p className="text-gray-700 mb-4">
-            <strong>내용:</strong> {articleData.description}
-          </p>
+          {articleData.description && (
+            <p className="text-gray-700 mb-2">
+              <strong>내용:</strong> {articleData.description}
+            </p>
+          )}
+          {articleData.registrationUrl && (
+            <p className="text-gray-700 mb-2">
+              <strong>신청 링크:</strong>{" "}
+              <a
+                href={articleData.registrationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline"
+              >
+                {articleData.registrationUrl}
+              </a>
+            </p>
+          )}
         </CardContent>
       </Card>
       <div className="mt-6 flex justify-end">
