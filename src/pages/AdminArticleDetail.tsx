@@ -122,6 +122,9 @@ export default function AdminArticleDetail() {
             <strong>주관 기관:</strong> {articleData.organization}
           </p>
           <p className="text-gray-700 mb-2">
+            <strong>행사 종류:</strong> {articleData.tags[0]}
+          </p>
+          <p className="text-gray-700 mb-2">
             <strong>장소:</strong> {articleData.location}
           </p>
           <p className="text-gray-700 mb-2">
