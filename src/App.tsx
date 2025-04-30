@@ -38,6 +38,7 @@ function App() {
         <Route path="/admin-login" element={<AdminLogin />} />
         {/* 관리자 홈 페이지 */}
         <Route path="/admin-home" element={<AdminHome />} />
+<<<<<<< HEAD
         {/* 행사 업로드 페이지 */}
         <Route path="/admin-upload" element={<EventUploadPage />} />
         {/* 행사 상세 페이지 */}
@@ -45,11 +46,24 @@ function App() {
           path="/admin/article/:articleId"
           element={<AdminArticleDetail />}
         />
+=======
+<<<<<<< HEAD
+        <Route path="/admin/article-upload" element={<ArticleUploadPage />} />
+        <Route path="/admin/article/:articleId" element={<ArticleDetailPage />} />
+        <Route path="/admin/article/:articleId/edit" element={<ArticleEditPage />} />
+=======
+        {/* 행사 업로드 페이지 */}
+        <Route path="/admin-upload" element={<EventUploadPage />} />
+>>>>>>> d0db937 (chore: 행사 수정페이지에 태그 추가 및 App.jsx에 라우터 변경 반영(/admin/article/:articleId/edit))
         {/* 행사 수정 페이지 */}
         <Route
           path="/admin/article/:articleId/edit"
           element={<AdminArticleEdit />}
         />
+<<<<<<< HEAD
+=======
+>>>>>>> 335ccd8 (chore: 행사 수정페이지에 태그 추가 및 App.jsx에 라우터 변경 반영(/admin/article/:articleId/edit))
+>>>>>>> d0db937 (chore: 행사 수정페이지에 태그 추가 및 App.jsx에 라우터 변경 반영(/admin/article/:articleId/edit))
       </Routes>
     </Router>
   );
