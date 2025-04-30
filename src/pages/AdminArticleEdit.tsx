@@ -51,6 +51,7 @@ export default function AdminArticleEdit() {
       formData.append("startAt", new Date(data.start_datetime).toISOString());
       formData.append("endAt", new Date(data.end_datetime).toISOString());
       formData.append("registrationUrl", data.link);
+      formData.append("tags", data.event_type);
 
       // 파일 데이터 수정
       if (data.thumbnail_image?.[0]) {

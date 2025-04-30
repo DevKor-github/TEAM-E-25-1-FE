@@ -40,7 +40,10 @@ function App() {
         {/* 행사 업로드 페이지 */}
         <Route path="/admin-upload" element={<EventUploadPage />} />
         {/* 행사 수정 페이지 */}
-        <Route path="/article/:articleId" element={<AdminArticleEdit />} />
+        <Route
+          path="/admin/article/:articleId/edit"
+          element={<AdminArticleEdit />}
+        />
       </Routes>
     </Router>
   );
