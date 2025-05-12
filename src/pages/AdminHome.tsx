@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { LoadingCard } from "@/components/LoadingPlaceholder";
+import { api } from '@/lib/axios';
 
 type Article = {
   id: string;
@@ -11,98 +13,153 @@ type Article = {
   location: string;
   thumbnail_path?: string;
   description?: string;
+  tags: string[];
+  registrationUrl: string;
+  scrapCount: number;
+  viewCount: number;
+  imagePaths: string[];
 };
 
-const sampleArticles: Article[] = [
-  {
-    id: "1",
-    title: "고려대학교 120주년 기념 행사",
-    organization: "고려대학교",
-    startAt: "2025-05-05T10:00:00Z",
-    endAt: "2025-05-05T17:00:00Z",
-    location: "고려대학교 중앙광장",
-    description: "고려대학교 개교 120주년을 맞이하여 진행되는 특별한 기념 행사입니다. 다양한 문화 행사와 기념식이 준비되어 있습니다.",
-  },
-  {
-    id: "2",
-    title: "2024 고려대학교 입실렌티",
-    organization: "고려대학교 총학생회",
-    startAt: "2024-03-23T18:00:00Z",
-    endAt: "2024-03-23T22:00:00Z",
-    location: "고려대학교 화정체육관",
-    description: "새로운 학기의 시작을 알리는 고려대학교의 대표적인 축제, 입실렌티에 여러분을 초대합니다.",
-  },
-  {
-    id: "3",
-    title: "2024 고려대학교 대동제",
-    organization: "고려대학교 총학생회",
-    startAt: "2024-05-20T10:00:00Z",
-    endAt: "2024-05-22T22:00:00Z",
-    location: "고려대학교 전역",
-    description: "봄의 절정을 맞이하여 진행되는 고려대학교의 대표 축제입니다. 다양한 부스와 공연이 준비되어 있습니다.",
-  }
-];
-
-export default function AdminHome() {
-  const [articles, setArticles] = useState<Article[]>(sampleArticles);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
+function ErrorAlert({ message, retry }: { message: string; retry?: () => void }) {
   return (
-    <div className="py-8">
-      <div className="bg-white rounded-lg shadow mb-6">
-        {articles && articles.length > 0 ? (
-          articles.map((article) => (
-            <div
-              key={article.id}
-              onClick={() => navigate(`/admin/article/${article.id}`)}
-              className="flex items-center px-6 py-4 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
-            >
-              <div className="flex-1">
-                <div className="text-sm text-gray-500 mb-1">
-                  {new Date(article.startAt).toLocaleDateString()}
-                </div>
-                <div className="font-semibold text-lg mb-1">{article.title}</div>
-                <div className="text-sm text-gray-600">{article.organization}</div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/admin/article/${article.id}/edit`);
-                }}
-                className="mr-2"
-              >
-                수정
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/admin/article/${article.id}`);
-                }}
-              >
-                상세
-              </Button>
-            </div>
-          ))
-        ) : (
-          <div className="p-6 text-center text-gray-500">
-            등록된 행사가 없습니다.
+    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+        </div>
+        <div className="ml-3">
+          <p className="text-sm text-red-700">{message}</p>
+        </div>
+        {retry && (
+          <div className="ml-auto">
+            <Button variant="outline" size="sm" onClick={retry}>
+              다시 시도
+            </Button>
           </div>
         )}
-      </div>
-
-      <div className="flex justify-center">
-        <Button 
-          onClick={() => navigate("/article/upload")}
-          className="bg-black text-white px-6 py-2 rounded-full"
-        >
-          + 행사 등록
-        </Button>
       </div>
     </div>
   );
 }
+
+export default function AdminHome() {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const fetchArticles = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.get('/article', {
+        params: {
+          tags: '',
+          isFinished: '',
+          sort: ''
+        }
+      });
+      setArticles(data);
+    } catch (error: any) {
+      console.error('Failed to fetch articles:', error);
+      setError(error.response?.data?.message || '행사 목록을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  return (
+    <div className="container mx-auto py-8">
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-2xl font-bold">행사 관리</h1>
+        <Button onClick={() => navigate('/article/upload')}>
+          행사 등록
+        </Button>
+      </div>
+
+      {error ? (
+        <ErrorAlert message={error} retry={fetchArticles} />
+      ) : loading ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <LoadingCard key={i} />
+          ))}
+        </div>
+      ) : articles.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">등록된 행사가 없습니다.</p>
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={() => navigate('/article/upload')}
+          >
+            첫 행사 등록하기
+          </Button>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {articles.map((article) => (
+            <div
+              key={article.id}
+              className="cursor-pointer"
+              onClick={() => navigate(`/admin/article/${article.id}`)}
+            >
+              <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                {article.thumbnail_path && (
+                  <div className="relative">
+                    <img
+                      src={article.thumbnail_path}
+                      alt={article.title}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="absolute bottom-2 right-2 flex gap-2">
+                      <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                        👁️ {article.viewCount}
+                      </span>
+                      <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                        🔖 {article.scrapCount}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div className="p-4">
+                  <div className="flex gap-2 mb-2">
+                    {article.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{article.title}</h3>
+                  <p className="text-gray-600 text-sm mb-2">
+                    {article.organization}
+                  </p>
+                  <div className="text-gray-500 text-sm">
+                    <p className="flex items-center gap-1">
+                      <span>📅</span>
+                      {new Date(article.startAt).toLocaleDateString()}
+                    </p>
+                    <p className="flex items-center gap-1">
+                      <span>📍</span>
+                      {article.location}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
