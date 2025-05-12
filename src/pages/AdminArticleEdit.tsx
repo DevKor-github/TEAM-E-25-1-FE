@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { EventForm } from "@/components/EventForm";
+import { ArticleForm } from "@components/ArticleForm";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Button } from "@components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export default function AdminArticleEdit() {
   const { articleId } = useParams(); // URL 파라미터에서 articleId 가져오기
@@ -101,7 +101,7 @@ export default function AdminArticleEdit() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">행사 수정</h2>
-      <EventForm onSubmit={handleSubmit} defaultValues={articleData} />
+      <ArticleForm onSubmit={handleSubmit} defaultValues={articleData} />
     </div>
   );
 }
