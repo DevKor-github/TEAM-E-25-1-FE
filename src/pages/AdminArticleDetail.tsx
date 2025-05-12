@@ -2,13 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 export default function AdminArticleDetail() {
   const { articleId } = useParams(); // URL 파라미터에서 articleId 가져오기
@@ -66,44 +59,74 @@ export default function AdminArticleDetail() {
     }
   };
 
-  // 로딩 중 표시
-  if (loading) {
-    return <div>로딩 중...</div>;
-  }
-
-  // 에러 메시지 표시
-  if (error) {
-    return (
-      <div className="max-w-md mx-auto mt-10">
-        <p className="text-red-600 font-semibold">{error}</p>
-        <div className="mt-4 flex justify-end">
-          <Button variant="outline" onClick={() => navigate("/admin-home")}>
-            홈으로 이동
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            {articleData.title}
-          </CardTitle>
-          <CardDescription>행사 상세정보</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* 썸네일 이미지 */}
-          <div className="mb-4">
-            <img
-              src={articleData.thumbnail_path}
-              alt="썸네일 이미지"
-              className="w-full h-auto rounded"
-            />
+    <div className="py-8 max-w-4xl mx-auto">
+      {loading ? (
+        <div>로딩 중...</div>
+      ) : error ? (
+        <div className="text-red-600">{error}</div>
+      ) : (
+        <>
+          {/* 행사 상세 정보 */}
+          <div className="bg-white rounded-lg shadow-md">
+            {articleData.thumbnail_path && (
+              <img
+                src={articleData.thumbnail_path}
+                alt="썸네일"
+                className="w-full h-64 object-cover rounded-t-lg"
+              />
+            )}
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">{articleData.title}</h1>
+              
+              <div className="space-y-3 mb-6">
+                <p><span className="font-semibold">주관:</span> {articleData.organization}</p>
+                <p><span className="font-semibold">장소:</span> {articleData.location}</p>
+                <p>
+                  <span className="font-semibold">일시:</span>{" "}
+                  {new Date(articleData.startAt).toLocaleString()} ~ {new Date(articleData.endAt).toLocaleString()}
+                </p>
+              </div>
+
+              <div className="prose max-w-none mb-6">
+                <h2 className="text-lg font-semibold mb-2">행사 설명</h2>
+                <p className="whitespace-pre-line">{articleData.description}</p>
+              </div>
+
+              {articleData.registrationUrl && (
+                <div className="mb-6">
+                  <h2 className="text-lg font-semibold mb-2">신청 링크</h2>
+                  <a 
+                    href={articleData.registrationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {articleData.registrationUrl}
+                  </a>
+                </div>
+              )}
+
+              {/* 상세 이미지 */}
+              {articleData.imagePaths && articleData.imagePaths.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">상세 이미지</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {articleData.imagePaths.map((url: string, index: number) => (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`상세 이미지 ${index + 1}`}
+                        className="w-full h-auto rounded-lg"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
+<<<<<<< HEAD
           {/* 상세 이미지 */}
           {articleData.imagePaths && (
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -169,6 +192,25 @@ export default function AdminArticleDetail() {
           삭제
         </Button>
       </div>
+=======
+          {/* 하단 버튼 그룹 */}
+          <div className="mt-6 flex justify-end gap-4">
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/admin/article/${articleId}/edit`)}
+            >
+              수정
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+            >
+              삭제
+            </Button>
+          </div>
+        </>
+      )}
+>>>>>>> ea47384 (feat: 페이지 ui 개선)
     </div>
   );
 }
