@@ -78,7 +78,6 @@ export default function AdminArticleDetail() {
             )}
             <div className="p-6">
               <h1 className="text-2xl font-bold mb-4">{articleData.title}</h1>
-              
               <div className="space-y-3 mb-6">
                 <p><span className="font-semibold">주관:</span> {articleData.organization}</p>
                 <p><span className="font-semibold">장소:</span> {articleData.location}</p>
@@ -87,12 +86,10 @@ export default function AdminArticleDetail() {
                   {new Date(articleData.startAt).toLocaleString()} ~ {new Date(articleData.endAt).toLocaleString()}
                 </p>
               </div>
-
               <div className="prose max-w-none mb-6">
                 <h2 className="text-lg font-semibold mb-2">행사 설명</h2>
                 <p className="whitespace-pre-line">{articleData.description}</p>
               </div>
-
               {articleData.registrationUrl && (
                 <div className="mb-6">
                   <h2 className="text-lg font-semibold mb-2">신청 링크</h2>
@@ -106,7 +103,6 @@ export default function AdminArticleDetail() {
                   </a>
                 </div>
               )}
-
               {/* 상세 이미지 */}
               {articleData.imagePaths && articleData.imagePaths.length > 0 && (
                 <div>
@@ -125,74 +121,6 @@ export default function AdminArticleDetail() {
               )}
             </div>
           </div>
-
-<<<<<<< HEAD
-          {/* 상세 이미지 */}
-          {articleData.imagePaths && (
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              {articleData.imagePaths.map((url: string, index: number) => (
-                <img
-                  key={index}
-                  src={url}
-                  alt={`상세 이미지 ${index + 1}`}
-                  className="w-full h-auto rounded"
-                />
-              ))}
-            </div>
-          )}
-
-          <p className="text-gray-700 mb-2">
-            <strong>주관 기관:</strong> {articleData.organization}
-          </p>
-          <p className="text-gray-700 mb-2">
-            <strong>행사 종류:</strong> {articleData.tags[0]}
-          </p>
-          <p className="text-gray-700 mb-2">
-            <strong>장소:</strong> {articleData.location}
-          </p>
-          <p className="text-gray-700 mb-2">
-            <strong>시작 일시:</strong>{" "}
-            {new Date(articleData.startAt).toLocaleString()}
-          </p>
-          <p className="text-gray-700 mb-2">
-            <strong>종료 일시:</strong>{" "}
-            {new Date(articleData.endAt).toLocaleString()}
-          </p>
-          {articleData.description && (
-            <p className="text-gray-700 mb-2">
-              <strong>내용:</strong> {articleData.description}
-            </p>
-          )}
-          {articleData.registrationUrl && (
-            <p className="text-gray-700 mb-2">
-              <strong>신청 링크:</strong>{" "}
-              <a
-                href={articleData.registrationUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 underline"
-              >
-                {articleData.registrationUrl}
-              </a>
-            </p>
-          )}
-        </CardContent>
-      </Card>
-      <div className="mt-6 flex justify-end">
-        <Button variant="outline" onClick={() => navigate("/admin-home")}>
-          홈으로 이동
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => navigate(`/admin/article/${articleId}/edit`)}
-        >
-          수정
-        </Button>
-        <Button variant="outline" onClick={handleDelete}>
-          삭제
-        </Button>
-      </div>
-=======
           {/* 하단 버튼 그룹 */}
           <div className="mt-6 flex justify-end gap-4">
             <Button
@@ -210,7 +138,6 @@ export default function AdminArticleDetail() {
           </div>
         </>
       )}
->>>>>>> ea47384 (feat: 페이지 ui 개선)
     </div>
   );
 }
