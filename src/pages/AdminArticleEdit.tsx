@@ -19,8 +19,21 @@ export default function AdminArticleEdit() {
         setError(null);
 
         const response = await axios.get(`/article/${articleId}`);
-
-        setArticleData(response.data);
+        const data = response.data;
+        // ArticleForm의 defaultValues에 맞게 매핑
+        setArticleData({
+          title: data.title,
+          organization: data.organization,
+          event_type: Array.isArray(data.tags) ? data.tags[0] : data.tags,
+          location: data.location,
+          start_datetime: data.startAt ? data.startAt.slice(0, 16) : "",
+          end_datetime: data.endAt ? data.endAt.slice(0, 16) : "",
+          content: data.description,
+          link: data.registrationUrl ?? "",
+          // 파일 입력은 브라우저에서 기본값 세팅 불가, undefined로 둠
+          thumbnail_image: undefined,
+          detail_image: undefined,
+        });
       } catch (err: any) {
         if (
           err.response?.status === 404 &&
