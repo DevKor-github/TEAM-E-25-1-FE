@@ -1,20 +1,30 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import path from 'path'
+import { fileURLToPath } from 'url'
+import { dirname, resolve } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    port: 5173,
+    host: true,
+    headers: {
+      "Service-Worker-Allowed": "/",
+      "Access-Control-Allow-Origin": "*"
+    }
+  },
   resolve: {
     alias: {
-      // 경로 alias 설정: @components → src/components 등으로 매핑
-      // 상대경로 지옥(../../../)을 피하고, 가독성 좋고 유지보수 쉬운 import 가능
-      "@": path.resolve(__dirname, "src"), 
-      '@components': path.resolve(__dirname, 'src/components'),
-      '@pages': path.resolve(__dirname, 'src/pages'),
-      '@hooks': path.resolve(__dirname, 'src/hooks'),
-      '@lib': path.resolve(__dirname, 'src/lib'),
-      '@assets': path.resolve(__dirname, 'src/assets'),
+      "@": resolve(__dirname, "src"),
+      '@components': resolve(__dirname, 'src/components'),
+      '@pages': resolve(__dirname, 'src/pages'),
+      '@hooks': resolve(__dirname, 'src/hooks'),
+      '@lib': resolve(__dirname, 'src/lib'),
+      '@assets': resolve(__dirname, 'src/assets'),
     },
   },
 })
