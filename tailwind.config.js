@@ -3,6 +3,8 @@ import { typography, colors as customColors } from "./src/styles/tokens";
 export default {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: ["class"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       borderRadius: {
@@ -51,7 +53,7 @@ export default {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
-        ...customColors, 
+        ...customColors,
       },
       fontFamily: typography.fontFamily,
       fontSize: typography.fontSize,
