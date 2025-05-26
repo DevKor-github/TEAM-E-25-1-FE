@@ -57,22 +57,25 @@ export default function ButtonTestPage() {
           레이블
         </Button>
       </div>
-      <div className="flex gap-2 items-center">
-        <Button buttonType="symbol" styleType="gray" state="enabled">
-          <span className="material-icons">share</span>
-        </Button>
-        <Button buttonType="symbol" styleType="gray" state="hovered">
-          <span className="material-icons">share</span>
-        </Button>
-        <Button buttonType="symbol" styleType="gray" state="focused">
-          <span className="material-icons">share</span>
-        </Button>
-        <Button buttonType="symbol" styleType="gray" state="disabled">
-          <span className="material-icons">share</span>
-        </Button>
-        <Button buttonType="symbol" styleType="gray" state="loading">
-          <span className="material-icons">share</span>
-        </Button>
+      <div>
+        <Button
+          buttonType="symbol"
+          styleType="gray"
+          state="enabled"
+          iconType="share"
+        ></Button>
+        <Button
+          buttonType="symbol"
+          styleType="gray"
+          state="disabled"
+          iconType="share"
+        ></Button>
+        <Button
+          buttonType="symbol"
+          styleType="gray"
+          state="enabled"
+          iconType="heart"
+        ></Button>
       </div>
     </div>
   );

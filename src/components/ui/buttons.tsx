@@ -3,6 +3,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import clsx from "clsx";
 import shareIcon_gray700 from "../../assets/shareIcon_gray700.svg";
 import shareIcon_gray300 from "../../assets/shareIcon_gray300.svg";
+import HeartIcon from "../../assets/heartIcon.svg";
 
 const buttonVariants = cva(
   "inline-flex justify-center items-center gap-2 rounded-[12px] font-medium font-pretendard text-[17px] leading-6 text-center transition-colors",
@@ -131,7 +132,9 @@ const buttonVariants = cva(
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
-    children: React.ReactNode;
+    children?: React.ReactNode;
+    iconType?: "share" | "heart";
+    iconAlt?: string;
   };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -141,6 +144,8 @@ export const Button: React.FC<ButtonProps> = ({
   state,
   children,
   className,
+  iconType,
+  iconAlt,
   ...props
 }) => {
   const isLoading = state === "loading";
@@ -153,9 +158,13 @@ export const Button: React.FC<ButtonProps> = ({
         ? "bg-red-300"
         : "bg-sky-100";
 
-  // symbol이면서 disabled면 shareIcon gray300, 아니면 gray700
-  const symbolIcon =
-    state === "disabled" ? shareIcon_gray300 : shareIcon_gray700;
+  // iconType과 state에 따라 아이콘 결정
+  let symbolIcon: string | undefined;
+  if (iconType === "share") {
+    symbolIcon = state === "disabled" ? shareIcon_gray300 : shareIcon_gray700;
+  } else if (iconType === "heart") {
+    symbolIcon = HeartIcon;
+  }
 
   return (
     <button
@@ -172,8 +181,8 @@ export const Button: React.FC<ButtonProps> = ({
           <span className={`block w-[6px] h-[6px] rounded-full ${dotColor}`} />
           <span className={`block w-[6px] h-[6px] rounded-full ${dotColor}`} />
         </span>
-      ) : buttonType === "symbol" ? (
-        <img src={symbolIcon} alt="share" />
+      ) : buttonType === "symbol" && symbolIcon ? (
+        <img src={symbolIcon} alt={iconAlt ?? iconType ?? "icon"} />
       ) : (
         children
       )}
