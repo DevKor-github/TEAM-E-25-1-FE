@@ -1,5 +1,4 @@
-/** @type {import('tailwindcss').Config} */
-import { typography, colors } from "./src/styles/tokens";
+import { typography, colors as customColors } from "./src/styles/tokens";
 
 export default {
   darkMode: ["class"],
@@ -52,15 +51,10 @@ export default {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
+        ...customColors, 
       },
-
-      // 사용자 페이지 관련 설정 (tokens.js에서 가져온 값 추가)
-      fontFamily: {
-        ...typography.fontFamily,
-      },
-      fontSize: {
-        ...typography.fontSize,
-      },
+      fontFamily: typography.fontFamily,
+      fontSize: typography.fontSize,
     },
   },
   plugins: [require("tailwindcss-animate")],
