@@ -55,10 +55,11 @@ export default {
       },
 
       // 사용자 페이지 관련 설정 (tokens.js에서 가져온 값 추가)
-      fontFamily: typography.fontFamily,
-      fontSize: typography.fontSize,
-      colors: {
-        ...colors,
+      fontFamily: {
+        ...typography.fontFamily,
+      },
+      fontSize: {
+        ...typography.fontSize,
       },
     },
   },
