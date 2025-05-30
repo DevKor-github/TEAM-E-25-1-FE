@@ -17,7 +17,7 @@ export default function AllToggleButton({ label, defaultToggled = false }: AllTo
         "flex items-center gap-2 rounded-[12px] px-4 py-3 w-[315px]",
         isToggled
           ? "bg-white border border-sky-300"
-          : "bg-gray-50 border border-transparent"
+          : "bg-gray-50 border border-gray-200"
       )}
     >      <img
         src={isToggled ? checkIconSky : checkIconGray}
@@ -27,7 +27,7 @@ export default function AllToggleButton({ label, defaultToggled = false }: AllTo
       <span
         className={clsx(
           "font-pretendard text-[17px] font-medium leading-[24px]",
-          isToggled ? "text-gray-700" : "text-gray-500"
+          isToggled ? "text-gray-700" : "text-gray-700"
         )}
       >
         {label}

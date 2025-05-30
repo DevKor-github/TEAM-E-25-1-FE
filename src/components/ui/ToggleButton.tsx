@@ -15,8 +15,8 @@ export default function ToggleButton({ label, defaultToggled = false }: ToggleBu
       className={clsx(
         "w-[120px] py-3 rounded-[12px] text-center font-pretendard text-[16px] font-medium leading-[22px]",
         isToggled
-          ? "bg-white border border-sky-300 text-sky-500"
-          : "bg-gray-50 border border-transparent text-gray-500"
+          ? "bg-sky50 text-sky-500"
+          : "bg-gray-50 text-gray-500"
       )}
     >
       {label}
