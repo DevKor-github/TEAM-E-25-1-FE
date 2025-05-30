@@ -1,19 +1,24 @@
 import React from "react";
 
 interface EventImageProps {
-  src: string;
+  src?: string;
   alt?: string;
+  className?: string;
 }
 
-export default function EventImage({ src, alt = "" }: EventImageProps) {
-  return (    <div className="w-[160px] h-[160px] rounded-[8px] border border-[rgba(3,7,1,0.05)] bg-white overflow-hidden">
-      {src ? (
-        <img
-          src={src}
-          alt={alt}
-          className="w-full h-full object-cover"
-        />
-      ) : null}
-    </div>
+export default function EventImage({ src, alt = "", className = "" }: EventImageProps) {
+  if (!src) {
+    return (
+      <div
+        className={`bg-white w-[160px] h-[160px] rounded-lg border border-gray-100 flex items-center justify-center ${className}`}
+      />
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={`w-[160px] h-[160px] object-cover rounded-lg border border-gray-100 ${className}`}
+    />
   );
 }
