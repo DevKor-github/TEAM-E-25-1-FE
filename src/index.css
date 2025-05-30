@@ -59,6 +59,12 @@
 }
 
 @layer base {
+<<<<<<< HEAD
+=======
+  * {
+    @apply border;
+  }
+>>>>>>> feat/ui-toggle-buttons
   body {
     @apply bg-background text-foreground;
   }
