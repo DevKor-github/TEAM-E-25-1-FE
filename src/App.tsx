@@ -7,6 +7,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
 import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
+import ComponentTest from "./pages/ComponentTest";
 
 // 인증된 사용자만 접근 가능한 라우트 컴포넌트
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -42,12 +43,14 @@ export default function App() {
             <PrivateRoute>
               <AdminArticleEdit />
             </PrivateRoute>
-          } />
-          <Route path="/article/upload" element={
+          } />          <Route path="/article/upload" element={
             <PrivateRoute>
               <ArticleUploadPage />
             </PrivateRoute>
           } />
+          
+          {/* UI 컴포넌트 데모 페이지 */}
+          <Route path="/component-test" element={<ComponentTest />} />
         </Routes>
       </main>
     </Router>
