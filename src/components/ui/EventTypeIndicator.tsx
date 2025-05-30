@@ -3,15 +3,16 @@ import React from "react";
 export type EventType = "강연" | "공모전" | "대회" | "박람회" | "설명회" | "축제";
 
 interface EventTypeIndicatorProps {
-  types: EventType[];
+  type: EventType;
   className?: string;
 }
 
-export default function EventTypeIndicator({ types, className = "" }: EventTypeIndicatorProps) {
+export default function EventTypeIndicator({ type, className = "" }: EventTypeIndicatorProps) {
   const getTypeStyles = (type: EventType) => {
     switch (type) {
       case "강연":
-        return "bg-blue-50 text-blue-500";      case "공모전":
+        return "bg-blue-50 text-blue-500";
+      case "공모전":
         return "bg-gray-50 text-gray-500";
       case "대회":
         return "bg-gray-50 text-gray-500";
@@ -27,15 +28,10 @@ export default function EventTypeIndicator({ types, className = "" }: EventTypeI
   };
 
   return (
-    <div className={`flex flex-col gap-2 ${className}`}>
-      {types.map((type) => (
-        <div
-          key={type}
-          className={`inline-flex items-center justify-center rounded-[8px] px-[6px] py-[2px] text-[15px] font-medium leading-[22px] whitespace-nowrap ${getTypeStyles(type)}`}
-        >
-          {type}
-        </div>
-      ))}
+    <div
+      className={`inline-flex items-center justify-center rounded-[8px] px-[6px] py-[2px] body3 whitespace-nowrap ${getTypeStyles(type)} ${className}`}
+    >
+      {type}
     </div>
   );
 }
