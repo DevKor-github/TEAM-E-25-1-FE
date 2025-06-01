@@ -1,9 +1,9 @@
-import { Button } from "./buttons";
+import { Button } from "@/components/ui/buttons";
 
-export default function ButtonTestPage() {
+export default function ButtonTest() {
   return (
-    <div className="flex flex-col gap-6 p-8 bg-gray-50 min-h-screen">
-      <div>
+    <div className="flex flex-col gap-10 p-8 bg-gray-50 min-h-screen">
+      <div className="flex flex-row gap-6">
         <Button styleType="brand" state="enabled" size="lg">
           레이블
         </Button>
@@ -20,7 +20,41 @@ export default function ButtonTestPage() {
           레이블
         </Button>
       </div>
-      <div>
+      <div className="flex flex-row gap-6">
+        <Button styleType="gray" state="enabled" size="lg">
+          레이블
+        </Button>
+        <Button styleType="gray" state="hovered" size="lg">
+          레이블
+        </Button>
+        <Button styleType="gray" state="focused" size="lg">
+          레이블
+        </Button>
+        <Button styleType="gray" state="disabled" size="lg">
+          레이블
+        </Button>
+        <Button styleType="gray" state="loading" size="lg">
+          레이블
+        </Button>
+      </div>
+      <div className="flex flex-row gap-6">
+        <Button styleType="destructive" state="enabled" size="lg">
+          레이블
+        </Button>
+        <Button styleType="destructive" state="hovered" size="lg">
+          레이블
+        </Button>
+        <Button styleType="destructive" state="focused" size="lg">
+          레이블
+        </Button>
+        <Button styleType="destructive" state="disabled" size="lg">
+          레이블
+        </Button>
+        <Button styleType="destructive" state="loading" size="lg">
+          레이블
+        </Button>
+      </div>
+      <div className="flex flex-row gap-6">
         <Button styleType="gray" state="enabled" size="md">
           레이블
         </Button>
@@ -37,7 +71,7 @@ export default function ButtonTestPage() {
           레이블
         </Button>
       </div>
-      <div>
+      <div className="flex flex-row gap-6">
         <Button styleType="destructive" state="enabled" size="md">
           레이블
         </Button>
@@ -53,15 +87,24 @@ export default function ButtonTestPage() {
         <Button styleType="destructive" state="loading" size="md">
           레이블
         </Button>
-        <Button styleType="destructive" state="loading" size="lg">
-          레이블
-        </Button>
       </div>
-      <div>
+      <div className="flex flex-row gap-6">
         <Button
           buttonType="symbol"
           styleType="gray"
           state="enabled"
+          iconType="share"
+        ></Button>
+        <Button
+          buttonType="symbol"
+          styleType="gray"
+          state="hovered"
+          iconType="share"
+        ></Button>
+        <Button
+          buttonType="symbol"
+          styleType="gray"
+          state="focused"
           iconType="share"
         ></Button>
         <Button
@@ -73,8 +116,8 @@ export default function ButtonTestPage() {
         <Button
           buttonType="symbol"
           styleType="gray"
-          state="enabled"
-          iconType="heart"
+          state="loading"
+          iconType="share"
         ></Button>
       </div>
     </div>

@@ -12,11 +12,7 @@ export function BottomButtonsCombo1({
   state?: "enabled" | "hovered" | "focused" | "disabled" | "loading";
 }) {
   return (
-<<<<<<< HEAD
     <div className="w-full min-h-[88px] p-5 bg-white flex items-center">
-=======
-    <div className="w-[375px] min-h-[88px] p-5 bg-white flex items-center">
->>>>>>> feat/ui-bottom-sheet
       <Button
         buttonType="text"
         size="lg"
@@ -43,11 +39,7 @@ export function BottomButtonsCombo2({
   rightState?: "enabled" | "hovered" | "focused" | "disabled" | "loading";
 }) {
   return (
-<<<<<<< HEAD
     <div className="w-full min-h-[88px] p-5 bg-white flex items-center gap-3">
-=======
-    <div className="w-[375px] min-h-[88px] p-5 bg-white flex items-center gap-3">
->>>>>>> feat/ui-bottom-sheet
       <Button
         buttonType="text"
         size="lg"
@@ -83,11 +75,7 @@ export function BottomButtonsCombo3({
   labelState?: "enabled" | "hovered" | "focused" | "disabled" | "loading";
 }) {
   return (
-<<<<<<< HEAD
     <div className="w-full min-h-[88px] p-5 bg-white flex items-center gap-3">
-=======
-    <div className="w-[375px] min-h-[88px] p-5 bg-white flex items-center gap-3">
->>>>>>> feat/ui-bottom-sheet
       <Button
         buttonType="symbol"
         styleType="gray"
