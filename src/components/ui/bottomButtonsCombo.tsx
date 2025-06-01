@@ -1,7 +1,4 @@
 import { Button } from "./buttons";
-import shareIcon_gray700 from "../../assets/shareIcon_gray700.svg";
-import shareIcon_gray300 from "../../assets/shareIcon_gray300.svg";
-import HeartIcon from "../../assets/heartIcon.svg";
 
 // type 1 button
 export function BottomButtonsCombo1({
