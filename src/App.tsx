@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { Header } from "@/components/Header";
 import ArticleUploadPage from "./pages/ArticleUploadPage";
@@ -21,34 +26,44 @@ export default function App() {
       <Header />
       <main className="container mx-auto px-4 pt-16">
         <Routes>
-          {/* 기본 경로를 로그인 페이지로 변경 */}          {/* 일반 사용자용 라우트 */}
+          {/* 기본 경로를 로그인 페이지로 변경 */} {/* 일반 사용자용 라우트 */}
           <Route path="/" element={<Navigate to="/admin-login" replace />} />
           <Route path="/article/:articleId" element={<ArticleDetailPage />} />
-          
           {/* 관리자 라우트 */}
           <Route path="/admin-login" element={<AdminLogin />} />
-          
           {/* 인증이 필요한 관리자 라우트들 */}
-          <Route path="/admin-home" element={
-            <PrivateRoute>
-              <AdminHome />
-            </PrivateRoute>
-          } />
-          <Route path="/admin/article/:articleId" element={
-            <PrivateRoute>
-              <AdminArticleDetail />
-            </PrivateRoute>
-          } />
-          <Route path="/admin/article/:articleId/edit" element={
-            <PrivateRoute>
-              <AdminArticleEdit />
-            </PrivateRoute>
-          } />          <Route path="/article/upload" element={
-            <PrivateRoute>
-              <ArticleUploadPage />
-            </PrivateRoute>
-          } />
-          
+          <Route
+            path="/admin-home"
+            element={
+              <PrivateRoute>
+                <AdminHome />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/article/:articleId"
+            element={
+              <PrivateRoute>
+                <AdminArticleDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/article/:articleId/edit"
+            element={
+              <PrivateRoute>
+                <AdminArticleEdit />
+              </PrivateRoute>
+            }
+          />{" "}
+          <Route
+            path="/article/upload"
+            element={
+              <PrivateRoute>
+                <ArticleUploadPage />
+              </PrivateRoute>
+            }
+          />
           {/* UI 컴포넌트 데모 페이지 */}
           <Route path="/component-test" element={<ComponentTest />} />
         </Routes>
