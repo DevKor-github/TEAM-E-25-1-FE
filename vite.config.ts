@@ -13,22 +13,17 @@ export default defineConfig({
     host: true,
     headers: {
       "Service-Worker-Allowed": "/",
-      "Access-Control-Allow-Origin": "*"
-    }
+      "Access-Control-Allow-Origin": "*",
+    },
   },
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
-      '@components': resolve(__dirname, 'src/components'),
-      '@pages': resolve(__dirname, 'src/pages'),
-      '@hooks': resolve(__dirname, 'src/hooks'),
-      '@lib': resolve(__dirname, 'src/lib'),
-      '@assets': resolve(__dirname, 'src/assets'),
+      "@components": resolve(__dirname, "src/components"),
+      "@pages": resolve(__dirname, "src/pages"),
+      "@hooks": resolve(__dirname, "src/hooks"),
+      "@lib": resolve(__dirname, "src/lib"),
+      "@assets": resolve(__dirname, "src/assets"),
     },
   },
-  test: {
-    environment: "jsdom",
-    globals: true,
-    setupFiles: "./src/setupTests.ts",
-  },
-})
+});
