@@ -5,6 +5,8 @@ import AllToggleButton from "@/components/ui/AllToggleButton";
 import EventImage from "@/components/ui/EventImage";
 import EventTypeIndicator from "@/components/ui/EventTypeIndicator";
 import EventDateIndicator from "@/components/ui/EventDateIndicator";
+import EventCard from "@/components/ui/EventCard";
+import EventThumbnail from "@/components/ui/EventThumbnail";
 
 function ComponentTest() {
   const [selected2, setSelected2] = useState("레이블1");
@@ -31,7 +33,7 @@ function ComponentTest() {
   };
 
   return (
-    <div className="p-10 space-y-10 bg-[var(--Grays-Gray-50)] min-h-screen">
+    <div className="p-10 space-y-10 bg-white min-h-screen">
       <h1 className="text-xl font-bold">UI 컴포넌트 데모</h1>
 
       {/* 🔹 Segmented Control */}
@@ -121,6 +123,45 @@ function ComponentTest() {
         <div className="grid grid-cols-3 gap-4">
           <EventImage src="" alt="이미지 없음" />
         </div>
+      </div>
+
+      {/* 🔹 Event Card & Thumbnail */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold">Event Card & Thumbnail</h2>
+        <section>
+          <h2 className="font-bold text-lg mb-2">Event Card</h2>
+          <div className="rounded-2xl">
+            <EventCard
+              title="이벤트 타이틀"
+              date="9월 25일 (수)"
+              type="강연"
+              dday={117}
+              isLiked={true}
+              likeCount={1000}
+              imageUrl={"/assets/event_thumbnail_image.png"}
+            />
+            <EventCard
+              title="이벤트 타이틀"
+              date="9월 25일 (수)"
+              type="강연"
+              dday={117}
+              isLiked={false}
+              likeCount={1000}
+              imageUrl={"/assets/event_thumbnail_image.png"}
+
+            />
+          </div>
+        </section>
+        <section>
+          <h2 className="font-bold text-lg mb-2">Event Thumbnail</h2>
+          <EventThumbnail
+            title="이벤트 타이틀"
+            org="dcamp officehour"
+            imageUrl={"/assets/event_thumbnail_image.png"}
+            period="25.04.24.(목) ~ 25.05.15.(목)"
+            location="온라인 접수"
+          />
+        </section>
       </div>
     </div>
   );
