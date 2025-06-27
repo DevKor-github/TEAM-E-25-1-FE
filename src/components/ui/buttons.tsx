@@ -4,6 +4,8 @@ import clsx from "clsx";
 import shareIcon_gray700 from "../../assets/shareIcon_gray700.svg";
 import shareIcon_gray300 from "../../assets/shareIcon_gray300.svg";
 import HeartIcon from "../../assets/heartIcon.svg";
+import chevronLeft from "../../assets/chevronLeft.svg";
+import chevronRight from "../../assets/chevronRight.svg";
 
 const buttonVariants = cva(
   "inline-flex justify-center items-center gap-2 rounded-[12px] font-medium font-pretendard text-[17px] leading-6 text-center transition-colors",
@@ -133,22 +135,33 @@ const buttonVariants = cva(
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
     children?: React.ReactNode;
-    iconType?: "share" | "heart";
+    iconType?: "share" | "heart" | "chevronLeft" | "chevronRight";
     iconAlt?: string;
+    loading?: boolean;
   };
 
 export const Button: React.FC<ButtonProps> = ({
   buttonType,
   size,
   styleType,
-  state,
   children,
   className,
   iconType,
   iconAlt,
+  disabled,
+  loading = false,
   ...props
 }) => {
-  const isLoading = state === "loading";
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [isFocused, setIsFocused] = React.useState(false);
+
+  // state 결정 (초기값 enabled)
+  let state: "enabled" | "hovered" | "focused" | "disabled" | "loading" =
+    "enabled";
+  if (loading) state = "loading";
+  else if (disabled) state = "disabled";
+  else if (isFocused) state = "focused";
+  else if (isHovered) state = "hovered";
 
   // state이 loading일 때 styleType에 따라 점 색상 결정
   const dotColor =
@@ -164,6 +177,10 @@ export const Button: React.FC<ButtonProps> = ({
     symbolIcon = state === "disabled" ? shareIcon_gray300 : shareIcon_gray700;
   } else if (iconType === "heart") {
     symbolIcon = HeartIcon;
+  } else if (iconType === "chevronLeft") {
+    symbolIcon = chevronLeft;
+  } else if (iconType === "chevronRight") {
+    symbolIcon = chevronRight;
   }
 
   return (
@@ -172,10 +189,14 @@ export const Button: React.FC<ButtonProps> = ({
         buttonVariants({ buttonType, size, styleType, state }),
         className
       )}
-      disabled={state === "disabled" || isLoading}
+      disabled={disabled || loading}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
       {...props}
     >
-      {isLoading ? (
+      {loading ? (
         <span className="flex items-center justify-center w-[34px] h-6 gap-2">
           <span className={`block w-[6px] h-[6px] rounded-full ${dotColor}`} />
           <span className={`block w-[6px] h-[6px] rounded-full ${dotColor}`} />
