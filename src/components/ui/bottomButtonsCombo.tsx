@@ -1,15 +1,16 @@
 import { Button } from "./buttons";
-import shareIcon_gray700 from "../../assets/shareIcon_gray700.svg";
-import shareIcon_gray300 from "../../assets/shareIcon_gray300.svg";
-import HeartIcon from "../../assets/heartIcon.svg";
 
 // type 1 button
 export function BottomButtonsCombo1({
   label,
-  state = "enabled", // 기본 state: enabled
+  disabled = false,
+  loading = false,
+  onClick,
 }: {
   label: string;
-  state?: "enabled" | "hovered" | "focused" | "disabled" | "loading";
+  disabled?: boolean;
+  loading?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <div className="w-full min-h-[88px] p-5 bg-white flex items-center">
@@ -17,8 +18,10 @@ export function BottomButtonsCombo1({
         buttonType="text"
         size="lg"
         styleType="brand"
-        state={state}
         className="w-full"
+        disabled={disabled}
+        loading={loading}
+        onClick={onClick}
       >
         {label}
       </Button>
@@ -30,13 +33,21 @@ export function BottomButtonsCombo1({
 export function BottomButtonsCombo2({
   leftLabel,
   rightLabel,
-  leftState = "enabled",
-  rightState = "enabled",
+  leftDisabled = false,
+  rightDisabled = false,
+  leftLoading = false,
+  rightLoading = false,
+  onLeftClick,
+  onRightClick,
 }: {
   leftLabel: string;
   rightLabel: string;
-  leftState?: "enabled" | "hovered" | "focused" | "disabled" | "loading";
-  rightState?: "enabled" | "hovered" | "focused" | "disabled" | "loading";
+  leftDisabled?: boolean;
+  rightDisabled?: boolean;
+  leftLoading?: boolean;
+  rightLoading?: boolean;
+  onLeftClick?: () => void;
+  onRightClick?: () => void;
 }) {
   return (
     <div className="w-full min-h-[88px] p-5 bg-white flex items-center gap-3">
@@ -44,8 +55,10 @@ export function BottomButtonsCombo2({
         buttonType="text"
         size="lg"
         styleType="gray"
-        state={leftState}
         className="w-[161.5px]"
+        disabled={leftDisabled}
+        loading={leftLoading}
+        onClick={onLeftClick}
       >
         {leftLabel}
       </Button>
@@ -53,8 +66,10 @@ export function BottomButtonsCombo2({
         buttonType="text"
         size="lg"
         styleType="brand"
-        state={rightState}
         className="w-[161.5px]"
+        disabled={rightDisabled}
+        loading={rightLoading}
+        onClick={onRightClick}
       >
         {rightLabel}
       </Button>
@@ -64,36 +79,54 @@ export function BottomButtonsCombo2({
 
 // type 3 buttons
 export function BottomButtonsCombo3({
-  shareState = "enabled",
-  heartState = "enabled",
+  shareDisabled = false,
+  heartDisabled = false,
   label,
-  labelState = "enabled",
+  labelDisabled = false,
+  shareLoading = false,
+  heartLoading = false,
+  labelLoading = false,
+  onShareClick,
+  onHeartClick,
+  onLabelClick,
 }: {
-  shareState?: "enabled" | "hovered" | "focused" | "disabled" | "loading";
-  heartState?: "enabled" | "hovered" | "focused" | "disabled" | "loading";
+  shareDisabled?: boolean;
+  heartDisabled?: boolean;
   label: string;
-  labelState?: "enabled" | "hovered" | "focused" | "disabled" | "loading";
+  labelDisabled?: boolean;
+  shareLoading?: boolean;
+  heartLoading?: boolean;
+  labelLoading?: boolean;
+  onShareClick?: () => void;
+  onHeartClick?: () => void;
+  onLabelClick?: () => void;
 }) {
   return (
     <div className="w-full min-h-[88px] p-5 bg-white flex items-center gap-3">
       <Button
         buttonType="symbol"
         styleType="gray"
-        state={shareState}
         iconType="share"
-      ></Button>
+        onClick={onShareClick}
+        disabled={shareDisabled}
+        loading={shareLoading}
+      />
       <Button
         buttonType="symbol"
         styleType="gray"
-        state={heartState}
         iconType="heart"
-      ></Button>
+        onClick={onHeartClick}
+        disabled={heartDisabled}
+        loading={heartLoading}
+      />
       <Button
         buttonType="text"
         size="lg"
         styleType="brand"
-        state={labelState}
         className="w-[215px]"
+        onClick={onLabelClick}
+        disabled={labelDisabled}
+        loading={labelLoading}
       >
         {label}
       </Button>
