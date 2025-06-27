@@ -7,7 +7,7 @@ export type EventType =
   | "축제";
 
 interface EventTypeIndicatorProps {
-  type: EventType[];
+  type: EventType; // 단일 값으로 변경
   className?: string;
 }
 
@@ -35,15 +35,12 @@ export default function EventTypeIndicator({
   };
 
   return (
-    <div className={`flex gap-2 ${className}`}>
-      {type.map((t) => (
-        <div
-          key={t}
-          className={`inline-flex items-center justify-center rounded-[8px] px-[6px] py-[2px] body3 whitespace-nowrap ${getTypeStyles(t)}`}
-        >
-          {t}
-        </div>
-      ))}
+    <div
+      className={`inline-flex items-center justify-center rounded-[8px] px-[6px] py-[2px] body3 whitespace-nowrap ${getTypeStyles(
+        type
+      )} ${className}`}
+    >
+      {type}
     </div>
   );
 }

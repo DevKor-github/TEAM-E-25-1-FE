@@ -48,7 +48,7 @@ export default function EventCard({
       <div className="font-pretendard text-[16px] leading-[22px] text-gray-500 font-normal mb-3">{date}</div>
       <div className="flex gap-2 items-center mb-2">
         {/* 여러 태그를 각각 렌더링 */}
-        {tags.map((tag) => (
+        {(tags ?? []).map((tag) => (
           <EventTypeIndicator key={tag} type={tag} />
         ))}
         <EventDateIndicator dday={dday} />
