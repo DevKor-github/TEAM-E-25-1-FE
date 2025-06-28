@@ -5,10 +5,11 @@ import EventDateIndicator from "./EventDateIndicator";
 import heartRed from "@/assets/heart_red500.svg";
 import heartGray from "@/assets/heart_gray.svg";
 import heartNon from "@/assets/heart_nothing.svg";
+
 interface EventCardProps {
   title: string;
   date: string;
-  type: EventType;
+  tags: EventType[]; // EventType[]로 강제
   dday: number;
   isLiked: boolean;
   likeCount: number;
@@ -21,7 +22,7 @@ interface EventCardProps {
 export default function EventCard({
   title,
   date,
-  type,
+  tags,
   dday,
   isLiked,
   likeCount,
@@ -46,7 +47,10 @@ export default function EventCard({
       <div className="font-pretendard font-semibold text-[17px] leading-[24px] text-gray800 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">{title}</div>
       <div className="font-pretendard text-[16px] leading-[22px] text-gray-500 font-normal mb-3">{date}</div>
       <div className="flex gap-2 items-center mb-2">
-        <EventTypeIndicator type={type} />
+        {/* 여러 태그를 각각 렌더링 */}
+        {(tags ?? []).map((tag) => (
+          <EventTypeIndicator key={tag} type={tag} />
+        ))}
         <EventDateIndicator dday={dday} />
         <div className="flex items-center gap-1 ml-auto min-w-[52px] pr-1">
           <img src={heartGray} alt="like-count" className="w-5 h-5" />

@@ -23,8 +23,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <Router>
-      <Header />
-      <main className="container mx-auto px-4 pt-16">
+      <main>
         <Routes>
           {/* 기본 경로를 로그인 페이지로 변경 */} {/* 일반 사용자용 라우트 */}
           <Route path="/" element={<Navigate to="/admin-login" replace />} />

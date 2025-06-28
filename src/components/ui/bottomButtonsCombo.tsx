@@ -89,6 +89,7 @@ export function BottomButtonsCombo3({
   onShareClick,
   onHeartClick,
   onLabelClick,
+  heartScrapped = false,
 }: {
   shareDisabled?: boolean;
   heartDisabled?: boolean;
@@ -100,6 +101,7 @@ export function BottomButtonsCombo3({
   onShareClick?: () => void;
   onHeartClick?: () => void;
   onLabelClick?: () => void;
+  heartScrapped?: boolean;
 }) {
   return (
     <div className="w-full min-h-[88px] p-5 bg-white flex items-center gap-3">
@@ -118,6 +120,7 @@ export function BottomButtonsCombo3({
         onClick={onHeartClick}
         disabled={heartDisabled}
         loading={heartLoading}
+        heartScrapped={heartScrapped}
       />
       <Button
         buttonType="text"
