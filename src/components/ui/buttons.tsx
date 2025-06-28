@@ -4,6 +4,7 @@ import clsx from "clsx";
 import shareIcon_gray700 from "../../assets/shareIcon_gray700.svg";
 import shareIcon_gray300 from "../../assets/shareIcon_gray300.svg";
 import HeartIcon from "../../assets/heartIcon.svg";
+import heart_red500 from "../../assets/heart_red500.svg";
 import chevronLeft from "../../assets/chevronLeft.svg";
 import chevronRight from "../../assets/chevronRight.svg";
 
@@ -138,6 +139,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
     iconType?: "share" | "heart" | "chevronLeft" | "chevronRight";
     iconAlt?: string;
     loading?: boolean;
+    heartScrapped?: boolean;
   };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -150,6 +152,7 @@ export const Button: React.FC<ButtonProps> = ({
   iconAlt,
   disabled,
   loading = false,
+  heartScrapped = false,
   ...props
 }) => {
   const [isHovered, setIsHovered] = React.useState(false);
@@ -176,7 +179,7 @@ export const Button: React.FC<ButtonProps> = ({
   if (iconType === "share") {
     symbolIcon = state === "disabled" ? shareIcon_gray300 : shareIcon_gray700;
   } else if (iconType === "heart") {
-    symbolIcon = HeartIcon;
+    symbolIcon = heartScrapped ? heart_red500 : HeartIcon;
   } else if (iconType === "chevronLeft") {
     symbolIcon = chevronLeft;
   } else if (iconType === "chevronRight") {

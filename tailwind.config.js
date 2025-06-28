@@ -59,5 +59,5 @@ export default {
       fontSize: typography.fontSize,
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar-hide")],
 };
