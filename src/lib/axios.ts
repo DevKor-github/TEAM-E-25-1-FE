@@ -37,14 +37,14 @@ api.interceptors.response.use(
         } else {
           alert("로그인 세션이 만료되었습니다. 다시 로그인 해주세요.");
         }
-        window.location.href = "/login";
+        window.location.href = "/auth/login";
         return Promise.reject(refreshErr);
       }
     }
 
     if (status === 500 && errCode === "AUTH_TOKEN_PARSING_FAILED") {
       alert("인증 정보 처리 중 오류가 발생했습니다. 다시 로그인 해주세요.");
-      window.location.href = "/login";
+      window.location.href = "/auth/login";
       return Promise.reject(err);
     }
 
