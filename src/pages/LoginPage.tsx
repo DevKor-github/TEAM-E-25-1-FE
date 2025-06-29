@@ -2,9 +2,20 @@ import { useNavigate } from "react-router-dom";
 import chevronLeft from "../assets/chevronLeft.svg";
 import logo from "../assets/logo.svg";
 import KakaoLoginBtn from "@/components/ui/kakaoLoginBtn";
+import { api } from "@/lib/axios";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+
+  const handleKakaoLogin = async () => {
+    try {
+      const res = await api.get("/auth/oauth/authorization");
+      window.location.href = res.data.authorizationUrl;
+    } catch (err) {
+      alert("카카오 로그인 요청에 실패했습니다.");
+    }
+  };
+
   return (
     <div className="relative w-[375px] h-[812px] mx-auto">
       <div className="w-[375px] h-[60px] flex flex-row items-center px-[20px] py-[10px] gap-[10px]">
@@ -26,7 +37,7 @@ export default function LoginPage() {
       </div>
 
       <div className="absolute top-[364px] left-[20px]">
-        <KakaoLoginBtn />
+        <KakaoLoginBtn onClick={handleKakaoLogin} />
       </div>
     </div>
   );
