@@ -8,6 +8,8 @@ import { useAuthStore } from "@/stores/authStore";
 import { Header } from "@/components/Header";
 import ArticleUploadPage from "./pages/ArticleUploadPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
+import LoginPage from "./pages/LoginPage";
+import Redirection from "./pages/Redirection";
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
 import AdminArticleDetail from "./pages/AdminArticleDetail";
@@ -23,11 +25,12 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <Router>
-      <Header />
-      <main className="container mx-auto px-4 pt-16">
+      <main>
         <Routes>
           {/* 기본 경로를 로그인 페이지로 변경 */} {/* 일반 사용자용 라우트 */}
           <Route path="/" element={<Navigate to="/admin-login" replace />} />
+          <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/auth/login/oauth/callback" element={<Redirection />} />
           <Route path="/article/:articleId" element={<ArticleDetailPage />} />
           {/* 관리자 라우트 */}
           <Route path="/admin-login" element={<AdminLogin />} />
