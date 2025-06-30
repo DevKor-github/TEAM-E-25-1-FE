@@ -7,6 +7,9 @@ import EventTypeIndicator from "@/components/ui/EventTypeIndicator";
 import EventDateIndicator from "@/components/ui/EventDateIndicator";
 import EventCard from "@/components/ui/EventCard";
 import EventThumbnail from "@/components/ui/EventThumbnail";
+import FilterButton from "@/components/ui/FilterButton";
+import Divider from "@/components/ui/Divider";
+import MobileHeaderSection from "../components/MobileHeaderSection";
 
 function ComponentTest() {
   const [selected2, setSelected2] = useState("레이블1");
@@ -36,7 +39,7 @@ function ComponentTest() {
     <div className="p-10 space-y-10 bg-white min-h-screen">
       <h1 className="text-xl font-bold">UI 컴포넌트 데모</h1>
 
-      {/* 🔹 Segmented Control */}
+      {/* Segmented Control */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Segmented Control</h2>
         <div className="space-y-8">
@@ -67,7 +70,7 @@ function ComponentTest() {
         </div>
       </div>
 
-      {/* 🔹 Toggle Buttons */}
+      {/* Toggle Buttons */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Toggle Buttons</h2>
         <div className="space-y-4">
@@ -91,7 +94,7 @@ function ComponentTest() {
         </div>
       </div>
 
-      {/* 🔹 Event Type Indicator */}
+      {/* Event Type Indicator */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Event Type Indicator</h2>
         <div className="flex gap-4">
@@ -104,7 +107,7 @@ function ComponentTest() {
         </div>
       </div>
 
-      {/* 🔹 Event Date Indicator */}
+      {/* Event Date Indicator */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Event Date Indicator</h2>
         <div className="flex gap-4">
@@ -117,7 +120,7 @@ function ComponentTest() {
         </div>
       </div>
 
-      {/* 🔹 Event Image */}
+      {/* Event Image */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Event Image</h2>
         <div className="grid grid-cols-3 gap-4">
@@ -125,7 +128,7 @@ function ComponentTest() {
         </div>
       </div>
 
-      {/* 🔹 Event Card & Thumbnail */}
+      {/* Event Card & Thumbnail */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Event Card & Thumbnail</h2>
         <section>
@@ -163,8 +166,34 @@ function ComponentTest() {
           />
         </section>
       </div>
-    </div>
-  );
+
+      {/* Filter Button & Divider */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold">_Filter Button</h2>
+        <div className="p-6 rounded-2xl bg-blue-50 flex flex-col gap-4 w-fit">
+          <div className="flex gap-4">
+            <FilterButton label="필터" />
+            <FilterButton label="초기화" />
+          </div>
+        </div>
+        <h2 className="mt-10 mb-2 font-bold text-lg">_Divider</h2>
+        <Divider />
+      </div>
+
+      {/* 🔹 MobileHeaderSection */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold">MobileHeaderSection</h2>
+         <MobileHeaderSection
+          eventCount={117}
+          selectedChip="강연 외 1개"
+          segments={["많이 본", "많이 찜한", "임박한"]}
+          selectedSegment={selected2}
+          onSegmentChange={setSelected2}
+          onReset={() => alert('초기화!')}
+          />
+        </div>
+      </div>
+    );
 }
 
 export default ComponentTest;
