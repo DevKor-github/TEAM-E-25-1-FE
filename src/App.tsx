@@ -4,22 +4,26 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { useAuthStore } from "@/stores/authStore";
-import { Header } from "@/components/Header";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
+import { useUserAuthStore } from "@/stores/userAuthStore";
 import ArticleUploadPage from "./pages/ArticleUploadPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
 import LoginPage from "./pages/LoginPage";
-import Redirection from "./pages/Redirection";
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
 import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
-import ComponentTest from "./pages/ComponentTest";
 
-// 인증된 사용자만 접근 가능한 라우트 컴포넌트
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+// 관리자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
+function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
+  const isLoggedIn = useAdminAuthStore((state) => state.isLoggedIn);
   return isLoggedIn ? children : <Navigate to="/admin-login" replace />;
+}
+
+// 사용자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
+function UserPrivateRoute({ children }: { children: React.ReactNode }) {
+  const isLoggedIn = useUserAuthStore((state) => state.isLoggedIn);
+  return isLoggedIn ? children : <Navigate to="/auth/login" replace />;
 }
 
 export default function App() {
@@ -27,48 +31,46 @@ export default function App() {
     <Router>
       <main>
         <Routes>
-          {/* 기본 경로를 로그인 페이지로 변경 */} {/* 일반 사용자용 라우트 */}
+          {/* 기본 경로를 로그인 페이지로 변경 */}
           <Route path="/" element={<Navigate to="/admin-login" replace />} />
+          {/* 사용자 라우트 */}
           <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/login/oauth/callback" element={<Redirection />} />
           <Route path="/article/:articleId" element={<ArticleDetailPage />} />
           {/* 관리자 라우트 */}
           <Route path="/admin-login" element={<AdminLogin />} />
-          {/* 인증이 필요한 관리자 라우트들 */}
+          {/* 인증이 필요한 관리자 라우트 */}
           <Route
             path="/admin-home"
             element={
-              <PrivateRoute>
+              <AdminPrivateRoute>
                 <AdminHome />
-              </PrivateRoute>
+              </AdminPrivateRoute>
             }
           />
           <Route
             path="/admin/article/:articleId"
             element={
-              <PrivateRoute>
+              <AdminPrivateRoute>
                 <AdminArticleDetail />
-              </PrivateRoute>
+              </AdminPrivateRoute>
             }
           />
           <Route
             path="/admin/article/:articleId/edit"
             element={
-              <PrivateRoute>
+              <AdminPrivateRoute>
                 <AdminArticleEdit />
-              </PrivateRoute>
+              </AdminPrivateRoute>
             }
-          />{" "}
+          />
           <Route
             path="/article/upload"
             element={
-              <PrivateRoute>
+              <AdminPrivateRoute>
                 <ArticleUploadPage />
-              </PrivateRoute>
+              </AdminPrivateRoute>
             }
           />
-          {/* UI 컴포넌트 데모 페이지 */}
-          <Route path="/component-test" element={<ComponentTest />} />
         </Routes>
       </main>
     </Router>

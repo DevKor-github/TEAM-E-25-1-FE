@@ -1,15 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type AuthState = {
+type AdminAuthState = {
   isLoggedIn: boolean;
   login: () => void;
   logout: () => void;
   checkExpiration: () => void;
 };
 
-export const useAuthStore = create(
-  persist<AuthState>(
+export const useAdminAuthStore = create(
+  persist<AdminAuthState>(
     (set) => ({
       // 초기 로그아웃 상태
       isLoggedIn: false,
@@ -39,7 +39,7 @@ export const useAuthStore = create(
       },
     }),
     {
-      name: "auth-storage", // localStorage에 저장될 키 이름
+      name: "admin-auth-storage", // localStorage에 저장될 키 이름
       storage: {
         getItem: (name) => {
           const item = localStorage.getItem(name);

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
-import { useAuthStore } from "@/stores/authStore";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import { useNavigate } from "react-router-dom";
 
 export function LoginForm() {
@@ -9,7 +9,7 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
 
   // zustand store에서 로그인 함수 가져오기
-  const login = useAuthStore((state) => state.login);
+  const login = useAdminAuthStore((state) => state.login);
 
   const navigate = useNavigate();
 

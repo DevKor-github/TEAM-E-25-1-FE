@@ -1,9 +1,9 @@
-import { useAuthStore } from "@/stores/authStore";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import { LogoutBtn } from "./LogoutBtn";
 import { useLocation } from "react-router-dom";
 
 export function Header() {
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const isLoggedIn = useAdminAuthStore((state) => state.isLoggedIn);
   const location = useLocation();
 
   return (

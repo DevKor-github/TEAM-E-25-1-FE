@@ -1,5 +1,5 @@
 import { Button } from "@components/ui/button";
-import { useAuthStore } from "@/stores/authStore";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import { useNavigate } from "react-router-dom";
 
 type LogoutBtnProps = {
@@ -7,7 +7,7 @@ type LogoutBtnProps = {
 };
 
 export function LogoutBtn({ className }: LogoutBtnProps) {
-  const logout = useAuthStore((state) => state.logout);
+  const logout = useAdminAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -16,8 +16,8 @@ export function LogoutBtn({ className }: LogoutBtnProps) {
   };
 
   return (
-    <Button 
-      onClick={handleLogout} 
+    <Button
+      onClick={handleLogout}
       variant="outline"
       size="sm"
       className={className}
