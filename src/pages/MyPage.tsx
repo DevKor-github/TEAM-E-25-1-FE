@@ -1,7 +1,65 @@
-import HeaderFrame from "@/components/HeaderFrame";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { api } from "@/lib/axios";
 import { Button } from "@/components/ui/buttons";
+import HeaderFrame from "@/components/HeaderFrame";
 
 export default function MyPage() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState<string>("");
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+      navigate("/", { replace: true });
+    } catch (err: any) {
+      if (err.response?.status == 401) {
+        alert("로그인 상태가 아닙니다.");
+      } else if (err.response?.status == 500) {
+        alert("인증 정보 처리 중 오류가 발생했습니다. 다시 로그인 해주세요.");
+      } else {
+        alert("로그아웃 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("정말로 회원탈퇴 하시겠습니까?")) return;
+    try {
+      await api.delete("/user/me");
+      navigate("/", { replace: true });
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        alert("로그인 상태가 아닙니다.");
+      } else if (err.response?.status === 404) {
+        alert("존재하지 않는 사용자입니다.");
+      } else {
+        alert("회원탈퇴 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get<{ email: string }>("/user/me");
+        setEmail(res.data.email);
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          alert("로그인 상태가 아닙니다.");
+        } else if (err.response?.status === 404) {
+          alert("존재하지 않는 사용자입니다.");
+        } else {
+          alert("이메일 정보를 불러올 수 없습니다.");
+        }
+        navigate("/", { replace: true });
+        return;
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <div className="relative w-[375px] mx-auto bg-white">
       <HeaderFrame />
@@ -27,17 +85,17 @@ export default function MyPage() {
             카카오 연동 이메일
           </div>
           <div className="w-full font-normal text-body1 text-gray-800 font-pretendard">
-            이메일
+            {email}
           </div>
         </div>
       </div>
 
       {/* 버튼 */}
       <div className="absolute top-[321px] left-[20px] flex flex-row gap-[12px]">
-        <Button styleType="gray" size="md">
+        <Button styleType="gray" size="md" onClick={handleLogout}>
           로그아웃
         </Button>
-        <Button styleType="destructive" size="md">
+        <Button styleType="destructive" size="md" onClick={handleDeleteAccount}>
           회원탈퇴
         </Button>
       </div>
