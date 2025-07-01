@@ -22,7 +22,7 @@ export default function MobileHeaderSection({
   onReset,
 }: MobileHeaderSectionProps) {
   return (
-    <div className="w-full max-w-[375px] mx-auto bg-white rounded-2xl p-5 flex flex-col gap-4">
+    <div className="w-full bg-white rounded-2xl p-5 flex flex-col gap-4">
       {/* 상단: 행사, 개수, dot, 초기화 */}
       <div className="flex items-center justify-between">
         <span className="text-[23px] font-pretendard font-semibold text-black">행사</span>
