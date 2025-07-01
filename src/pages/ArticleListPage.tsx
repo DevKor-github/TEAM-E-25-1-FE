@@ -24,7 +24,7 @@ const mockEvents: Event[] = [
     id: 1,
     title: "벤처투자 1:1 전문 멘토링",
     date: "25.04.24(목) ~ 25.05.15(목) 온라인 접수",
-    tags: ["설명회", "행사중" as EventType],
+    tags: ["설명회"], // "행사중" 태그 제거
     dday: 3,
     isLiked: false,
     likeCount: 999,
@@ -41,22 +41,20 @@ export default function ArticleListPage() {
   const segments = ["많이 본", "많이 찜한", "임박한"];
 
   return (
-    <div className="w-full min-h-screen bg-[#F5F5F7] flex flex-col items-center">
+    <div className="w-[375px] mx-auto bg-white px-[20px] min-h-screen">
       <HeaderFrame />
-      <div className="w-full max-w-[375px] px-2">
-        <MobileHeaderSection
-          eventCount={mockEvents.length}
-          selectedChip={"필터 없음"}
-          segments={segments}
-          selectedSegment={selectedSegment}
-          onSegmentChange={setSelectedSegment}
-          onReset={() => {}}
-        />
-        <div className="flex flex-col gap-4 mt-4">
-          {mockEvents.map((event) => (
-            <EventCard key={event.id} {...event} />
-          ))}
-        </div>
+      <MobileHeaderSection
+        eventCount={mockEvents.length}
+        selectedChip={"필터 없음"}
+        segments={segments}
+        selectedSegment={selectedSegment}
+        onSegmentChange={setSelectedSegment}
+        onReset={() => {}}
+      />
+      <div className="flex flex-col gap-4 mt-4">
+        {mockEvents.map((event) => (
+          <EventCard key={event.id} {...event} dday={event.dday} /* status="ongoing" 필요시 전달 */ />
+        ))}
       </div>
     </div>
   );
