@@ -6,11 +6,14 @@ import {
 } from "react-router-dom";
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import { useUserAuthStore } from "@/stores/userAuthStore";
-import ArticleUploadPage from "./pages/ArticleUploadPage";
-import ArticleDetailPage from "./pages/ArticleDetailPage";
+
 import LoginPage from "./pages/LoginPage";
+import ArticleDetailPage from "./pages/ArticleDetailPage";
+import MyPage from "./pages/MyPage";
+
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
+import ArticleUploadPage from "./pages/ArticleUploadPage";
 import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
 
@@ -31,14 +34,21 @@ export default function App() {
     <Router>
       <main>
         <Routes>
-          {/* 기본 경로를 로그인 페이지로 변경 */}
-          <Route path="/" element={<Navigate to="/admin-login" replace />} />
+          {/* 기본 경로를 로그인 페이지로 변경 (개발 완료 후 /article로 변경해야 함) */}
+          <Route path="/" element={<Navigate to="/auth/login" replace />} />
           {/* 사용자 라우트 */}
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/article/:articleId" element={<ArticleDetailPage />} />
+          <Route
+            path="/user"
+            element={
+              <UserPrivateRoute>
+                <MyPage />
+              </UserPrivateRoute>
+            }
+          />
           {/* 관리자 라우트 */}
           <Route path="/admin-login" element={<AdminLogin />} />
-          {/* 인증이 필요한 관리자 라우트 */}
           <Route
             path="/admin-home"
             element={
