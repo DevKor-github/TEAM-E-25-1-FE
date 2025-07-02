@@ -1,10 +1,5 @@
 import React from "react";
 import Grabber from "@/components/ui/grabber";
-import {
-  BottomButtonsCombo1,
-  BottomButtonsCombo2,
-  BottomButtonsCombo3,
-} from "@/components/ui/bottomButtonsCombo";
 
 interface BottomSheetProps {
   title?: string;
