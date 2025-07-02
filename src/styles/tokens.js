@@ -27,5 +27,10 @@ export const colors = {
     sky300: "var(--sky-300, #75dcff)",
     sky400: "var(--sky-400, #2ccbff)",
     sky500: "var(--sky-500, #00bbff)", // Univent Sky
+    sky600: "var(--sky-600, #0091d4)",
+    sky700: "var(--sky-700, #0073ab)",
+    sky800: "var(--sky-800, #00618d)",
+    sky900: "var(--sky-900, #065174)",
+    sky950: "var(--sky-950, #04334d)",
   },
 };
