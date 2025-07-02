@@ -58,7 +58,7 @@ const buttonVariants = cva(
       {
         styleType: "brand",
         state: "hovered",
-        class: "bg-sky-500 text-white border-none",
+        class: "bg-sky-600 text-white border-none",
       },
       {
         styleType: "brand",
