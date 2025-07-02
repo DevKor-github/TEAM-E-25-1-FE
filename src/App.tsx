@@ -26,7 +26,7 @@ function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
 // 사용자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
 function UserPrivateRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useUserAuthStore((state) => state.isLoggedIn);
-  return isLoggedIn ? children : <Navigate to="/auth/login" replace />;
+  return isLoggedIn ? children : <Navigate to="/login" replace />;
 }
 
 export default function App() {
@@ -35,12 +35,14 @@ export default function App() {
       <main>
         <Routes>
           {/* 기본 경로를 로그인 페이지로 변경 (개발 완료 후 /article로 변경해야 함) */}
-          <Route path="/" element={<Navigate to="/auth/login" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           {/* 사용자 라우트 */}
-          <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/article/:articleId" element={<ArticleDetailPage />} />
+          {/* 로그인 api 연결 리다이렉트 확인용 임시 라우트 */}
+          {/* <Route path="/article" element={<MyPage />} /> */}
           <Route
-            path="/user"
+            path="/mypage"
             element={
               <UserPrivateRoute>
                 <MyPage />

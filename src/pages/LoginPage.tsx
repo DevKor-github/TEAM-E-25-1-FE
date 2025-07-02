@@ -9,8 +9,8 @@ export default function LoginPage() {
 
   const handleKakaoLogin = async () => {
     try {
-      const res = await api.get("/auth/oauth/authorization");
-      window.location.href = res.data.authorizationUrl;
+      window.location.href =
+        "https://goyangeyaong.shop/auth/oauth/authorization";
     } catch (err) {
       alert("카카오 로그인 요청에 실패했습니다.");
     }
