@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import chevronLeft from "../assets/chevronLeft.svg";
 import logo from "../assets/logo.svg";
 import KakaoLoginBtn from "@/components/ui/kakaoLoginBtn";
-import { api } from "@/lib/axios";
 
 export default function LoginPage() {
   const navigate = useNavigate();

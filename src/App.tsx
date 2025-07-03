@@ -39,8 +39,6 @@ export default function App() {
           {/* 사용자 라우트 */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/article/:articleId" element={<ArticleDetailPage />} />
-          {/* 로그인 api 연결 리다이렉트 확인용 임시 라우트 */}
-          {/* <Route path="/article" element={<MyPage />} /> */}
           <Route
             path="/mypage"
             element={
