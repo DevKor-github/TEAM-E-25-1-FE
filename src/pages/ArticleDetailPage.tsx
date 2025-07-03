@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/axios";
-import { LoadingPlaceholder } from "@/components/LoadingPlaceholder";
 import HeaderFrame from "@/components/HeaderFrame";
 import EventTypeIndicator from "@/components/ui/EventTypeIndicator";
 import type { EventType } from "@/components/ui/EventTypeIndicator";
@@ -18,29 +18,29 @@ type Article = {
   id: string;
   title: string;
   organization: string;
-  startAt: string;
-  endAt: string;
-  location: string;
-  description: string;
-  thumbnail_path?: string;
-  imagePaths: string[];
-  tags: string[];
-  registrationUrl?: string;
+  thumbnailPath: string;
   scrapCount: number;
   viewCount: number;
+  tags: string[];
+  description?: string;
+  location: string;
+  startAt: string;
+  endAt: string;
+  imagePaths?: string[];
+  registrationUrl?: string;
 };
 
 const dummyArticle: Article = {
   id: "1",
   title:
     "[Flagsmith 세미나] 버튼 하나로 실험하는 방법 : AB 테스트를 위한 새로운 접근법",
-  organization: "더미 주관 기관",
+  organization: "고려대학교 스타트업스테이션",
   startAt: "2025-05-26T18:00:00Z",
   endAt: "2025-05-27T19:00:00Z",
   location: "서울 마포구 마포대로 122 디캠프 마포",
   description:
     "사업 방향성 설정과 성장에 필요한 전문 멘토링 dcamp officehour 5월 모집 오픈!!",
-  thumbnail_path: "/eventThumbnail.png",
+  thumbnailPath: "/eventThumbnail.png",
   imagePaths: ["/detailImage.png", "/eventThumbnail.png", "/detailImage.png"],
   tags: ["설명회"],
   registrationUrl: "https://www.naver.com/",
@@ -60,9 +60,10 @@ function formatDate(start: string, end: string) {
 }
 
 export default function ArticleDetailPage() {
+  const navigate = useNavigate();
   const { articleId } = useParams();
   const [article, setArticle] = useState<Article | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isScrapped, setIsScrapped] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<string | null>(null);
@@ -70,14 +71,16 @@ export default function ArticleDetailPage() {
 
   const TAB_HEIGHT = 40; // sticky tabbed control의 height(px)
   const datePlaceRef = useRef<HTMLDivElement>(null);
+  const orgRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const descRef = useRef<HTMLDivElement>(null);
 
   const handleTabChange = (tabId: string) => {
     let ref = null;
     if (tabId === "tab1") ref = datePlaceRef;
-    if (tabId === "tab2") ref = imageRef;
-    if (tabId === "tab3") ref = descRef;
+    if (tabId === "tab2") ref = orgRef;
+    if (tabId === "tab3") ref = imageRef;
+    if (tabId === "tab4") ref = descRef;
 
     if (ref && ref.current) {
       const rect = ref.current.getBoundingClientRect();
@@ -99,45 +102,53 @@ export default function ArticleDetailPage() {
     setModalImage(null);
   };
 
+  // article 데이터 가져오기
   useEffect(() => {
-    // const fetchArticle = async () => {
-    //   try {
-    //     setLoading(true);
-    //     const { data } = await api.get(`/article/${articleId}`);
-    //     setArticle(data);
-    //     setError(null);
-    //   } catch (err: any) {
-    //     console.error("API Error:", err);
-    //     if (err.response?.status === 404) {
-    //       setError("해당 행사를 찾을 수 없습니다.");
-    //     } else if (!navigator.onLine) {
-    //       setError("인터넷 연결을 확인해주세요.");
-    //     } else {
-    //       setError(
-    //         err.response?.data?.message ||
-    //           "행사 정보를 불러오는 중 오류가 발생했습니다."
-    //       );
-    //     }
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
+    if (!articleId) return;
 
-    // fetchArticle();
+    const fetchArticle = async () => {
+      try {
+        const { data } = await api.get(`/article/${articleId}`);
+        setArticle(data);
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          setError("해당 행사를 찾을 수 없습니다.");
+        } else {
+          setError("행사 정보를 불러오는 중 오류가 발생했습니다.");
+        }
+      }
+    };
+
+    fetchArticle();
 
     // API 연동 전 더미 데이터로 테스트
     setTimeout(() => {
       setArticle(dummyArticle);
-      setLoading(false);
     }, 500);
   }, [articleId]);
 
-  if (loading)
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <LoadingPlaceholder />
-      </div>
-    );
+  // 스크랩 여부 가져오기
+  useEffect(() => {
+    if (!articleId) return;
+
+    const fetchScrapStatus = async () => {
+      try {
+        const res = await api.get(`/scrap/article/${articleId}`);
+        setIsScrapped(res.data.isScrapped);
+      } catch (err: any) {
+        setIsScrapped(false); // 에러 시 기본값 false
+
+        if (err.response?.status === 401) {
+          navigate("/login");
+          return;
+        } else {
+          alert("스크랩 상태를 불러오는 중 오류가 발생했습니다.");
+        }
+      }
+    };
+
+    fetchScrapStatus();
+  }, [articleId]);
 
   if (error)
     return (
@@ -164,17 +175,17 @@ export default function ArticleDetailPage() {
     <div className="w-[375px] mx-auto bg-white">
       <HeaderFrame />
 
-      {/* Eventcard 컴포넌트 추가해야 함*/}
+      {/* Eventcard 컴포넌트 추가해야 함
       <div className="flex flex-col pt-5 pr-5 pb-2 pl-5 gap-5">
-        {article.thumbnail_path && (
-          <img src={article.thumbnail_path} alt="썸네일 이미지" />
+        {article.thumbnailPath && (
+          <img src={article.thumbnailPath} alt="썸네일 이미지" />
         )}
 
         <div className="font-semibold text-title4 text-gray-800 font-pretendard">
           {article.title}
         </div>
 
-        {/* <div>
+        <div>
           <EventCard
             title="이벤트 타이틀"
             date="9월 25일 (수)"
@@ -184,20 +195,22 @@ export default function ArticleDetailPage() {
             likeCount={999}
             imageUrl={"/assets/event_thumbnail_image.png"}
           />
-        </div> */}
-      </div>
+        </div>
+      </div> */}
 
+      {/* 탭 컨트롤 */}
       {!modalOpen && (
         <div className="sticky top-0 z-20 bg-white border-b border-solid border-gray-200 pt-3 px-4 gap-2.5">
           <TabbedControl
             tabs={[
               { label: "행사 일시 ∙ 장소", id: "tab1" },
+              { label: "행사 주최기관", id: "tab2" },
               {
                 label: "행사 이미지",
-                id: "tab2",
-                numbering: article.imagePaths.length,
+                id: "tab3",
+                numbering: article.imagePaths?.length ?? 0,
               },
-              { label: "행사 소개", id: "tab3" },
+              { label: "행사 소개", id: "tab4" },
             ]}
             onTabChange={handleTabChange}
           />
@@ -239,21 +252,36 @@ export default function ArticleDetailPage() {
         </div>
       </div>
 
+      <div ref={orgRef} className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1">
+        <div className="font-medium text-body3 text-gray-500 font-pretendard">
+          행사 주최기관
+        </div>
+        <div className="font-normal text-body1 text-gray-800 font-pretendard">
+          {article.organization}
+        </div>
+      </div>
+
       <div ref={imageRef} className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-3">
         <div className="font-medium text-body3 text-gray-500 font-pretendard">
-          행사 이미지 ({article.imagePaths.length})
+          행사 이미지 ({article.imagePaths?.length ?? 0})
         </div>
-        <div className="flex flex-row gap-4 overflow-x-auto">
-          {article.imagePaths.map((src, index) => (
-            <div
-              key={index}
-              onClick={() => handleImageClick(src, index)}
-              className="cursor-pointer flex-shrink-0 w-[160px]"
-            >
-              <EventImage src={src} alt={`행사 이미지 ${index + 1}`} />
-            </div>
-          ))}
-        </div>
+        {article.imagePaths && article.imagePaths.length > 0 ? (
+          <div className="flex flex-row gap-4 overflow-x-auto">
+            {article.imagePaths.map((src, index) => (
+              <div
+                key={index}
+                onClick={() => handleImageClick(src, index)}
+                className="cursor-pointer flex-shrink-0 w-[160px]"
+              >
+                <EventImage src={src} alt={`행사 이미지 ${index + 1}`} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="font-normal text-body1 text-gray-800 font-pretendard">
+            이미지가 없습니다.
+          </div>
+        )}
       </div>
 
       {/* 상세이미지 모달 */}
@@ -269,7 +297,7 @@ export default function ArticleDetailPage() {
                 alt="닫기"
               />
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-normal text-body1 text-gray-700 font-pretendard">
-                {modalIndex + 1} / {article.imagePaths.length}
+                {modalIndex + 1} / {article.imagePaths?.length}
               </div>
             </div>
 
@@ -289,7 +317,9 @@ export default function ArticleDetailPage() {
                     iconType="chevronLeft"
                     onClick={() => {
                       if (modalIndex > 0) {
-                        setModalImage(article.imagePaths[modalIndex - 1]);
+                        setModalImage(
+                          article.imagePaths?.[modalIndex - 1] ?? null
+                        );
                         setModalIndex(modalIndex - 1);
                       }
                     }}
@@ -302,7 +332,10 @@ export default function ArticleDetailPage() {
                     styleType="gray"
                     iconType="chevronRight"
                     onClick={() => {
-                      if (modalIndex < article.imagePaths.length - 1) {
+                      if (
+                        article.imagePaths &&
+                        modalIndex < article.imagePaths.length - 1
+                      ) {
                         setModalImage(article.imagePaths[modalIndex + 1]);
                         setModalIndex(modalIndex + 1);
                       }
@@ -314,13 +347,11 @@ export default function ArticleDetailPage() {
           </div>
         </div>
       )}
-
       <div ref={descRef} className="pt-8 pr-5 pb-10 pl-5 gap-2.5">
         <div className="font-normal text-body1 text-gray-800 font-pretendard">
           {article.description}
         </div>
       </div>
-
       <div>
         <BottomButtonsCombo3
           onShareClick={() => {
@@ -331,6 +362,7 @@ export default function ArticleDetailPage() {
           onLabelClick={() => {
             window.open(article.registrationUrl, "_blank");
           }}
+          heartScrapped={isScrapped ?? false} // isScrapped 값이 올 때까지 false로 처리
         />
       </div>
     </div>
