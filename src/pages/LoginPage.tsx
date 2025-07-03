@@ -2,15 +2,14 @@ import { useNavigate } from "react-router-dom";
 import chevronLeft from "../assets/chevronLeft.svg";
 import logo from "../assets/logo.svg";
 import KakaoLoginBtn from "@/components/ui/kakaoLoginBtn";
-import { api } from "@/lib/axios";
 
 export default function LoginPage() {
   const navigate = useNavigate();
 
   const handleKakaoLogin = async () => {
     try {
-      const res = await api.get("/auth/oauth/authorization");
-      window.location.href = res.data.authorizationUrl;
+      window.location.href =
+        "https://goyangeyaong.shop/auth/oauth/authorization";
     } catch (err) {
       alert("카카오 로그인 요청에 실패했습니다.");
     }

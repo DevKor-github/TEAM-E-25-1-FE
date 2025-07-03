@@ -11,6 +11,10 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    proxy: {
+      "/auth": "https://goyangeyaong.shop/",
+      "/user": "https://goyangeyaong.shop/",
+    },
     headers: {
       "Service-Worker-Allowed": "/",
       "Access-Control-Allow-Origin": "*",
