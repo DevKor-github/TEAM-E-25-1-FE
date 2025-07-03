@@ -64,7 +64,7 @@ export default function ArticleDetailPage() {
   const { articleId } = useParams();
   const [article, setArticle] = useState<Article | null>(null);
   const [isScrapped, setIsScrapped] = useState<boolean | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
@@ -102,6 +102,24 @@ export default function ArticleDetailPage() {
     setModalImage(null);
   };
 
+  // 스크랩 여부 가져오는 함수
+  const fetchScrapStatus = async () => {
+    if (!articleId) return;
+
+    try {
+      const res = await api.get(`/scrap/article/${articleId}`);
+      setIsScrapped(res.data.isScrapped);
+    } catch (err: any) {
+      setIsScrapped(false);
+      if (err.response?.status === 401) {
+        navigate("/login");
+        return;
+      } else {
+        alert("스크랩 상태를 불러오는 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
   // article 데이터 가져오기
   useEffect(() => {
     if (!articleId) return;
@@ -112,9 +130,9 @@ export default function ArticleDetailPage() {
         setArticle(data);
       } catch (err: any) {
         if (err.response?.status === 404) {
-          setError("해당 행사를 찾을 수 없습니다.");
+          alert("해당 행사를 찾을 수 없습니다.");
         } else {
-          setError("행사 정보를 불러오는 중 오류가 발생했습니다.");
+          alert("행사 정보를 불러오는 중 오류가 발생했습니다.");
         }
       }
     };
@@ -127,37 +145,9 @@ export default function ArticleDetailPage() {
     }, 500);
   }, [articleId]);
 
-  // 스크랩 여부 가져오기
   useEffect(() => {
-    if (!articleId) return;
-
-    const fetchScrapStatus = async () => {
-      try {
-        const res = await api.get(`/scrap/article/${articleId}`);
-        setIsScrapped(res.data.isScrapped);
-      } catch (err: any) {
-        setIsScrapped(false); // 에러 시 기본값 false
-
-        if (err.response?.status === 401) {
-          navigate("/login");
-          return;
-        } else {
-          alert("스크랩 상태를 불러오는 중 오류가 발생했습니다.");
-        }
-      }
-    };
-
     fetchScrapStatus();
   }, [articleId]);
-
-  if (error)
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
-          {error}
-        </div>
-      </div>
-    );
 
   if (!article)
     return (
@@ -363,6 +353,28 @@ export default function ArticleDetailPage() {
             window.open(article.registrationUrl, "_blank");
           }}
           heartScrapped={isScrapped ?? false} // isScrapped 값이 올 때까지 false로 처리
+          onHeartClick={async () => {
+            if (!articleId) return;
+
+            try {
+              if (isScrapped) {
+                await api.delete(`/scrap/${articleId}`);
+              } else {
+                await api.post(`/scrap/${articleId}`);
+              }
+              await fetchScrapStatus(); // 서버의 최신 스크랩 상태로 동기화
+            } catch (err: any) {
+              if (err.response?.status === 401) {
+                navigate("/login");
+              } else if (err.response?.status === 404) {
+                alert("해당 게시글이 존재하지 않습니다.");
+              } else if (err.response?.status === 409) {
+                alert("이미 스크랩한 게시글입니다.");
+              } else {
+                alert("스크랩 처리 중 오류가 발생했습니다.");
+              }
+            }
+          }}
         />
       </div>
     </div>
