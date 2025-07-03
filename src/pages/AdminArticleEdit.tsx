@@ -35,10 +35,7 @@ export default function AdminArticleEdit() {
           detail_image: undefined,
         });
       } catch (err: any) {
-        if (
-          err.response?.status === 404 &&
-          err.response?.data?.code === "ARTICLE_NOT_FOUND_FOR_UPDATE"
-        ) {
+        if (err.response?.status === 404) {
           setError("수정할 행사를 찾을 수 없습니다.");
         } else {
           setError("행사 데이터를 불러오는 중 오류가 발생했습니다.");
@@ -79,12 +76,9 @@ export default function AdminArticleEdit() {
       await axios.patch(`/article/${articleId}`, formData);
 
       alert("행사가 성공적으로 수정되었습니다!");
-      navigate("/admin-home");
+      navigate("/admin/home");
     } catch (err: any) {
-      if (
-        err.response?.status === 404 &&
-        err.response?.data?.code === "ARTICLE_NOT_FOUND_FOR_UPDATE"
-      ) {
+      if (err.response?.status === 404) {
         setError("수정할 행사를 찾을 수 없습니다.");
       } else {
         setError("행사 수정 중 오류가 발생했습니다.");
@@ -103,7 +97,7 @@ export default function AdminArticleEdit() {
       <div className="max-w-md mx-auto mt-10">
         <p className="text-red-600 font-semibold">{error}</p>
         <div className="mt-4 flex justify-end">
-          <Button variant="outline" onClick={() => navigate("/admin-home")}>
+          <Button variant="outline" onClick={() => navigate("/admin/home")}>
             홈으로 이동
           </Button>
         </div>

@@ -53,7 +53,7 @@ export default function AdminArticleDetail() {
       await api.delete(`/article/${articleId}`);
 
       alert("행사가 성공적으로 삭제되었습니다!");
-      navigate("/admin-home");
+      navigate("/admin/home");
     } catch (err: any) {
       if (err.response?.status === 404) {
         setError("삭제할 행사를 찾을 수 없습니다.");
@@ -150,7 +150,7 @@ export default function AdminArticleDetail() {
             <div className="mt-6 flex justify-end gap-4">
               <Button
                 variant="outline"
-                onClick={() => navigate(`/admin/article/${articleId}/edit`)}
+                onClick={() => navigate(`/admin/event/${articleId}/edit`)}
               >
                 수정
               </Button>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LoadingCard } from "@/components/LoadingPlaceholder";
-import { api } from '@/lib/axios';
+import { api } from "@/lib/axios";
 
 type Article = {
   id: string;
@@ -20,13 +20,27 @@ type Article = {
   imagePaths: string[];
 };
 
-function ErrorAlert({ message, retry }: { message: string; retry?: () => void }) {
+function ErrorAlert({
+  message,
+  retry,
+}: {
+  message: string;
+  retry?: () => void;
+}) {
   return (
     <div className="bg-red-50 border border-red-200 rounded-lg p-4">
       <div className="flex">
         <div className="flex-shrink-0">
-          <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          <svg
+            className="h-5 w-5 text-red-400"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
           </svg>
         </div>
         <div className="ml-3">
@@ -54,17 +68,20 @@ export default function AdminHome() {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.get('/article', {
+      const { data } = await api.get("/article", {
         params: {
-          tags: '',
-          isFinished: '',
-          sort: ''
-        }
+          tags: "",
+          isFinished: "",
+          sort: "",
+        },
       });
       setArticles(data);
     } catch (error: any) {
-      console.error('Failed to fetch articles:', error);
-      setError(error.response?.data?.message || '행사 목록을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      console.error("Failed to fetch articles:", error);
+      setError(
+        error.response?.data?.message ||
+          "행사 목록을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+      );
     } finally {
       setLoading(false);
     }
@@ -78,9 +95,7 @@ export default function AdminHome() {
     <div className="container mx-auto py-8">
       <div className="mb-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold">행사 관리</h1>
-        <Button onClick={() => navigate('/article/upload')}>
-          행사 등록
-        </Button>
+        <Button onClick={() => navigate("/event/upload")}>행사 등록</Button>
       </div>
 
       {error ? (
@@ -97,7 +112,7 @@ export default function AdminHome() {
           <Button
             variant="outline"
             className="mt-4"
-            onClick={() => navigate('/article/upload')}
+            onClick={() => navigate("/event/upload")}
           >
             첫 행사 등록하기
           </Button>
@@ -108,7 +123,7 @@ export default function AdminHome() {
             <div
               key={article.id}
               className="cursor-pointer"
-              onClick={() => navigate(`/admin/article/${article.id}`)}
+              onClick={() => navigate(`/admin/event/${article.id}`)}
             >
               <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 {article.thumbnail_path && (
@@ -139,7 +154,9 @@ export default function AdminHome() {
                       </span>
                     ))}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">{article.title}</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {article.title}
+                  </h3>
                   <p className="text-gray-600 text-sm mb-2">
                     {article.organization}
                   </p>
@@ -162,4 +179,3 @@ export default function AdminHome() {
     </div>
   );
 }
-

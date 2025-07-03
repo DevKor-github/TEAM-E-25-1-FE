@@ -15,7 +15,7 @@ const HeaderFrame = () => {
           src={userIcon}
           alt="user"
           className="cursor-pointer"
-          onClick={() => navigate("/user")}
+          onClick={() => navigate("/mypage")}
         />
       </div>
     </div>
