@@ -10,6 +10,7 @@ import { useUserAuthStore } from "@/stores/userAuthStore";
 import LoginPage from "./pages/LoginPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
 import MyPage from "./pages/MyPage";
+import ErrorPage from "./pages/ErrorPage";
 
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
@@ -39,6 +40,7 @@ export default function App() {
           {/* 사용자 라우트 */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/article/:articleId" element={<ArticleDetailPage />} />
+          <Route path="/error" element={<ErrorPage />} />
           <Route
             path="/mypage"
             element={

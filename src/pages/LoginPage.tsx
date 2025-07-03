@@ -10,8 +10,12 @@ export default function LoginPage() {
     try {
       window.location.href =
         "https://goyangeyaong.shop/auth/oauth/authorization";
-    } catch (err) {
-      alert("카카오 로그인 요청에 실패했습니다.");
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        alert("유효하지 않은 인증 코드입니다.");
+      } else {
+        alert("카카오 로그인 요청에 실패했습니다.");
+      }
     }
   };
 
