@@ -44,11 +44,17 @@ export default function EventCard({
   isLiked,
   onToggleScrap,
 }: EventCardProps) {
-  // dday 계산
-  const today = new Date();
-  const end = new Date(endAt);
-  const diff = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  // tags: 배열로 안전하게 처리
+  // dday 계산 (타임존 이슈 없이 날짜만 비교, 한국시간 기준, startAt 유효성 체크)
+  let diff: number | undefined = undefined;
+  const isValidStart = !!startAt && !isNaN(new Date(startAt).getTime());
+  if (isValidStart) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = new Date(startAt);
+    start.setHours(0, 0, 0, 0);
+    diff = Math.ceil((start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  }
+  // tags: 배열
   const safeTags = Array.isArray(tags) ? tags : [];
   // date, period (startAt, endAt이 undefined일 때 안전 처리)
   const safeStartAt = startAt ?? "";
