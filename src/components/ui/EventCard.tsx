@@ -1,45 +1,79 @@
 import React from "react";
-import EventImage from "./EventImage";
 import EventTypeIndicator, { EventType } from "./EventTypeIndicator";
 import EventDateIndicator from "./EventDateIndicator";
 import heartRed from "@/assets/heart_red500.svg";
 import heartGray from "@/assets/heart_gray.svg";
 import heartNon from "@/assets/heart_nothing.svg";
 
-interface EventCardProps {
+// Article 타입: 백엔드 스웨거 기준
+export type Article = {
+  id: string;
   title: string;
-  date: string;
-  tags: EventType[]; // EventType[]로 강제
-  dday: number;
-  isLiked: boolean;
-  likeCount: number;
-  imageUrl: string;
-  org: string;
-  period: string;
+  organization: string;
+  thumbnailPath: string;
+  scrapCount: number;
+  viewCount: number;
+  tags: EventType[]; // 배열로 변경
+  description: string;
   location: string;
+  startAt: string;
+  endAt: string;
+  imagePaths: string[];
+  registrationUrl: string;
+  isLiked: boolean;
+};
+
+interface EventCardProps extends Article {
+  onToggleScrap?: () => void;
 }
 
 export default function EventCard({
+  id,
   title,
-  date,
+  organization,
+  thumbnailPath,
+  scrapCount,
+  viewCount,
   tags,
-  dday,
-  isLiked,
-  likeCount,
-  imageUrl,
-  org,
-  period,
+  description,
   location,
+  startAt,
+  endAt,
+  imagePaths,
+  registrationUrl,
+  isLiked,
+  onToggleScrap,
 }: EventCardProps) {
+  // dday 계산
+  const today = new Date();
+  const end = new Date(endAt);
+  const diff = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  // tags: 배열로 안전하게 처리
+  const safeTags = Array.isArray(tags) ? tags : [];
+  // date, period (startAt, endAt이 undefined일 때 안전 처리)
+  const safeStartAt = startAt ?? "";
+  const safeEndAt = endAt ?? "";
+  const date = safeStartAt && safeEndAt ? `${safeStartAt.split('T')[0]} ~ ${safeEndAt.split('T')[0]}` : "";
+  const likeCount = scrapCount;
+  const imageUrl = thumbnailPath;
+  const org = organization;
+
   return (
-    <div className="flex flex-col w-full rounded-2xl bg-white p-4 shadow-sm">
+    <div className="flex flex-col w-[335px] rounded-2xl bg-white p-4 shadow-sm">
       <div className="relative mb-2">
         <img
           src={imageUrl}
           alt={title}
           className="rounded-xl w-full h-[120px] object-cover"
         />
-        <button className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center">
+        <button
+          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleScrap && onToggleScrap();
+          }}
+        >
           <img src={isLiked ? heartRed : heartNon} alt="like" className="w-7 h-7" />
         </button>
       </div>
@@ -47,11 +81,10 @@ export default function EventCard({
       <div className="font-pretendard font-semibold text-[17px] leading-[24px] text-gray800 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">{title}</div>
       <div className="font-pretendard text-[16px] leading-[22px] text-gray-500 font-normal mb-3">{date}</div>
       <div className="flex gap-2 items-center mb-2">
-        {/* 여러 태그를 각각 렌더링 */}
-        {(tags ?? []).map((tag) => (
+        {safeTags.map((tag) => (
           <EventTypeIndicator key={tag} type={tag} />
         ))}
-        <EventDateIndicator dday={dday} />
+        <EventDateIndicator dday={diff} />
         <div className="flex items-center gap-1 ml-auto min-w-[52px] pr-1">
           <img src={heartGray} alt="like-count" className="w-5 h-5" />
           <span className="font-pretendard text-sm font-body-3 text-gray-500">{likeCount > 999 ? '999+' : likeCount}</span>
