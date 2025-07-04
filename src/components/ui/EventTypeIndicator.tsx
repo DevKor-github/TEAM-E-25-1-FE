@@ -8,7 +8,7 @@ export type EventType =
 
 interface EventTypeIndicatorProps {
   type: EventType; // 단일 값으로 변경
-  className?: string;
+  93
 }
 
 export default function EventTypeIndicator({
