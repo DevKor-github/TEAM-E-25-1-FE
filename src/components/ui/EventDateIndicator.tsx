@@ -11,24 +11,7 @@ interface EventDateIndicatorProps {
   className?: string;
 }
 
-export default function EventDateIndicator({ dday, status, className = "" }: EventDateIndicatorProps) {
-  // dday 값에 따라 status 자동 판별
-  let computedStatus: DateStatus = "upcoming";
-  if (typeof dday === "number") {
-    if (dday < 0) {
-      computedStatus = "ended";
-    } else if (dday === 0) {
-      computedStatus = "ongoing";
-    } else if (dday <= 7) {
-      computedStatus = "imminent";
-    } else {
-      computedStatus = "upcoming";
-    }
-  }
-  const finalStatus = status || computedStatus;
-
-  const getStatusStyles = (status: DateStatus) => {
-    switch (status) {
+export default function EventDateIndicator({ dday, status = "upcoming", className = "" }: EventDateIndicatorProps) {  const getStatusStyles = (status: DateStatus) => {    switch (status) {
       case "upcoming":
         return "bg-gray-50 text-gray-500"; // 일반 (D-117)      
       case "imminent":
@@ -43,24 +26,23 @@ export default function EventDateIndicator({ dday, status, className = "" }: Eve
   };
 
   const getDateText = () => {
-    if (finalStatus === "ongoing") return "행사중";
-    if (finalStatus === "ended") return "종료";
+    if (status === "ongoing" || dday === 0) return "행사중";
+    if (status === "ended" || dday < 0) return "종료";
     if (dday === 1) return "내일 시작";
-    if (dday === 0) return "오늘 시작";
     return `D-${dday}`;
   };
 
   return (
     <div
       style={{ fontSize: "15px", borderRadius: "8px" }}
-      className={`inline-flex items-center justify-center px-[6px] py-[2px] font-medium leading-[22px] whitespace-nowrap ${getStatusStyles(finalStatus)} ${className}`}
+      className={`inline-flex items-center justify-center px-[6px] py-[2px] font-medium leading-[22px] whitespace-nowrap ${getStatusStyles(status)} ${className}`}
     >
-      {finalStatus === "ongoing" ? (
+      {status === "ongoing" ? (
         <div className="inline-flex items-center gap-[6px]">
           <span>{getDateText()}</span>
           <img 
             src={liveIndicator} 
-            alt="진행중"
+            alt="행사중"
             className="w-[6px] h-[6px]"
           />
         </div>
