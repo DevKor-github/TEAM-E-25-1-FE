@@ -1,3 +1,4 @@
+import { AdminHeader } from "@/components/AdminHeader";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -92,90 +93,93 @@ export default function AdminHome() {
   }, []);
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">행사 관리</h1>
-        <Button onClick={() => navigate("/event/upload")}>행사 등록</Button>
-      </div>
+    <>
+      <AdminHeader />
+      <div className="container mx-auto py-8 pt-20">
+        <div className="mb-6 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">행사 관리</h1>
+          <Button onClick={() => navigate("/event/upload")}>행사 등록</Button>
+        </div>
 
-      {error ? (
-        <ErrorAlert message={error} retry={fetchArticles} />
-      ) : loading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <LoadingCard key={i} />
-          ))}
-        </div>
-      ) : articles.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500">등록된 행사가 없습니다.</p>
-          <Button
-            variant="outline"
-            className="mt-4"
-            onClick={() => navigate("/event/upload")}
-          >
-            첫 행사 등록하기
-          </Button>
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map((article) => (
-            <div
-              key={article.id}
-              className="cursor-pointer"
-              onClick={() => navigate(`/admin/event/${article.id}`)}
+        {error ? (
+          <ErrorAlert message={error} retry={fetchArticles} />
+        ) : loading ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <LoadingCard key={i} />
+            ))}
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">등록된 행사가 없습니다.</p>
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => navigate("/event/upload")}
             >
-              <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                {article.thumbnail_path && (
-                  <div className="relative">
-                    <img
-                      src={article.thumbnail_path}
-                      alt={article.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="absolute bottom-2 right-2 flex gap-2">
-                      <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                        👁️ {article.viewCount}
-                      </span>
-                      <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                        🔖 {article.scrapCount}
-                      </span>
+              첫 행사 등록하기
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((article) => (
+              <div
+                key={article.id}
+                className="cursor-pointer"
+                onClick={() => navigate(`/admin/event/${article.id}`)}
+              >
+                <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  {article.thumbnail_path && (
+                    <div className="relative">
+                      <img
+                        src={article.thumbnail_path}
+                        alt={article.title}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute bottom-2 right-2 flex gap-2">
+                        <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                          👁️ {article.viewCount}
+                        </span>
+                        <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                          🔖 {article.scrapCount}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                )}
-                <div className="p-4">
-                  <div className="flex gap-2 mb-2">
-                    {article.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">
-                    {article.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-2">
-                    {article.organization}
-                  </p>
-                  <div className="text-gray-500 text-sm">
-                    <p className="flex items-center gap-1">
-                      <span>📅</span>
-                      {new Date(article.startAt).toLocaleDateString()}
+                  )}
+                  <div className="p-4">
+                    <div className="flex gap-2 mb-2">
+                      {article.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">
+                      {article.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-2">
+                      {article.organization}
                     </p>
-                    <p className="flex items-center gap-1">
-                      <span>📍</span>
-                      {article.location}
-                    </p>
+                    <div className="text-gray-500 text-sm">
+                      <p className="flex items-center gap-1">
+                        <span>📅</span>
+                        {new Date(article.startAt).toLocaleDateString()}
+                      </p>
+                      <p className="flex items-center gap-1">
+                        <span>📍</span>
+                        {article.location}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 }

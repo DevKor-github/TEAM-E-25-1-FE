@@ -1,3 +1,4 @@
+import { AdminHeader } from "@/components/AdminHeader";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArticleForm } from "@components/ArticleForm";
 import { useEffect, useState } from "react";
@@ -106,9 +107,12 @@ export default function AdminArticleEdit() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">행사 수정</h2>
-      <ArticleForm onSubmit={handleSubmit} defaultValues={articleData} />
-    </div>
+    <>
+      <AdminHeader />
+      <div className="max-w-2xl mx-auto p-6 pt-20">
+        <h2 className="text-2xl font-bold mb-4">행사 수정</h2>
+        <ArticleForm onSubmit={handleSubmit} defaultValues={articleData} />
+      </div>
+    </>
   );
 }

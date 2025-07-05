@@ -1,3 +1,4 @@
+import { AdminHeader } from "@/components/AdminHeader";
 import { ArticleForm } from "@components/ArticleForm";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -47,10 +48,13 @@ export default function ArticleUploadPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">행사 등록</h2>
-      {error && <div className="text-red-600 mb-4">{error}</div>}
-      <ArticleForm onSubmit={handleSubmit} />
-    </div>
+    <>
+      <AdminHeader />
+      <div className="max-w-2xl mx-auto p-6 pt-20">
+        <h2 className="text-2xl font-bold mb-4">행사 등록</h2>
+        {error && <div className="text-red-600 mb-4">{error}</div>}
+        <ArticleForm onSubmit={handleSubmit} />
+      </div>
+    </>
   );
 }

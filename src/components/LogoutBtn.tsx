@@ -12,7 +12,7 @@ export function LogoutBtn({ className }: LogoutBtnProps) {
 
   const handleLogout = () => {
     logout();
-    navigate("/admin-login");
+    navigate("/admin/login");
   };
 
   return (

@@ -2,7 +2,7 @@ import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import { LogoutBtn } from "./LogoutBtn";
 import { useLocation } from "react-router-dom";
 
-export function Header() {
+export function AdminHeader() {
   const isLoggedIn = useAdminAuthStore((state) => state.isLoggedIn);
   const location = useLocation();
 
@@ -11,7 +11,7 @@ export function Header() {
       <div className="container mx-auto h-full px-4 flex items-center justify-between">
         <h1 className="text-xl font-bold">UNIVENT</h1>
         {isLoggedIn && location.pathname !== "/admin/login" && (
-          <LogoutBtn className="scale-75" />
+          <LogoutBtn className="scale-100" />
         )}
       </div>
     </header>

@@ -21,7 +21,7 @@ import AdminArticleEdit from "./pages/AdminArticleEdit";
 // 관리자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
 function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAdminAuthStore((state) => state.isLoggedIn);
-  return isLoggedIn ? children : <Navigate to="/admin-login" replace />;
+  return isLoggedIn ? children : <Navigate to="/admin/login" replace />;
 }
 
 // 사용자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
@@ -35,7 +35,7 @@ export default function App() {
     <Router>
       <main>
         <Routes>
-          {/* 기본 경로를 로그인 페이지로 변경 (개발 완료 후 /article로 변경해야 함) */}
+          {/* 기본 경로를 로그인 페이지로 변경 (개발 완료 후 /event로 변경해야 함) */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           {/* 사용자 라우트 */}
           <Route path="/login" element={<LoginPage />} />
@@ -76,7 +76,7 @@ export default function App() {
             }
           />
           <Route
-            path="/event/upload"
+            path="/admin/event/upload"
             element={
               <AdminPrivateRoute>
                 <ArticleUploadPage />

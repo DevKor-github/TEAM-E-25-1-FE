@@ -1,3 +1,4 @@
+import { AdminHeader } from "@/components/AdminHeader";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/axios";
@@ -64,103 +65,112 @@ export default function AdminArticleDetail() {
   };
 
   return (
-    <div className="py-8 max-w-4xl mx-auto">
-      {error ? (
-        <div className="text-red-600">{error}</div>
-      ) : (
-        /* 정상 데이터 렌더링 */
-        article && (
-          <>
-            <div className="bg-white rounded-lg shadow-md">
-              {article.thumbnailPath && (
-                <img
-                  src={article.thumbnailPath}
-                  alt="썸네일 이미지"
-                  className="w-full h-64 object-cover rounded-t-lg"
-                />
-              )}
-              <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">{article.title}</h1>
-                <div className="space-y-3 mb-6">
-                  <p>
-                    <span className="font-semibold">태그:</span>
-                    {article.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-block ml-2 px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </p>
-                  <p>
-                    <span className="font-semibold">일시:</span>
-                    {new Date(article.startAt).toLocaleString()} ~
-                    {new Date(article.endAt).toLocaleString()}
-                  </p>
-                  <p>
-                    <span className="font-semibold">장소:</span>
-                    {article.location}
-                  </p>
-                  <p>
-                    <span className="font-semibold">주최기관:</span>
-                    {article.organization}
-                  </p>
-                </div>
-
-                {article.description && (
-                  <div className="prose max-w-none mb-6">
-                    <h2 className="text-lg font-semibold mb-2">행사 설명</h2>
-                    <p className="whitespace-pre-line">{article.description}</p>
-                  </div>
+    <>
+      <AdminHeader />
+      <div className="pt-20 py-8 max-w-4xl mx-auto">
+        {error ? (
+          <div className="text-red-600">{error}</div>
+        ) : (
+          /* 정상 데이터 렌더링 */
+          article && (
+            <>
+              <div className="bg-white rounded-lg shadow-md">
+                {article.thumbnailPath && (
+                  <img
+                    src={article.thumbnailPath}
+                    alt="썸네일 이미지"
+                    className="w-full h-64 object-cover rounded-t-lg"
+                  />
                 )}
-
-                {article.registrationUrl && (
-                  <div className="mb-6">
-                    <h2 className="text-lg font-semibold mb-2">신청 링크</h2>
-                    <a
-                      href={article.registrationUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {article.registrationUrl}
-                    </a>
-                  </div>
-                )}
-
-                {article.imagePaths && article.imagePaths.length > 0 && (
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2">상세 이미지</h2>
-                    <div className="grid grid-cols-2 gap-4">
-                      {article.imagePaths.map((url: string, index: number) => (
-                        <img
-                          key={index}
-                          src={url}
-                          alt={`상세 이미지 ${index + 1}`}
-                          className="w-full h-auto rounded-lg"
-                        />
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">{article.title}</h1>
+                  <div className="space-y-3 mb-6">
+                    <p>
+                      <span className="font-semibold">태그:</span>
+                      {article.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-block ml-2 px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
+                        >
+                          {tag}
+                        </span>
                       ))}
-                    </div>
+                    </p>
+                    <p>
+                      <span className="font-semibold">일시:</span>
+                      {new Date(article.startAt).toLocaleString()} ~
+                      {new Date(article.endAt).toLocaleString()}
+                    </p>
+                    <p>
+                      <span className="font-semibold">장소:</span>
+                      {article.location}
+                    </p>
+                    <p>
+                      <span className="font-semibold">주최기관:</span>
+                      {article.organization}
+                    </p>
                   </div>
-                )}
+
+                  {article.description && (
+                    <div className="prose max-w-none mb-6">
+                      <h2 className="text-lg font-semibold mb-2">행사 설명</h2>
+                      <p className="whitespace-pre-line">
+                        {article.description}
+                      </p>
+                    </div>
+                  )}
+
+                  {article.registrationUrl && (
+                    <div className="mb-6">
+                      <h2 className="text-lg font-semibold mb-2">신청 링크</h2>
+                      <a
+                        href={article.registrationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {article.registrationUrl}
+                      </a>
+                    </div>
+                  )}
+
+                  {article.imagePaths && article.imagePaths.length > 0 && (
+                    <div>
+                      <h2 className="text-lg font-semibold mb-2">
+                        상세 이미지
+                      </h2>
+                      <div className="grid grid-cols-2 gap-4">
+                        {article.imagePaths.map(
+                          (url: string, index: number) => (
+                            <img
+                              key={index}
+                              src={url}
+                              alt={`상세 이미지 ${index + 1}`}
+                              className="w-full h-auto rounded-lg"
+                            />
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-            {/* 하단 버튼 그룹 */}
-            <div className="mt-6 flex justify-end gap-4">
-              <Button
-                variant="outline"
-                onClick={() => navigate(`/admin/event/${articleId}/edit`)}
-              >
-                수정
-              </Button>
-              <Button variant="destructive" onClick={handleDelete}>
-                삭제
-              </Button>
-            </div>
-          </>
-        )
-      )}
-    </div>
+              {/* 하단 버튼 그룹 */}
+              <div className="mt-6 flex justify-end gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(`/admin/event/${articleId}/edit`)}
+                >
+                  수정
+                </Button>
+                <Button variant="destructive" onClick={handleDelete}>
+                  삭제
+                </Button>
+              </div>
+            </>
+          )
+        )}
+      </div>
+    </>
   );
 }

@@ -24,7 +24,7 @@ export function LoginForm() {
     // 로그인 로직
     if (id === ADMIN_ID && password === ADMIN_PASSWORD) {
       login(); // zustand의 로그인 함수 호출
-      navigate("/admin-home"); // 로그인 성공 시 AdminHome으로 이동
+      navigate("/admin/home"); // 로그인 성공 시 AdminHome으로 이동
     } else {
       alert("아이디 또는 비밀번호가 잘못되었습니다.");
     }
