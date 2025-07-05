@@ -11,6 +11,7 @@ interface MobileHeaderSectionProps {
   selectedSegment: string;
   onSegmentChange: (value: string) => void;
   onReset: () => void;
+  onFilter?: () => void;
 }
 
 export default function MobileHeaderSection({
@@ -20,6 +21,7 @@ export default function MobileHeaderSection({
   selectedSegment,
   onSegmentChange,
   onReset,
+  onFilter,
 }: MobileHeaderSectionProps) {
   return (
     <div className="w-full bg-white rounded-2xl p-5 flex flex-col gap-4">
@@ -29,7 +31,7 @@ export default function MobileHeaderSection({
         <div className="flex items-center">
           <span className="text-[17px] font-pretendard font-medium text-gray-400 pr-2">{eventCount}개</span>
           <img src={dotIcon} alt="dot" className="w-1.5 h-1.5 mr-3" />
-          <FilterButton label="필터" onClick={onReset} />
+          <FilterButton label="필터" onClick={onFilter || onReset} />
         </div>
       </div>
       {/* chip: selectedChip이 있을 때만 렌더링 */}
