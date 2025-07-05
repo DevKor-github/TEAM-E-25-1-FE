@@ -36,7 +36,7 @@ export default function EventTypeIndicator({
 
   return (
     <div
-      className={`inline-flex items-center justify-center rounded-[8px] px-[6px] py-[2px] body3 whitespace-nowrap ${getTypeStyles(
+      className={`font-pretendard font-medium text-[15px] inline-flex items-center justify-center rounded-[8px] px-[6px] py-[2px] body3 whitespace-nowrap ${getTypeStyles(
         type
       )} ${className}`}
     >
