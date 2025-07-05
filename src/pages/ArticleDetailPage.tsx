@@ -6,13 +6,13 @@ import { api } from "@/lib/axios";
 import HeaderFrame from "@/components/HeaderFrame";
 import EventTypeIndicator from "@/components/ui/EventTypeIndicator";
 import type { EventType } from "@/components/ui/EventTypeIndicator";
-import EventCard from "@/components/ui/EventCard";
 import TabbedControl from "@/components/ui/tabbedControl";
 import EventDateIndicator from "@/components/ui/EventDateIndicator";
 import EventImage from "@/components/ui/EventImage";
 import { Button } from "@/components/ui/buttons";
 import { BottomButtonsCombo3 } from "@components/ui/bottomButtonsCombo";
 import closeIcon from "../assets/closeIcon.svg";
+import heartGray from "@/assets/heart_gray.svg";
 
 type Article = {
   id: string;
@@ -21,7 +21,7 @@ type Article = {
   thumbnailPath: string;
   scrapCount: number;
   viewCount: number;
-  tags: string[];
+  tags: EventType[];
   description?: string;
   location: string;
   startAt: string;
@@ -35,8 +35,8 @@ const dummyArticle: Article = {
   title:
     "[Flagsmith 세미나] 버튼 하나로 실험하는 방법 : AB 테스트를 위한 새로운 접근법",
   organization: "고려대학교 스타트업스테이션",
-  startAt: "2025-05-26T18:00:00Z",
-  endAt: "2025-05-27T19:00:00Z",
+  startAt: "2025-08-26T18:00:00Z",
+  endAt: "2025-08-27T19:00:00Z",
   location: "서울 마포구 마포대로 122 디캠프 마포",
   description:
     "사업 방향성 설정과 성장에 필요한 전문 멘토링 dcamp officehour 5월 모집 오픈!!",
@@ -44,7 +44,7 @@ const dummyArticle: Article = {
   imagePaths: ["/detailImage.png", "/eventThumbnail.png", "/detailImage.png"],
   tags: ["설명회"],
   registrationUrl: "https://www.naver.com/",
-  scrapCount: 999,
+  scrapCount: 1000,
   viewCount: 150,
 };
 
@@ -68,6 +68,22 @@ export default function ArticleDetailPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
+
+  // dday 계산 (타임존 이슈 없이 날짜만 비교, 한국시간 기준, startAt 유효성 체크)
+  let diff: number | undefined = undefined;
+  if (article) {
+    const isValidStart =
+      !!article.startAt && !isNaN(new Date(article.startAt).getTime());
+    if (isValidStart) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const start = new Date(article.startAt);
+      start.setHours(0, 0, 0, 0);
+      diff = Math.ceil(
+        (start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+    }
+  }
 
   const TAB_HEIGHT = 40; // sticky tabbed control의 height(px)
   const datePlaceRef = useRef<HTMLDivElement>(null);
@@ -122,22 +138,25 @@ export default function ArticleDetailPage() {
 
   // article 데이터 가져오기
   useEffect(() => {
-    if (!articleId) return;
+    // if (!articleId) return;
 
-    const fetchArticle = async () => {
-      try {
-        const { data } = await api.get(`/article/${articleId}`);
-        setArticle(data);
-      } catch (err: any) {
-        if (err.response?.status === 404) {
-          alert("해당 행사를 찾을 수 없습니다.");
-        } else {
-          alert("행사 정보를 불러오는 중 오류가 발생했습니다.");
-        }
-      }
-    };
+    // const fetchArticle = async () => {
+    //   try {
+    //     const { data } = await api.get(`/article/${articleId}`);
+    //     setArticle({
+    //       ...data,
+    //       tags: data.tags as EventType[],
+    //     });
+    //   } catch (err: any) {
+    //     if (err.response?.status === 404) {
+    //       alert("해당 행사를 찾을 수 없습니다.");
+    //     } else {
+    //       alert("행사 정보를 불러오는 중 오류가 발생했습니다.");
+    //     }
+    //   }
+    // };
 
-    fetchArticle();
+    // fetchArticle();
 
     // API 연동 전 더미 데이터로 테스트
     setTimeout(() => {
@@ -165,32 +184,41 @@ export default function ArticleDetailPage() {
     <div className="w-[375px] mx-auto bg-white">
       <HeaderFrame />
 
-      {/* Eventcard 컴포넌트 추가해야 함
-      <div className="flex flex-col pt-5 pr-5 pb-2 pl-5 gap-5">
-        {article.thumbnailPath && (
-          <img src={article.thumbnailPath} alt="썸네일 이미지" />
-        )}
+      <div className="flex flex-col w-full pt-5 pr-5 pb-2 pl-5 gap-5">
+        <img
+          src={article.thumbnailPath}
+          alt="썸네일 이미지"
+          className="w-full h-[188px] min-w-[240px] min-h-[135px] rounded-lg border border-gray-200 flex flex-col gap-[10px]"
+        />
 
-        <div className="font-semibold text-title4 text-gray-800 font-pretendard">
-          {article.title}
+        <div className="flex flex-col w-full h-[94px] gap-3">
+          <div className="w-full h-full font-semibold text-title4 text-gray-800 font-pretendard">
+            {article.title}
+          </div>
+          <div className="flex flew-row w-full h-[26px] gap-5">
+            <div className="flex flew-row w-full max-w-[186px] gap-2">
+              {article.tags.map((tag) => (
+                <EventTypeIndicator key={tag} type={tag} />
+              ))}
+            </div>
+            <div className="flex flew-row gap-3">
+              <div className="font-normal text-body3 text-gray-500 font-pretendard">
+                조회 {article.viewCount}
+              </div>
+              <div className="flex flew-row gap-1">
+                <img src={heartGray} alt="like-count" className="w-5 h-5" />
+                <div className="font-normal text-body3 text-gray-500 font-pretendard">
+                  {article.scrapCount > 999 ? "999+" : article.scrapCount}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div>
-          <EventCard
-            title="이벤트 타이틀"
-            date="9월 25일 (수)"
-            type={article.tags as EventType[]}
-            dday={117}
-            isLiked={true}
-            likeCount={999}
-            imageUrl={"/assets/event_thumbnail_image.png"}
-          />
-        </div>
-      </div> */}
+      </div>
 
       {/* 탭 컨트롤 */}
       {!modalOpen && (
-        <div className="sticky top-0 z-20 bg-white border-b border-solid border-gray-200 pt-3 px-4 gap-2.5">
+        <div className="sticky top-0 z-20 bg-white flex flew-col w-full border-b border-solid border-gray-200 pt-3 px-4 gap-2.5">
           <TabbedControl
             tabs={[
               { label: "행사 일시 ∙ 장소", id: "tab1" },
@@ -206,7 +234,6 @@ export default function ArticleDetailPage() {
           />
         </div>
       )}
-
       <div
         ref={datePlaceRef}
         className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1"
@@ -218,10 +245,9 @@ export default function ArticleDetailPage() {
           {formatDate(article.startAt, article.endAt)}
         </div>
         <div>
-          <EventDateIndicator status="ongoing" />
+          <EventDateIndicator dday={diff} />
         </div>
       </div>
-
       <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1">
         <div className="font-medium text-body3 text-gray-500 font-pretendard">
           행사 장소
@@ -241,7 +267,6 @@ export default function ArticleDetailPage() {
           </Button>
         </div>
       </div>
-
       <div ref={orgRef} className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1">
         <div className="font-medium text-body3 text-gray-500 font-pretendard">
           행사 주최기관
@@ -250,7 +275,6 @@ export default function ArticleDetailPage() {
           {article.organization}
         </div>
       </div>
-
       <div ref={imageRef} className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-3">
         <div className="font-medium text-body3 text-gray-500 font-pretendard">
           행사 이미지 ({article.imagePaths?.length ?? 0})
@@ -273,7 +297,6 @@ export default function ArticleDetailPage() {
           </div>
         )}
       </div>
-
       {/* 상세이미지 모달 */}
       {modalOpen && modalImage && (
         <div className="fixed inset-0 flex items-center justify-center">
