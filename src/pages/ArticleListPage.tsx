@@ -4,6 +4,7 @@ import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import { EventType } from "../components/ui/EventTypeIndicator";
+import FilterSheet, { FilterState } from "../components/FilterSheet";
 
 // Article 타입: 백엔드 스웨거 기준
 export type Article = {
@@ -77,6 +78,40 @@ export default function ArticleListPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // 필터 상태
+  const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
+  const [filterState, setFilterState] = React.useState<FilterState>({
+    types: [],
+    includePast: true,
+  });
+
+  // 임박한 정렬: 종료된 행사 제외
+  const getSortedList = (list: Article[]) => {
+    switch (selectedSegment) {
+      case "많이 본":
+        return [...list].sort((a, b) => b.viewCount - a.viewCount);
+      case "많이 찜한":
+        return [...list].sort((a, b) => b.scrapCount - a.scrapCount);
+      case "임박한": {
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        return [...list]
+          .filter((a) => {
+            const end = new Date(a.endAt);
+            end.setHours(0, 0, 0, 0);
+            return end.getTime() >= now.getTime(); // 종료된 행사 제외
+          })
+          .sort((a, b) => {
+            const aStart = new Date(a.startAt).getTime();
+            const bStart = new Date(b.startAt).getTime();
+            return aStart - bStart;
+          });
+      }
+      default:
+        return list;
+    }
+  };
+
   // 쿼리스트링으로 스크랩 필터 상태 결정
   const params = new URLSearchParams(location.search);
   const showScrapOnly = params.get("scrapOnly") === "1";
@@ -92,10 +127,37 @@ export default function ArticleListPage() {
     }
   };
 
-  // 필터링된 리스트
+  // 필터 버튼 클릭
+  const handleOpenFilter = () => setFilterSheetOpen(true);
+  const handleCloseFilter = () => setFilterSheetOpen(false);
+  const handleApplyFilter = () => setFilterSheetOpen(false);
+
+  // 필터링
+  const applyFilter = (list: Article[]) => {
+    let filtered = list;
+    if (filterState.types.length > 0) {
+      filtered = filtered.filter((a) =>
+        a.tags.some((t) => filterState.types.includes(t))
+      );
+    }
+    if (!filterState.includePast) {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      filtered = filtered.filter((a) => {
+        const end = new Date(a.endAt);
+        end.setHours(0, 0, 0, 0);
+        return end.getTime() >= now.getTime();
+      });
+    }
+    return filtered;
+  };
+
+  // 필터링 및 정렬된 리스트
   const filteredList = showScrapOnly
     ? articleList.filter((a) => a.isLiked)
     : articleList;
+  const filterAppliedList = applyFilter(filteredList);
+  const sortedList = getSortedList(filterAppliedList);
 
   // 스크랩 토글 핸들러
   const handleToggleScrap = (id: string) => {
@@ -113,22 +175,41 @@ export default function ArticleListPage() {
   };
 
   return (
-    <div className="w-[375px] mx-auto bg-white px-[20px] min-h-screen">
-      <HeaderFrame onClickScrap={handleScrapIconClick} />
-      {/* 상단 하트 버튼은 HeaderFrame에서 처리됨 */}
-      <MobileHeaderSection
-        eventCount={filteredList.length}
-        segments={segments}
-        selectedSegment={selectedSegment}
-        onSegmentChange={setSelectedSegment}
-        onReset={() => {}}
-      />
-      <div className="flex flex-col gap-4 mt-4">
-        {filteredList.map((article) => (
-          <Link key={article.id} to={`/article/${article.id}`} style={{ textDecoration: 'none' }}>
-            <EventCard {...article} onToggleScrap={() => handleToggleScrap(article.id)} />
-          </Link>
-        ))}
+    <div className="w-[375px] mx-auto bg-white">
+      <div className="w-full mx-auto px-[20px]">
+        <HeaderFrame onClickScrap={handleScrapIconClick} />
+        {/* 필터 버튼 */}
+        <MobileHeaderSection
+          eventCount={sortedList.length}
+          segments={segments}
+          selectedSegment={selectedSegment}
+          onSegmentChange={setSelectedSegment}
+          onReset={() => {
+            setFilterState({ types: [], includePast: true });
+          }}
+          onFilter={handleOpenFilter}
+        />
+        <FilterSheet
+          open={filterSheetOpen}
+          onClose={handleCloseFilter}
+          filterState={filterState}
+          setFilterState={setFilterState}
+          onApply={handleApplyFilter}
+        />
+        <div className="flex flex-col gap-4 mt-4">
+          {sortedList.map((article) => (
+            <Link
+              key={article.id}
+              to={`/article/${article.id}`}
+              style={{ textDecoration: "none" }}
+            >
+              <EventCard
+                {...article}
+                onToggleScrap={() => handleToggleScrap(article.id)}
+              />
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
