@@ -1,4 +1,3 @@
-import React from "react";
 import liveIndicator from "@/assets/live_Indicator_sky500.svg";
 
 export type EventType =
@@ -38,6 +37,7 @@ export default function EventDateIndicator({
   };
 
   const getDateText = () => {
+    if (typeof dday !== "number") return "";
     if (status === "ongoing" || dday === 0) return "행사중";
     if (status === "ended" || dday < 0) return "종료";
     if (dday === 1) return "내일 시작";
