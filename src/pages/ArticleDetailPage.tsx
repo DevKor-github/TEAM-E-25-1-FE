@@ -124,11 +124,12 @@ export default function ArticleDetailPage() {
       const res = await api.get(`/scrap/article/${articleId}`);
       setIsScrapped(res.data.isScrapped);
     } catch (err: any) {
-      setIsScrapped(false);
       if (err.response?.status === 401) {
-        navigate("/login");
+        // 비로그인 상태
+        setIsScrapped(false);
         return;
       } else {
+        setIsScrapped(false);
         alert("스크랩 상태를 불러오는 중 오류가 발생했습니다.");
       }
     }
