@@ -1,6 +1,4 @@
-import React from "react";
-import EventImage from "./EventImage";
-import EventTypeIndicator, { EventType } from "./EventTypeIndicator";
+import EventTypeIndicator from "./EventTypeIndicator";
 import EventDateIndicator from "./EventDateIndicator";
 import heartRed from "@/assets/heart_red500.svg";
 import heartGray from "@/assets/heart_gray.svg";
@@ -28,7 +26,6 @@ interface EventCardProps extends Article {
 }
 
 export default function EventCard({
-  id,
   title,
   organization,
   thumbnailPath,
@@ -69,7 +66,7 @@ export default function EventCard({
       <div className="relative mb-2">
         <img
           src={imageUrl}
-        
+          alt={title}
           className="rounded-xl w-full h-[120px] object-cover"
         />
         <button

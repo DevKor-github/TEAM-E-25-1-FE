@@ -23,10 +23,12 @@ export default function MobileHeaderSection({
   onFilter,
 }: MobileHeaderSectionProps) {
   return (
-    <div className="w-full bg-white rounded-2xl p-0 flex flex-col gap-4">
+    <div className="w-full bg-white rounded-2xl p-5 flex flex-col gap-4">
       {/* 상단: 행사, 개수, dot, 초기화 */}
-      <div className="flex items-center justify-between pt-5 px-5">
-        <span className="text-[23px] font-pretendard font-semibold text-black">행사</span>
+      <div className="flex items-center justify-between">
+        <span className="text-[23px] font-pretendard font-semibold text-black">
+          행사
+        </span>
         <div className="flex items-center">
           <span className="text-[17px] font-pretendard font-medium text-gray-400 pr-2">
             {eventCount}개
@@ -37,18 +39,20 @@ export default function MobileHeaderSection({
       </div>
       {/* chip: selectedChip이 있을 때만 렌더링 */}
       {selectedChip && (
-        <div className="flex gap-2 px-5">
-          <span className="inline-flex items-center px-2 py-1 rounded-[6px] bg-blue-50 text-blue-500 text-[15px] font-pretendard font-medium">{selectedChip}</span>
+        <div className="flex gap-2">
+          <span className="inline-flex items-center px-2 py-1 rounded-[6px] bg-blue-50 text-blue-500 text-[15px] font-pretendard font-medium">
+            {selectedChip}
+          </span>
         </div>
       )}
       {/* Divider */}
-      <div className="px-5">
-        <Divider />
-      </div>
+      <Divider />
       {/* SegmentedControl */}
-      <div className="pb-5 flex justify-center">
-        <SegmentedControl segments={segments} selected={selectedSegment} onChange={onSegmentChange} />
-      </div>
+      <SegmentedControl
+        segments={segments}
+        selected={selectedSegment}
+        onChange={onSegmentChange}
+      />
     </div>
   );
 }

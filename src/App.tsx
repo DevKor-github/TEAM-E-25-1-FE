@@ -17,11 +17,6 @@ import AdminHome from "./pages/AdminHome";
 import ArticleUploadPage from "./pages/ArticleUploadPage";
 import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
-import ArticleListPage from "./pages/ArticleListPage";
-
-// 인증된 사용자만 접근 가능한 라우트 컴포넌트
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-}
 
 // 관리자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
 function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
@@ -34,8 +29,7 @@ function UserPrivateRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useUserAuthStore((state) => state.isLoggedIn);
   return isLoggedIn ? children : <Navigate to="/login" replace />;
 }
-// <Route path="/auth/login" element={<LoginPage />} />
-// <Route path="/auth/login/oauth/callback" element={<Redirection />} />
+
 export default function App() {
   return (
     <Router>
@@ -48,7 +42,6 @@ export default function App() {
           />
           {/* 사용자 라우트 */}
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/event" element={<ArticleListPage />} />
           <Route path="/event/:articleId" element={<ArticleDetailPage />} />
           <Route path="/error" element={<ErrorPage />} />
           <Route
