@@ -50,12 +50,12 @@ export function BottomButtonsCombo2({
   onRightClick?: () => void;
 }) {
   return (
-    <div className="w-full min-h-[88px] p-5 bg-white flex items-center gap-3">
+    <div className="w-[315px] min-h-[88px] bg-white flex items-center gap-[12px]">
       <Button
         buttonType="text"
         size="lg"
         styleType="gray"
-        className="w-[161.5px]"
+        className="flex-1"
         disabled={leftDisabled}
         loading={leftLoading}
         onClick={onLeftClick}
@@ -66,7 +66,7 @@ export function BottomButtonsCombo2({
         buttonType="text"
         size="lg"
         styleType="brand"
-        className="w-[161.5px]"
+        className="flex-1"
         disabled={rightDisabled}
         loading={rightLoading}
         onClick={onRightClick}
