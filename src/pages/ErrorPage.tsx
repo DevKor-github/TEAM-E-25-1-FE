@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { BottomButtonsCombo1 } from "@/components/ui/bottomButtonsCombo";
 import chevronLeft from "../assets/chevronLeft.svg";
-import errorIcon from "../assets/errorIcon.svg";
+import ErrorIcon from "../assets/ErrorIcon.svg";
 
 export default function ErrorPage() {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export default function ErrorPage() {
       </div>
 
       <div className="absolute top-[60px] w-[375px] flex flex-col p-[20px] gap-[24px]">
-        <img src={errorIcon} alt="error icon" className="w-[60px] h-[60px]" />
+        <img src={ErrorIcon} alt="error icon" className="w-[60px] h-[60px]" />
 
         <div className="w-full flex flex-col gap-[8px]">
           <div className="w-full font-bold text-title3 text-gray-900 font-pretendard">
