@@ -1,10 +1,9 @@
-import EventTypeIndicator, { EventType } from "./EventTypeIndicator";
+import EventTypeIndicator from "./EventTypeIndicator";
 import EventDateIndicator from "./EventDateIndicator";
 import heartRed from "@/assets/heart_red500.svg";
 import heartGray from "@/assets/heart_gray.svg";
 import heartNon from "@/assets/heart_nothing.svg";
 
-// Article 타입: 백엔드 스웨거 기준
 export type Article = {
   id: string;
   title: string;
@@ -12,7 +11,7 @@ export type Article = {
   thumbnailPath: string;
   scrapCount: number;
   viewCount: number;
-  tags: EventType[]; // 배열로 변경
+  tags: string[];
   description: string;
   location: string;
   startAt: string;

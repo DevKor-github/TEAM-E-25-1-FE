@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/axios";
 import HeaderFrame from "@/components/HeaderFrame";
 import EventTypeIndicator from "@/components/ui/EventTypeIndicator";
-import type { EventType } from "@/components/ui/EventTypeIndicator";
 import TabbedControl from "@/components/ui/tabbedControl";
 import EventDateIndicator from "@/components/ui/EventDateIndicator";
 import EventImage from "@/components/ui/EventImage";
@@ -21,7 +20,7 @@ type Article = {
   thumbnailPath: string;
   scrapCount: number;
   viewCount: number;
-  tags: EventType[];
+  tags: string[];
   description?: string;
   location: string;
   startAt: string;
@@ -144,7 +143,11 @@ export default function ArticleDetailPage() {
         const { data } = await api.get(`/article/${articleId}`);
         setArticle({
           ...data,
-          tags: data.tags as EventType[],
+          tags: Array.isArray(data.tags)
+            ? data.tags
+            : typeof data.tags === "string"
+              ? [data.tags]
+              : [],
         });
       } catch (err: any) {
         if (err.response?.status === 404) {

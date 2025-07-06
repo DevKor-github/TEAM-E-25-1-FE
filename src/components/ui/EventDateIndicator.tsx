@@ -1,13 +1,5 @@
 import liveIndicator from "@/assets/live_Indicator_sky500.svg";
 
-export type EventType =
-  | "강연"
-  | "공모전"
-  | "대회"
-  | "박람회"
-  | "설명회"
-  | "축제";
-
 type DateStatus = "upcoming" | "imminent" | "ongoing" | "ended";
 
 interface EventDateIndicatorProps {

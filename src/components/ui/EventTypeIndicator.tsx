@@ -1,13 +1,16 @@
-export type EventType =
-  | "강연"
-  | "공모전"
-  | "대회"
-  | "박람회"
-  | "설명회"
-  | "축제";
+const allowedTagTypes = [
+  "강연",
+  "공모전",
+  "대회",
+  "박람회",
+  "설명회",
+  "축제",
+] as const; // 배열의 값을 변하지 않는 고정값(리터럴)으로 지정
+
+type AllowedTagType = (typeof allowedTagTypes)[number]; // "강연" | "공모전" | "대회" | "박람회" | "설명회" | "축제"
 
 interface EventTypeIndicatorProps {
-  type: EventType; // 단일 값으로 변경
+  type: string;
   className?: string;
 }
 
@@ -15,7 +18,12 @@ export default function EventTypeIndicator({
   type,
   className = "",
 }: EventTypeIndicatorProps) {
-  const getTypeStyles = (type: EventType) => {
+  // 허용된 태그 타입이 아니면 null 반환
+  if (!allowedTagTypes.includes(type as AllowedTagType)) {
+    return null;
+  }
+
+  const getTypeStyles = (type: AllowedTagType) => {
     switch (type) {
       case "강연":
         return "bg-blue-50 text-blue-500";
@@ -37,7 +45,7 @@ export default function EventTypeIndicator({
   return (
     <div
       className={`font-pretendard font-medium text-[15px] inline-flex items-center justify-center rounded-[8px] px-[6px] py-[2px] body3 whitespace-nowrap ${getTypeStyles(
-        type
+        type as AllowedTagType
       )} ${className}`}
     >
       {type}

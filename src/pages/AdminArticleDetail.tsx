@@ -33,7 +33,14 @@ export default function AdminArticleDetail() {
     const fetchArticle = async () => {
       try {
         const { data } = await api.get(`/article/${articleId}`);
-        setArticle(data);
+        setArticle({
+          ...data,
+          tags: Array.isArray(data.tags)
+            ? data.tags
+            : typeof data.tags === "string"
+              ? [data.tags]
+              : [],
+        });
       } catch (err: any) {
         if (err.response?.status === 404) {
           setError("해당 행사를 찾을 수 없습니다.");
@@ -88,12 +95,7 @@ export default function AdminArticleDetail() {
                     <p>
                       <span className="font-semibold">태그:</span>
                       {article.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-block ml-2 px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
-                        >
-                          {tag}
-                        </span>
+                        <span key={tag}>{tag}</span>
                       ))}
                     </p>
                     <p>
