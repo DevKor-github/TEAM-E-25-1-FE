@@ -24,7 +24,7 @@ export type Article = {
   isLiked: boolean; // 스크랩 여부 추가
 };
 
-// mockEvents: Article 타입 더미 데이터
+// mockEvents: Article 타입 더미 데이터1
 const mockEvents: Article[] = [
   {
     id: "1",
@@ -48,7 +48,7 @@ const mockEvents: Article[] = [
 // 더미2
 const articles: Article[] = [
   {
-    id: "21231423423",
+    id: "2",
     title: "채용박람회",
     organization: "고려대학교",
     thumbnailPath: "https://example.com/thumbnail.jpg",
@@ -175,8 +175,8 @@ export default function ArticleListPage() {
   };
 
   return (
-    <div className="w-[375px] mx-auto bg-white">
-      <div className="w-full mx-auto px-[20px]">
+    <div className="w-full min-h-screen flex flex-col items-center bg-gray-500">
+      <div className="w-full max-w-[375px] px-[20px] box-border">
         <HeaderFrame onClickScrap={handleScrapIconClick} />
         {/* 필터 버튼 */}
         <MobileHeaderSection
@@ -196,12 +196,13 @@ export default function ArticleListPage() {
           setFilterState={setFilterState}
           onApply={handleApplyFilter}
         />
-        <div className="flex flex-col gap-4 mt-4">
+        <div className="flex flex-col gap-4 mt-4 w-full">
           {sortedList.map((article) => (
             <Link
               key={article.id}
               to={`/article/${article.id}`}
               style={{ textDecoration: "none" }}
+              className="w-full"
             >
               <EventCard
                 {...article}
