@@ -5,7 +5,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
-import { useUserAuthStore } from "@/stores/userAuthStore";
 
 import LoginPage from "./pages/LoginPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
@@ -25,12 +24,6 @@ function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
   return isLoggedIn ? children : <Navigate to="/admin/login" replace />;
 }
 
-// 사용자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
-function UserPrivateRoute({ children }: { children: React.ReactNode }) {
-  const isLoggedIn = useUserAuthStore((state) => state.isLoggedIn);
-  return isLoggedIn ? children : <Navigate to="/login" replace />;
-}
-
 export default function App() {
   return (
     <Router>
@@ -43,14 +36,7 @@ export default function App() {
           <Route path="/event" element={<ArticleListPage />} />
           <Route path="/event/:articleId" element={<ArticleDetailPage />} />
           <Route path="/error" element={<ErrorPage />} />
-          <Route
-            path="/mypage"
-            element={
-              <UserPrivateRoute>
-                <MyPage />
-              </UserPrivateRoute>
-            }
-          />
+          <Route path="/mypage" element={<MyPage />} />
           {/* 관리자 라우트 */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route

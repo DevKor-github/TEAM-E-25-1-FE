@@ -14,6 +14,7 @@ export default function MyPage() {
       navigate("/", { replace: true });
     } catch (err: any) {
       if (err.response?.status === 401) {
+        navigate("/login", { replace: true });
         alert("로그인 상태가 아닙니다.");
       } else if (err.response?.status === 500) {
         alert("인증 정보 처리 중 오류가 발생했습니다. 다시 로그인 해주세요.");
