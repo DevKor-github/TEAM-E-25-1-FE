@@ -30,18 +30,14 @@ function UserPrivateRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useUserAuthStore((state) => state.isLoggedIn);
   return isLoggedIn ? children : <Navigate to="/login" replace />;
 }
-// <Route path="/auth/login" element={<LoginPage />} />
-// <Route path="/auth/login/oauth/callback" element={<Redirection />} />
+
 export default function App() {
   return (
     <Router>
       <main>
         <Routes>
-          {/* 기본 경로를 개발 완료 후 /event로 변경해야 함) */}
-          <Route
-            path="/"
-            element={<Navigate to="/event/215748916971311104" replace />}
-          />
+          {/* 기본 경로 설정 */}
+          <Route path="/" element={<Navigate to="/event" replace />} />
           {/* 사용자 라우트 */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/event" element={<ArticleListPage />} />

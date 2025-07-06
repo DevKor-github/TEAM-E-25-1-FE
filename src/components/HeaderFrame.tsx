@@ -11,7 +11,7 @@ const HeaderFrame = ({ onClickScrap }: HeaderFrameProps) => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full h-[60px] flex flex-row items-center justify-between border-b border-b-gray-200">
+    <div className="w-full h-[60px] flex flex-row items-center justify-between border-b border-b-gray-200 px-[20px]">
       <img src={logo} alt="univent logo" />
       <div className="flex flex-row items-center gap-4 w-fit h-fit min-w-[64px] min-h-[24px]">
         <img
