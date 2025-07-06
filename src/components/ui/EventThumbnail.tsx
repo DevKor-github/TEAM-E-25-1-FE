@@ -11,7 +11,7 @@ interface EventThumbnailProps {
 }
 
 export default function EventThumbnail({
-  title,
+  
   imageUrl,
   isLiked = false,
 }: EventThumbnailProps) {

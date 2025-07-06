@@ -9,6 +9,9 @@ const allowedTagTypes = [
 
 type AllowedTagType = (typeof allowedTagTypes)[number]; // "강연" | "공모전" | "대회" | "박람회" | "설명회" | "축제"
 
+// Export the type for use in other components
+export type EventType = AllowedTagType;
+
 interface EventTypeIndicatorProps {
   type: string;
   className?: string;

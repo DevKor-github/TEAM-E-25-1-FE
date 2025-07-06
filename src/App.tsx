@@ -19,10 +19,6 @@ import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
 import ArticleListPage from "./pages/ArticleListPage";
 
-// 인증된 사용자만 접근 가능한 라우트 컴포넌트
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-}
-
 // 관리자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
 function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAdminAuthStore((state) => state.isLoggedIn);

@@ -4,7 +4,6 @@ import ToggleButton from "./ui/ToggleButton";
 import SegmentedControl from "./ui/SegmentedControl";
 import { BottomButtonsCombo2 } from "./ui/bottomButtonsCombo";
 import { EventType } from "./ui/EventTypeIndicator";
-import BottomSheet from "./ui/bottomSheet";
 
 export type FilterState = {
   types: EventType[];
