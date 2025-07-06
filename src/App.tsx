@@ -4,23 +4,35 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { useAuthStore } from "@/stores/authStore";
-import { Header } from "@/components/Header";
-import ArticleUploadPage from "./pages/ArticleUploadPage";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
+import { useUserAuthStore } from "@/stores/userAuthStore";
+
+import LoginPage from "./pages/LoginPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
-//import LoginPage from "./pages/LoginPage";
-//import Redirection from "./pages/Redirection";
+import MyPage from "./pages/MyPage";
+import ErrorPage from "./pages/ErrorPage";
+
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
+import ArticleUploadPage from "./pages/ArticleUploadPage";
 import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
-import ComponentTest from "./pages/ComponentTest";
 import ArticleListPage from "./pages/ArticleListPage";
 
 // 인증된 사용자만 접근 가능한 라우트 컴포넌트
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
-  return isLoggedIn ? children : <Navigate to="/admin-login" replace />;
+}
+
+// 관리자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
+function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
+  const isLoggedIn = useAdminAuthStore((state) => state.isLoggedIn);
+  return isLoggedIn ? children : <Navigate to="/admin/login" replace />;
+}
+
+// 사용자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
+function UserPrivateRoute({ children }: { children: React.ReactNode }) {
+  const isLoggedIn = useUserAuthStore((state) => state.isLoggedIn);
+  return isLoggedIn ? children : <Navigate to="/login" replace />;
 }
 // <Route path="/auth/login" element={<LoginPage />} />
 // <Route path="/auth/login/oauth/callback" element={<Redirection />} />
@@ -29,47 +41,58 @@ export default function App() {
     <Router>
       <main>
         <Routes>
-          {/* 기본 경로를 로그인 페이지로 변경 */} {/* 일반 사용자용 라우트 */}
-          <Route path="/" element={<Navigate to="/article-list" replace />} />
+          {/* 기본 경로를 개발 완료 후 /event로 변경해야 함) */}
+          <Route
+            path="/"
+            element={<Navigate to="/event/215748916971311104" replace />}
+          />
+          {/* 사용자 라우트 */}
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/event" element={<ArticleListPage />} />
-          <Route path="/article/:articleId" element={<ArticleDetailPage />} />
+          <Route path="/event/:articleId" element={<ArticleDetailPage />} />
+          <Route path="/error" element={<ErrorPage />} />
+          <Route
+            path="/mypage"
+            element={
+              <UserPrivateRoute>
+                <MyPage />
+              </UserPrivateRoute>
+            }
+          />
           {/* 관리자 라우트 */}
-          <Route path="/admin-login" element={<AdminLogin />} />
-          {/* 인증이 필요한 관리자 라우트들 */}
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route
-            path="/admin-home"
+            path="/admin/home"
             element={
-              <PrivateRoute>
+              <AdminPrivateRoute>
                 <AdminHome />
-              </PrivateRoute>
+              </AdminPrivateRoute>
             }
           />
           <Route
-            path="/admin/article/:articleId"
+            path="/admin/event/:articleId"
             element={
-              <PrivateRoute>
+              <AdminPrivateRoute>
                 <AdminArticleDetail />
-              </PrivateRoute>
+              </AdminPrivateRoute>
             }
           />
           <Route
-            path="/admin/article/:articleId/edit"
+            path="/admin/event/:articleId/edit"
             element={
-              <PrivateRoute>
+              <AdminPrivateRoute>
                 <AdminArticleEdit />
-              </PrivateRoute>
-            }
-          />{" "}
-          <Route
-            path="/article/upload"
-            element={
-              <PrivateRoute>
-                <ArticleUploadPage />
-              </PrivateRoute>
+              </AdminPrivateRoute>
             }
           />
-          {/* UI 컴포넌트 데모 페이지 */}
-          <Route path="/component-test" element={<ComponentTest />} />
+          <Route
+            path="/admin/event/upload"
+            element={
+              <AdminPrivateRoute>
+                <ArticleUploadPage />
+              </AdminPrivateRoute>
+            }
+          />
         </Routes>
       </main>
     </Router>

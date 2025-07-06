@@ -1,4 +1,3 @@
-import React from "react";
 import FilterButton from "./ui/FilterButton";
 import Divider from "./ui/Divider";
 import SegmentedControl from "./ui/SegmentedControl";
@@ -29,7 +28,9 @@ export default function MobileHeaderSection({
       <div className="flex items-center justify-between pt-5 px-5">
         <span className="text-[23px] font-pretendard font-semibold text-black">행사</span>
         <div className="flex items-center">
-          <span className="text-[17px] font-pretendard font-medium text-gray-400 pr-2">{eventCount}개</span>
+          <span className="text-[17px] font-pretendard font-medium text-gray-400 pr-2">
+            {eventCount}개
+          </span>
           <img src={dotIcon} alt="dot" className="w-1.5 h-1.5 mr-3" />
           <FilterButton label="필터" onClick={onFilter || onReset} />
         </div>

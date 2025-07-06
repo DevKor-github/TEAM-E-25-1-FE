@@ -5,11 +5,16 @@ interface ToggleButtonProps {
   checked: boolean;
   onClick: () => void;
   children?: React.ReactNode;
+  checked: boolean;
+  onClick: () => void;
+  children?: React.ReactNode;
 }
 
 export default function ToggleButton({ label, checked, onClick, children }: ToggleButtonProps) {
+export default function ToggleButton({ label, checked, onClick, children }: ToggleButtonProps) {
   return (
     <button
+      onClick={onClick}
       onClick={onClick}
       className={clsx(
         "w-full py-3 rounded-[12px] text-center font-pretendard text-[16px] font-medium leading-[22px]",
@@ -18,6 +23,7 @@ export default function ToggleButton({ label, checked, onClick, children }: Togg
           : "bg-gray-50 text-gray-500"
       )}
     >
+      {children || label}
       {children || label}
     </button>
   );

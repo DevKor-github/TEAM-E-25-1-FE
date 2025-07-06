@@ -3,8 +3,8 @@ import { cva, VariantProps } from "class-variance-authority";
 import clsx from "clsx";
 import shareIcon_gray700 from "../../assets/shareIcon_gray700.svg";
 import shareIcon_gray300 from "../../assets/shareIcon_gray300.svg";
-import HeartIcon from "../../assets/heartIcon.svg";
-import heart_red500 from "../../assets/heart_red500.svg";
+import heartIcon from "../../assets/heartIcon.svg";
+import heartIcon_red from "../../assets/heartIcon_red.svg";
 import chevronLeft from "../../assets/chevronLeft.svg";
 import chevronRight from "../../assets/chevronRight.svg";
 
@@ -58,7 +58,7 @@ const buttonVariants = cva(
       {
         styleType: "brand",
         state: "hovered",
-        class: "bg-sky-500 text-white border-none",
+        class: "bg-sky-600 text-white border-none",
       },
       {
         styleType: "brand",
@@ -179,7 +179,7 @@ export const Button: React.FC<ButtonProps> = ({
   if (iconType === "share") {
     symbolIcon = state === "disabled" ? shareIcon_gray300 : shareIcon_gray700;
   } else if (iconType === "heart") {
-    symbolIcon = heartScrapped ? heart_red500 : HeartIcon;
+    symbolIcon = heartScrapped ? heartIcon_red : heartIcon;
   } else if (iconType === "chevronLeft") {
     symbolIcon = chevronLeft;
   } else if (iconType === "chevronRight") {

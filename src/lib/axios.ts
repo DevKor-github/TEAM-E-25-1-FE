@@ -1,12 +1,16 @@
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 export const api = axios.create({
-  baseURL: "http://localhost:3000/",
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
   withCredentials: true,
 });
+
+let isRedirecting = false;
 
 // 토큰 갱신
 api.interceptors.response.use(
@@ -14,37 +18,33 @@ api.interceptors.response.use(
   async (err) => {
     const originalRequest = err.config;
     const status = err.response?.status;
-    const errCode = err.response?.data?.code;
 
-    if (
-      status === 401 &&
-      errCode === "AUTH_TOKEN_EXPIRED" &&
-      !originalRequest._retry
-    ) {
+    // 로그인 상태 확인 (useUserAuthStore는 훅이므로 컴포넌트 밖에서는 직접 접근해야 함)
+    const isLoggedIn = JSON.parse(
+      localStorage.getItem("user-auth-storage") || "{}"
+    ).state?.isLoggedIn;
+
+    if (status === 401 && isLoggedIn && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         await api.get("/auth/refresh");
         return api(originalRequest);
       } catch (refreshErr: any) {
-        const refreshStatus = refreshErr?.response?.status;
-        const refreshErrCode = refreshErr?.response?.data?.code;
-
-        if (
-          refreshStatus === 400 &&
-          refreshErrCode === "AUTH_REFRESH_TOKEN_MISSING"
-        ) {
-          alert("토큰 재발급을 위한 정보가 누락되었습니다.");
-        } else {
+        if (!isRedirecting) {
+          isRedirecting = true;
           alert("로그인 세션이 만료되었습니다. 다시 로그인 해주세요.");
+          window.location.href = "/login";
         }
-        window.location.href = "/auth/login";
         return Promise.reject(refreshErr);
       }
     }
 
-    if (status === 500 && errCode === "AUTH_TOKEN_PARSING_FAILED") {
-      alert("인증 정보 처리 중 오류가 발생했습니다. 다시 로그인 해주세요.");
-      window.location.href = "/auth/login";
+    if (status === 500) {
+      if (!isRedirecting) {
+        isRedirecting = true;
+        alert("인증 정보 처리 중 오류가 발생했습니다. 다시 로그인 해주세요.");
+        window.location.href = "/login";
+      }
       return Promise.reject(err);
     }
 

@@ -89,7 +89,7 @@ export function BottomButtonsCombo3({
   onShareClick,
   onHeartClick,
   onLabelClick,
-  heartScrapped = false,
+  heartScrapped,
 }: {
   shareDisabled?: boolean;
   heartDisabled?: boolean;
@@ -101,7 +101,7 @@ export function BottomButtonsCombo3({
   onShareClick?: () => void;
   onHeartClick?: () => void;
   onLabelClick?: () => void;
-  heartScrapped?: boolean;
+  heartScrapped: boolean;
 }) {
   return (
     <div className="w-full min-h-[88px] p-5 bg-white flex items-center gap-3">
