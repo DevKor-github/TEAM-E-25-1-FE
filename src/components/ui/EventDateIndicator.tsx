@@ -47,7 +47,7 @@ export default function EventDateIndicator({
   return (
     <div
       style={{ fontSize: "15px", borderRadius: "8px" }}
-      className={`inline-flex items-center justify-center px-[6px] py-[2px] font-medium leading-[22px] whitespace-nowrap ${getStatusStyles(status)} ${className}`}
+      className={`inline-flex items-center justify-center px-[6px] py-[2px] font-pretendard font-medium text-[15px] leading-[22px] whitespace-nowrap ${getStatusStyles(status)} ${className}`}
     >
       {status === "ongoing" ? (
         <div className="inline-flex items-center gap-[6px]">

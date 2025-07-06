@@ -65,3 +65,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #fff;
+}
