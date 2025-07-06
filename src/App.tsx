@@ -39,7 +39,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           {/* 사용자 라우트 */}
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/event/:eventId" element={<ArticleDetailPage />} />
+          <Route path="/event/:articleId" element={<ArticleDetailPage />} />
           <Route path="/error" element={<ErrorPage />} />
           <Route
             path="/mypage"
@@ -60,7 +60,7 @@ export default function App() {
             }
           />
           <Route
-            path="/admin/event/:eventId"
+            path="/admin/event/:articleId"
             element={
               <AdminPrivateRoute>
                 <AdminArticleDetail />
@@ -68,7 +68,7 @@ export default function App() {
             }
           />
           <Route
-            path="/admin/event/:event/edit"
+            path="/admin/event/:articleId/edit"
             element={
               <AdminPrivateRoute>
                 <AdminArticleEdit />
