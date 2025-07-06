@@ -1,4 +1,3 @@
-import React from "react";
 import heartRed from "@/assets/heart_red500.svg";
 import heartGray from "@/assets/heart_gray.svg";
 
@@ -13,10 +12,7 @@ interface EventThumbnailProps {
 
 export default function EventThumbnail({
   title,
-  org,
   imageUrl,
-  period,
-  location,
   isLiked = false,
 }: EventThumbnailProps) {
   return (

@@ -1,12 +1,14 @@
-import React from "react";
-
 interface EventImageProps {
   src?: string;
   alt?: string;
   className?: string;
 }
 
-export default function EventImage({ src, alt = "", className = "" }: EventImageProps) {
+export default function EventImage({
+  src,
+  alt = "",
+  className = "",
+}: EventImageProps) {
   if (!src) {
     return (
       <div

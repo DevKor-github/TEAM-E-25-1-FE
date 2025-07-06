@@ -1,5 +1,3 @@
-import React from "react";
-
 interface SegmentedControlProps {
   segments: string[];
   selected: string;
@@ -29,9 +27,10 @@ export default function SegmentedControl({
               flex items-center justify-center
               transition-colors duration-150
               focus-visible:outline-none focus-visible:ring-0
-              ${isSelected
-                ? "bg-[var(--Grays-White)] text-[var(--Grays-Gray-700)] font-bold shadow-[0_2px_8px_0_rgba(3,0,40,0.04)]"
-                : "bg-transparent text-[var(--Grays-Gray-500)] hover:bg-[var(--Grays-Gray-100)] font-normal"
+              ${
+                isSelected
+                  ? "bg-[var(--Grays-White)] text-[var(--Grays-Gray-700)] font-bold shadow-[0_2px_8px_0_rgba(3,0,40,0.04)]"
+                  : "bg-transparent text-[var(--Grays-Gray-500)] hover:bg-[var(--Grays-Gray-100)] font-normal"
               }
             `}
             style={{

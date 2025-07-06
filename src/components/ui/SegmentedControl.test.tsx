@@ -1,8 +1,6 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import SegmentedControl from "./SegmentedControl";
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 describe("SegmentedControl", () => {
   const segments = ["All", "Upcoming", "Past"];

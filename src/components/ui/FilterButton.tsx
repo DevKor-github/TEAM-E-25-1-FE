@@ -1,4 +1,3 @@
-import React from "react";
 import listFilterIcon from "../../assets/list-filter.svg";
 import rotateCwIcon from "../../assets/rotate-cw.svg";
 
@@ -8,7 +7,11 @@ interface FilterButtonProps {
   className?: string;
 }
 
-export default function FilterButton({ label, onClick, className = "" }: FilterButtonProps) {
+export default function FilterButton({
+  label,
+  onClick,
+  className = "",
+}: FilterButtonProps) {
   const icon =
     label === "필터" ? (
       <img src={listFilterIcon} alt="필터" className="w-6 h-6" />
@@ -23,8 +26,16 @@ export default function FilterButton({ label, onClick, className = "" }: FilterB
       onClick={onClick}
     >
       {icon}
-      <span style={{ fontFamily: 'Pretendard', fontWeight: 500, fontSize: 17, color: 'var(--Grays-Gray-500, #6A7282)' }}>{label}</span>
+      <span
+        style={{
+          fontFamily: "Pretendard",
+          fontWeight: 500,
+          fontSize: 17,
+          color: "var(--Grays-Gray-500, #6A7282)",
+        }}
+      >
+        {label}
+      </span>
     </button>
   );
 }
-

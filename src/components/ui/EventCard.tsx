@@ -1,4 +1,3 @@
-import React from "react";
 import EventTypeIndicator, { EventType } from "./EventTypeIndicator";
 import EventDateIndicator from "./EventDateIndicator";
 import heartRed from "@/assets/heart_red500.svg";
@@ -13,29 +12,28 @@ export type Article = {
   thumbnailPath: string;
   scrapCount: number;
   viewCount: number;
-  tags: string;
+  tags: EventType[]; // 배열로 변경
   description: string;
   location: string;
   startAt: string;
   endAt: string;
   imagePaths: string[];
   registrationUrl: string;
+  isLiked: boolean;
 };
 
+interface EventCardProps extends Article {
+  onToggleScrap?: () => void;
+}
+
 export default function EventCard({
-  id,
   title,
   organization,
   thumbnailPath,
   scrapCount,
-  viewCount,
   tags,
-  description,
-  location,
   startAt,
   endAt,
-  imagePaths,
-  registrationUrl,
   isLiked,
   onToggleScrap,
 }: EventCardProps) {
@@ -65,14 +63,21 @@ export default function EventCard({
   const org = organization;
 
   return (
-    <div className="flex flex-col w-full rounded-2xl bg-white p-4 shadow-sm">
+    <div className="flex flex-col w-[335px] rounded-2xl bg-white p-4 shadow-sm">
       <div className="relative mb-2">
         <img
           src={imageUrl}
-          alt={article.title}
+          alt={title}
           className="rounded-xl w-full h-[120px] object-cover"
         />
-        <button className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center">
+        <button
+          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleScrap && onToggleScrap();
+          }}
+        >
           <img
             src={isLiked ? heartRed : heartNon}
             alt="like"
@@ -84,13 +89,13 @@ export default function EventCard({
         {org}
       </div>
       <div className="font-pretendard font-semibold text-[17px] leading-[24px] text-gray800 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">
-        {article.title}
+        {title}
       </div>
       <div className="font-pretendard text-[16px] leading-[22px] text-gray-500 font-normal mb-3">
         {date}
       </div>
       <div className="flex gap-2 items-center mb-2">
-        {tags.map((tag) => (
+        {safeTags.map((tag) => (
           <EventTypeIndicator key={tag} type={tag} />
         ))}
         <EventDateIndicator dday={diff} />
