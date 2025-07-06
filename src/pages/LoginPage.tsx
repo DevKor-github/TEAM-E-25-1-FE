@@ -16,7 +16,7 @@ export default function LoginPage() {
   const handleKakaoLogin = async () => {
     try {
       window.location.href =
-        "https://goyangeyaong.shop/auth/oauth/authorization";
+        "https://api.goyangeyaong.shop/auth/oauth/authorization";
     } catch (err: any) {
       if (err.response?.status === 401) {
         alert("유효하지 않은 인증 코드입니다.");
