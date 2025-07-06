@@ -175,7 +175,7 @@ export default function ArticleListPage() {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center bg-gray-500">
+    <div className="w-full min-h-screen flex flex-col items-center bg-white">
       <div className="w-full max-w-[375px] px-[20px] box-border">
         <HeaderFrame onClickScrap={handleScrapIconClick} />
         {/* 필터 버튼 */}
