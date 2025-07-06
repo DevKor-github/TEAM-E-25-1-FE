@@ -6,6 +6,7 @@ import { api } from "@/lib/axios";
 import HeaderFrame from "@/components/HeaderFrame";
 import EventTypeIndicator from "@/components/ui/EventTypeIndicator";
 import TabbedControl from "@/components/ui/tabbedControl";
+import Toast from "@/components/ui/toast";
 import EventDateIndicator from "@/components/ui/EventDateIndicator";
 import EventImage from "@/components/ui/EventImage";
 import { Button } from "@/components/ui/buttons";
@@ -63,6 +64,7 @@ export default function ArticleDetailPage() {
   const { articleId } = useParams();
   const [article, setArticle] = useState<Article | null>(null);
   const [isScrapped, setIsScrapped] = useState<boolean | null>(null);
+  const [showToast, setShowToast] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
@@ -237,6 +239,7 @@ export default function ArticleDetailPage() {
           />
         </div>
       )}
+
       <div
         ref={datePlaceRef}
         className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1"
@@ -264,10 +267,17 @@ export default function ArticleDetailPage() {
             size="md"
             onClick={() => {
               navigator.clipboard.writeText(article.location);
+              setShowToast(true);
+              setTimeout(() => setShowToast(false), 2000); // 2초 후 토스트 숨김
             }}
           >
             주소 복사
           </Button>
+          {showToast && (
+            <div className="w-screen flex justify-center max-w-[300px] fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+              <Toast message="주소가 복사되었습니다" />
+            </div>
+          )}
         </div>
       </div>
       <div ref={orgRef} className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1">
