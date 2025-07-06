@@ -5,13 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/axios";
 
 export default function ArticleUploadPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (data: any) => {
     try {
-      setIsSubmitting(true);
       setError(null);
 
       const formData = new FormData();
@@ -42,8 +40,6 @@ export default function ArticleUploadPage() {
       setError(
         err.response?.data?.message || "행사 등록 중 오류가 발생했습니다."
       );
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
