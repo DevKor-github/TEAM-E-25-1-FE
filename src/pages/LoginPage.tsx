@@ -1,10 +1,17 @@
 import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useUserAuthStore } from "@/stores/userAuthStore";
 import chevronLeft from "../assets/chevronLeft.svg";
 import logo from "../assets/logo.svg";
 import KakaoLoginBtn from "@/components/ui/kakaoLoginBtn";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const isLoggedIn = useUserAuthStore((state) => state.isLoggedIn);
+
+  if (isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleKakaoLogin = async () => {
     try {

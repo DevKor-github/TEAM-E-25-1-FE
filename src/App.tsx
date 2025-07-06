@@ -35,8 +35,11 @@ export default function App() {
     <Router>
       <main>
         <Routes>
-          {/* 기본 경로를 로그인 페이지로 변경 (개발 완료 후 /event로 변경해야 함) */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* 기본 경로를 개발 완료 후 /event로 변경해야 함) */}
+          <Route
+            path="/"
+            element={<Navigate to="/event/215748916971311104" replace />}
+          />
           {/* 사용자 라우트 */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/event/:articleId" element={<ArticleDetailPage />} />
