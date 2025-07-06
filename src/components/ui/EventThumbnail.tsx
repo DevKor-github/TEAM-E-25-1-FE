@@ -20,7 +20,6 @@ export default function EventThumbnail({
       <div className="relative mb-2">
         <img
           src={imageUrl}
-          alt={title}
           className="rounded-xl w-full h-[120px] object-cover"
         />
         <button className="absolute top-3 right-3 w-6 h-6 flex items-center justify-center">
