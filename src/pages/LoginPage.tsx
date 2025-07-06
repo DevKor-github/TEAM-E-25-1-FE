@@ -1,10 +1,27 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "@/lib/axios";
 import chevronLeft from "../assets/chevronLeft.svg";
 import logo from "../assets/logo.svg";
 import KakaoLoginBtn from "@/components/ui/kakaoLoginBtn";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        await api.get("/user/me");
+        // 로그인 상태면 메인으로 리다이렉트
+        navigate("/", { replace: true });
+      } catch (err: any) {
+        return;
+      }
+    };
+
+    checkLoginStatus();
+  }, [navigate]);
 
   const handleKakaoLogin = async () => {
     try {
