@@ -65,11 +65,11 @@ export default function EventCard({
   const org = organization;
 
   return (
-    <div className="flex flex-col w-[335px] rounded-2xl bg-white p-4 shadow-sm">
+    <div className="flex flex-col w-full rounded-2xl bg-white p-4 shadow-sm">
       <div className="relative mb-2">
         <img
           src={imageUrl}
-          alt={title}
+        
           className="rounded-xl w-full h-[120px] object-cover"
         />
         <button
