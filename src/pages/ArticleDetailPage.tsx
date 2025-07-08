@@ -30,24 +30,6 @@ type Article = {
   registrationUrl?: string;
 };
 
-// const dummyArticle: Article = {
-//   id: "1",
-//   title:
-//     "[Flagsmith 세미나] 버튼 하나로 실험하는 방법 : AB 테스트를 위한 새로운 접근법",
-//   organization: "고려대학교 스타트업스테이션",
-//   startAt: "2025-08-26T18:00:00Z",
-//   endAt: "2025-08-27T19:00:00Z",
-//   location: "서울 마포구 마포대로 122 디캠프 마포",
-//   description:
-//     "사업 방향성 설정과 성장에 필요한 전문 멘토링 dcamp officehour 5월 모집 오픈!!",
-//   thumbnailPath: "/eventThumbnail.png",
-//   imagePaths: ["/detailImage.png", "/eventThumbnail.png", "/detailImage.png"],
-//   tags: ["설명회"],
-//   registrationUrl: "https://www.naver.com/",
-//   scrapCount: 1000,
-//   viewCount: 150,
-// };
-
 function formatDate(start: string, end: string) {
   const days = ["일", "월", "화", "수", "목", "금", "토"];
   const startDate = new Date(start);
@@ -158,15 +140,11 @@ export default function ArticleDetailPage() {
         } else {
           alert("행사 정보를 불러오는 중 오류가 발생했습니다.");
         }
+        navigate("/", { replace: true });
       }
     };
 
     fetchArticle();
-
-    // API 연동 전 더미 데이터로 테스트
-    // setTimeout(() => {
-    //   setArticle(dummyArticle);
-    // }, 500);
   }, [articleId]);
 
   useEffect(() => {
@@ -178,7 +156,7 @@ export default function ArticleDetailPage() {
       <div className="max-w-4xl mx-auto p-6">
         <div className="text-center py-8">
           <h2 className="text-xl font-semibold text-gray-600">
-            행사를 찾을 수 없습니다.
+            해당 행사를 찾을 수 없습니다.
           </h2>
         </div>
       </div>
