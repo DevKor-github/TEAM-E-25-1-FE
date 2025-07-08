@@ -99,29 +99,17 @@ export default function AdminArticleEdit() {
   // 수정 요청 처리
   const handleSubmit = async (data: any) => {
     try {
-      const formData = new FormData();
-
-      // body 데이터 수정
-      formData.append("title", data.title);
-      formData.append("organization", data.organization);
-      formData.append("description", data.description);
-      formData.append("location", data.location);
-      formData.append("startAt", new Date(data.startAt).toISOString());
-      formData.append("endAt", new Date(data.endAt).toISOString());
-      formData.append("registrationUrl", data.registrationUrl);
-      formData.append("tags", data.tags);
-
-      // 파일 데이터 수정
-      if (data.thumbnail_image?.[0]) {
-        formData.append("thumbnail", data.thumbnailPath[0]);
-      }
-      if (data.imagePaths?.length) {
-        Array.from(data.imagePaths as File[]).forEach((file: File) => {
-          formData.append("media", file);
-        });
-      }
-
-      await api.patch(`/article/${articleId}`, formData);
+      await api.patch(`/article/${articleId}`, {
+        title: data.title,
+        organization: data.organization,
+        description: data.description,
+        location: data.location,
+        startAt: new Date(data.startAt).toISOString(),
+        endAt: new Date(data.endAt).toISOString(),
+        registrationUrl: data.registrationUrl,
+        tags: data.tags,
+        // mediaIds: ... (이미지 처리 추가하기)
+      });
 
       alert("행사가 성공적으로 수정되었습니다!");
       navigate(`/admin/event/${articleId}`);
