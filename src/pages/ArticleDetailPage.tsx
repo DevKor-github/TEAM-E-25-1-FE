@@ -46,7 +46,7 @@ export default function ArticleDetailPage() {
   const { articleId } = useParams();
   const [article, setArticle] = useState<Article | null>(null);
   const [isScrapped, setIsScrapped] = useState<boolean | null>(null);
-  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
@@ -245,17 +245,12 @@ export default function ArticleDetailPage() {
             size="md"
             onClick={() => {
               navigator.clipboard.writeText(article.location);
-              setShowToast(true);
-              setTimeout(() => setShowToast(false), 2000); // 2초 후 토스트 숨김
+              setToastMessage("주소가 복사되었습니다");
+              setTimeout(() => setToastMessage(null), 2000);
             }}
           >
             주소 복사
           </Button>
-          {showToast && (
-            <div className="w-screen flex justify-center max-w-[300px] fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-              <Toast message="주소가 복사되었습니다" />
-            </div>
-          )}
         </div>
       </div>
       <div ref={orgRef} className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1">
@@ -360,6 +355,8 @@ export default function ArticleDetailPage() {
         <BottomButtonsCombo3
           onShareClick={() => {
             navigator.clipboard.writeText(window.location.href);
+            setToastMessage("공유링크가 복사되었습니다");
+            setTimeout(() => setToastMessage(null), 2000);
           }}
           label="신청하기"
           labelDisabled={!article.registrationUrl}
@@ -391,6 +388,13 @@ export default function ArticleDetailPage() {
           }}
         />
       </div>
+
+      {/* Toast 메시지 띄우기 */}
+      {toastMessage && (
+        <div className="w-screen flex justify-center max-w-[300px] fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+          <Toast message={toastMessage} />
+        </div>
+      )}
     </div>
   );
 }
