@@ -27,6 +27,7 @@ export default function MyPage() {
     if (!window.confirm("정말로 회원탈퇴 하시겠습니까?")) return;
     try {
       await api.delete("/user/me");
+      alert("성공적으로 회원탈퇴가 처리되었습니다.");
       navigate("/", { replace: true });
     } catch (err: any) {
       if (err.response?.status === 401) {
