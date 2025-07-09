@@ -15,20 +15,21 @@ export default function ArticleUploadPage() {
       const formData = new FormData();
       formData.append("title", data.title);
       formData.append("organization", data.organization);
-      formData.append("description", data.content);
+      formData.append("description", data.description);
       formData.append("location", data.location);
-      formData.append("startAt", new Date(data.start_datetime).toISOString());
-      formData.append("endAt", new Date(data.end_datetime).toISOString());
-      if (data.link) formData.append("registrationUrl", data.link);
-      formData.append("tags", data.event_type);
+      formData.append("startAt", new Date(data.startAt).toISOString());
+      formData.append("endAt", new Date(data.endAt).toISOString());
+      if (data.registrationUrl)
+        formData.append("registrationUrl", data.registrationUrl);
+      formData.append("tags", data.tags);
 
       // Handle file uploads
-      if (data.thumbnail_image?.[0]) {
-        formData.append("thumbnail", data.thumbnail_image[0]);
+      if (data.thumbnailPath?.[0]) {
+        formData.append("thumbnail", data.thumbnailPath[0]);
       }
 
-      if (data.detail_image?.length) {
-        Array.from(data.detail_image as File[]).forEach((file: File) => {
+      if (data.imagePaths?.length) {
+        Array.from(data.imagePaths as File[]).forEach((file: File) => {
           formData.append("media", file);
         });
       }
