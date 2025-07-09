@@ -22,6 +22,7 @@ export type Article = {
   imagePaths: string[];
   registrationUrl: string;
   isLiked: boolean; // 스크랩 여부 추가
+  scrapUsers: string[]; // 스크랩한 사용자 ID 배열 추가
 };
 
 // mockEvents: Article 타입 더미 데이터1
@@ -41,6 +42,7 @@ const mockEvents: Article[] = [
     imagePaths: ["/event_thumbnail_image.png"],
     registrationUrl: "",
     isLiked: false,
+    scrapUsers: ["user1", "user2", "user3"], // 스크랩한 사용자들
   },
   // ...더미 데이터 추가 가능
 ];
@@ -65,6 +67,7 @@ const articles: Article[] = [
     ],
     registrationUrl: "https://example.com/register",
     isLiked: false,
+    scrapUsers: ["user4", "user5"], // 스크랩한 사용자들
   },
   ...mockEvents,
 ];
@@ -161,6 +164,8 @@ export default function ArticleListPage() {
 
   // 스크랩 토글 핸들러
   const handleToggleScrap = (id: string) => {
+    const currentUserId = "currentUser"; // 실제로는 인증된 사용자 ID를 사용해야 함
+    
     setArticleList((prev) =>
       prev.map((a) =>
         a.id === id
@@ -168,6 +173,9 @@ export default function ArticleListPage() {
               ...a,
               isLiked: !a.isLiked,
               scrapCount: a.isLiked ? a.scrapCount - 1 : a.scrapCount + 1,
+              scrapUsers: a.isLiked
+                ? a.scrapUsers.filter((userId) => userId !== currentUserId) // 스크랩 취소시 배열에서 제거
+                : [...a.scrapUsers, currentUserId], // 스크랩시 배열에 추가
             }
           : a
       )

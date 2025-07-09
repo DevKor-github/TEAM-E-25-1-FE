@@ -19,6 +19,7 @@ export type Article = {
   imagePaths: string[];
   registrationUrl: string;
   isLiked: boolean;
+  scrapUsers: string[]; // 스크랩한 사용자 ID 배열 추가
 };
 
 interface EventCardProps extends Article {

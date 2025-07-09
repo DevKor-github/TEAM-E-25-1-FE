@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import { useUserAuthStore } from "@/stores/userAuthStore";
 
@@ -56,7 +57,7 @@ export default function App() {
             }
           />
           {/* 관리자 라우트 */}
-          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/  " element={<AdminLogin />} />
           <Route
             path="/admin/home"
             element={
