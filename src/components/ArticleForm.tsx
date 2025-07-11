@@ -75,13 +75,12 @@ const articleFormSchema = z
 
     thumbnailPath: z
       .custom<FileList>()
-      .refine((files) => files?.length === 1, "썸네일 이미지를 첨부해주세요.")
       .refine(
-        (files) => files?.[0]?.size <= MAX_FILE_SIZE,
+        (files) => !files || files?.[0]?.size <= MAX_FILE_SIZE,
         "파일 크기는 5MB 이하여야 합니다."
       )
       .refine(
-        (files) => ALLOWED_FILE_TYPES.includes(files?.[0]?.type),
+        (files) => !files || ALLOWED_FILE_TYPES.includes(files?.[0]?.type),
         "jpg 또는 png 파일만 업로드 가능합니다."
       ),
 
@@ -153,6 +152,20 @@ export function ArticleForm({
     setPreviewThumbnail(undefined);
   };
 
+  // 폼 제출 전 썸네일 이미지 유효성 검사
+  const handleValidatedSubmit = (values: ArticleFormValues) => {
+    // 미리보기(기존) 썸네일과 새로 추가된 썸네일 모두 없는 경우 에러 처리
+    if (
+      !previewThumbnail &&
+      (!values.thumbnailPath || values.thumbnailPath.length !== 1)
+    ) {
+      alert("썸네일 이미지를 첨부해주세요.");
+      return;
+    }
+    // 정상 처리
+    onSubmit(values, previewImages, previewThumbnail);
+  };
+
   const form = useForm<ArticleFormValues>({
     resolver: zodResolver(articleFormSchema),
     defaultValues: {
@@ -175,9 +188,7 @@ export function ArticleForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((values) => {
-          onSubmit(values, previewImages, previewThumbnail);
-        })}
+        onSubmit={form.handleSubmit(handleValidatedSubmit)}
         className="space-y-4"
       >
         <FormField
