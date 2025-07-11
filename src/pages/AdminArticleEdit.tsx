@@ -142,6 +142,8 @@ export default function AdminArticleEdit() {
               <ArticleForm
                 onSubmit={handleSubmit}
                 defaultValues={articleToFormDefault(article)}
+                thumbnailPreviewUrl={article.thumbnailPath}
+                imagePreviewUrls={article.imagePaths}
               />
             </>
           )

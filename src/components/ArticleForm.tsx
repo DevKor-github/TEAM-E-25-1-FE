@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -123,10 +124,35 @@ export type ArticleFormValues = z.infer<typeof articleFormSchema>;
 export function ArticleForm({
   onSubmit,
   defaultValues,
+  thumbnailPreviewUrl,
+  imagePreviewUrls,
 }: {
-  onSubmit: (values: ArticleFormValues) => void;
+  onSubmit: (
+    values: ArticleFormValues,
+    remainingImageUrls?: string[],
+    remainingThumbnailUrl?: string
+  ) => void;
   defaultValues?: Partial<ArticleFormValues>;
+  thumbnailPreviewUrl?: string;
+  imagePreviewUrls?: string[];
 }) {
+  const [previewImages, setPreviewImages] = useState<string[]>(
+    imagePreviewUrls ?? []
+  );
+  const [previewThumbnail, setPreviewThumbnail] = useState<string | undefined>(
+    thumbnailPreviewUrl
+  );
+
+  // 상세 이미지 삭제 핸들러
+  const handleRemovePreviewImage = (idx: number) => {
+    setPreviewImages((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  // 썸네일 이미지 삭제 핸들러
+  const handleRemoveThumbnail = () => {
+    setPreviewThumbnail(undefined);
+  };
+
   const form = useForm<ArticleFormValues>({
     resolver: zodResolver(articleFormSchema),
     defaultValues: {
@@ -148,7 +174,12 @@ export function ArticleForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit((values) => {
+          onSubmit(values, previewImages, previewThumbnail);
+        })}
+        className="space-y-4"
+      >
         <FormField
           control={form.control}
           name="title"
@@ -287,6 +318,23 @@ export function ArticleForm({
           render={({ field: { value, onChange, ...field }, fieldState }) => (
             <FormItem>
               <FormLabel>썸네일 이미지</FormLabel>
+              {previewThumbnail && (
+                <div className="mb-2 relative inline-block">
+                  <img
+                    src={previewThumbnail}
+                    alt="기존 썸네일"
+                    className="w-32 h-32 object-cover rounded border"
+                  />
+                  <button
+                    type="button"
+                    className="absolute top-1 right-1 bg-white/80 rounded-full px-2 py-0.5 text-xs border"
+                    onClick={handleRemoveThumbnail}
+                  >
+                    삭제
+                  </button>
+                  <div className="text-xs text-gray-500">기존 썸네일</div>
+                </div>
+              )}
               <FormControl>
                 <Input
                   type="file"
@@ -306,6 +354,29 @@ export function ArticleForm({
           render={({ field: { value, onChange, ...field }, fieldState }) => (
             <FormItem>
               <FormLabel>상세 이미지 (선택, 최대 10개)</FormLabel>
+              {previewImages.length > 0 && (
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {previewImages.map((url, idx) => (
+                    <div key={idx} className="relative inline-block">
+                      <img
+                        src={url}
+                        alt={`상세 이미지 ${idx + 1}`}
+                        className="w-24 h-24 object-cover rounded border"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-white/80 rounded-full px-2 py-0.5 text-xs border"
+                        onClick={() => handleRemovePreviewImage(idx)}
+                      >
+                        삭제
+                      </button>
+                      <div className="text-xs text-gray-500 text-center">
+                        기존 이미지
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               <FormControl>
                 <Input
                   type="file"
