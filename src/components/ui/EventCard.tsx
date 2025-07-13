@@ -18,8 +18,7 @@ export type Article = {
   endAt: string;
   imagePaths: string[];
   registrationUrl: string;
-  isLiked: boolean;
-  scrapUsers: string[]; // 스크랩한 사용자 ID 배열 추가
+  isScrapped?: boolean; // 스크랩 여부 
 };
 
 interface EventCardProps extends Article {
@@ -34,7 +33,7 @@ export default function EventCard({
   tags,
   startAt,
   endAt,
-  isLiked,
+  isScrapped,
   onToggleScrap,
 }: EventCardProps) {
   // dday 계산 (타임존 이슈 없이 날짜만 비교, 한국시간 기준, startAt 유효성 체크)
@@ -79,7 +78,7 @@ export default function EventCard({
           }}
         >
           <img
-            src={isLiked ? heartRed : heartNon}
+            src={isScrapped ? heartRed : heartNon}
             alt="like"
             className="w-7 h-7"
           />

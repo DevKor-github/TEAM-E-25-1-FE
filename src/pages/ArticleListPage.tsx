@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
-import { EventType } from "../components/ui/EventTypeIndicator";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
 
@@ -15,15 +14,14 @@ export type Article = {
   thumbnailPath: string;
   scrapCount: number;
   viewCount: number;
-  tags: EventType[];
+  tags: string[]; // 백엔드에서 string 배열로 오는 것으로 보임
   description: string;
   location: string;
   startAt: string;
   endAt: string;
   imagePaths: string[];
   registrationUrl: string;
-  isLiked: boolean; // 스크랩 여부 추가
-  scrapUsers: string[]; // 스크랩한 사용자 ID 배열 추가
+  isScrapped?: boolean; // 스크랩 여부 
 };
 
 export default function ArticleListPage() {
@@ -46,17 +44,18 @@ export default function ArticleListPage() {
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/articles", {
+      const response = await api.get("/article", {
         params: {
-          sort: selectedSegment === "많이 본" ? "viewCount" : 
-                selectedSegment === "많이 찜한" ? "scrapCount" : "startAt",
-          order: selectedSegment === "임박한" ? "asc" : "desc",
-          types: filterState.types.length > 0 ? filterState.types.join(",") : undefined,
-          includePast: filterState.includePast,
+          tags: filterState.types.length > 0 ? filterState.types : undefined,
+          isFinished: filterState.includePast ? undefined : false,
+          sortBy: selectedSegment === "많이 본" ? "viewCount" : 
+                 selectedSegment === "많이 찜한" ? "scrapCount" : "createdAt",
+          page: 1,
+          limit: 50, // 한 번에 가져올 게시글 수
         }
       });
-      // 백엔드 응답이 배열인지 객체인지에 따라 조정
-      setArticleList(Array.isArray(response.data) ? response.data : response.data.articles || []);
+      // 백엔드 응답이 배열로 오는 것으로 보임
+      setArticleList(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("게시글 목록 조회 실패:", error);
       alert("게시글 목록을 불러오는 중 오류가 발생했습니다.");
@@ -71,7 +70,7 @@ export default function ArticleListPage() {
       const article = articleList.find(a => a.id === id);
       if (!article) return;
 
-      if (article.isLiked) {
+      if (article.isScrapped) {
         await api.delete(`/scrap/${id}`);
       } else {
         await api.post(`/scrap/${id}`);
