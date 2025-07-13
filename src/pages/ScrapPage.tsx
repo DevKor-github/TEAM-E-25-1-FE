@@ -4,6 +4,7 @@ import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
+import { Button } from "../components/ui/button";
 import { api } from "../lib/axios";
 
 // Article 타입: 백엔드 스웨거 기준
@@ -159,7 +160,7 @@ export default function ScrapPage() {
               <div className="text-gray-500">스크랩한 게시글이 없습니다.</div>
               <button
                 onClick={handleBackToHome}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="mt-4 px-4 py-2 bg-sky-500 font-pretendard text-white rounded-lg"
               >
                 홈으로 돌아가기
               </button>
