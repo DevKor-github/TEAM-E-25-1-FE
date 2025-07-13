@@ -97,8 +97,148 @@ export default function AdminArticleEdit() {
   }, [articleId, navigate]);
 
   // 수정 요청 처리
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (
+    data: any,
+    remainingImageUrls?: string[],
+    remainingThumbnailUrl?: string
+  ) => {
     try {
+      // 새로 업로드할 이미지 파일 추출
+      const newThumbnailFile = data.thumbnailPath?.[0] ?? null;
+      const newImageFiles = data.imagePaths
+        ? (Array.from(data.imagePaths) as File[])
+        : [];
+
+      const isThumbnailUnchanged = !!remainingThumbnailUrl && !newThumbnailFile;
+      const isImageUnchanged =
+        (!newImageFiles || newImageFiles.length === 0) &&
+        remainingImageUrls &&
+        article?.imagePaths &&
+        remainingImageUrls.length === article.imagePaths.length &&
+        remainingImageUrls.every(
+          (url, idx) => url === article.imagePaths?.[idx]
+        );
+
+      // 썸네일, 상세 이미지 모두 변경사항 없는 경우 PATCH /article만 요청
+      if (isThumbnailUnchanged && isImageUnchanged) {
+        await api.patch(`/article/${articleId}`, {
+          title: data.title,
+          organization: data.organization,
+          description: data.description,
+          location: data.location,
+          startAt: new Date(data.startAt).toISOString(),
+          endAt: new Date(data.endAt).toISOString(),
+          registrationUrl: data.registrationUrl,
+          tags: data.tags,
+        });
+
+        alert("행사가 성공적으로 수정되었습니다!");
+        navigate(`/admin/event/${articleId}`);
+        return;
+      }
+
+      // 썸네일 이미지 정보
+      let thumbnailInfo = null;
+      if (!isThumbnailUnchanged && newThumbnailFile) {
+        thumbnailInfo = {
+          fileName: newThumbnailFile.name,
+          mimeType: newThumbnailFile.type,
+        };
+      }
+
+      // 상세 이미지 정보
+      const fileInfoList: { fileName: string; mimeType: string }[] = [];
+      newImageFiles.forEach((file: File) => {
+        fileInfoList.push({
+          fileName: file.name,
+          mimeType: file.type,
+        });
+      });
+
+      // POST /media/presigned-url
+      let thumbnailPresignedUrl = null;
+      let thumbnailImageUrl = remainingThumbnailUrl || null;
+      let imagePresignedUrls: { presignedUrl: string; imageUrl: string }[] = [];
+
+      if (thumbnailInfo || fileInfoList.length > 0) {
+        const presignedBody: any = { articleId, fileInfoList };
+        // thumbnailInfo가 있는 경우 필드 추가해서 API 요청
+        if (thumbnailInfo) presignedBody.thumbnailInfo = thumbnailInfo;
+
+        const { data: presignedData } = await api.post(
+          "/media/presigned-url",
+          presignedBody
+        );
+
+        // 썸네일 이미지 presignedUrl
+        if (presignedData.thumbnailPresignedUrl) {
+          thumbnailPresignedUrl =
+            presignedData.thumbnailPresignedUrl.presignedUrl;
+          thumbnailImageUrl = presignedData.thumbnailPresignedUrl.imageUrl;
+        }
+        // 상세 이미지 presignedUrls
+        if (Array.isArray(presignedData.presignedUrls)) {
+          imagePresignedUrls = presignedData.presignedUrls;
+        }
+      }
+
+      // PUT (presignedUrl을 통해 S3에 파일 업로드)
+      const uploadPromises: Promise<any>[] = [];
+
+      if (!isThumbnailUnchanged && thumbnailPresignedUrl && newThumbnailFile) {
+        uploadPromises.push(
+          fetch(thumbnailPresignedUrl, {
+            method: "PUT",
+            body: newThumbnailFile,
+            headers: {
+              "Content-Type": newThumbnailFile.type,
+            },
+          })
+        );
+      }
+
+      // 남겨둔 기존 상세 이미지 + 새로 업로드한 상세 이미지의 imageUrl 배열
+      let finalImageUrls: string[] = remainingImageUrls
+        ? [...remainingImageUrls]
+        : [];
+
+      newImageFiles.forEach((file, idx) => {
+        const presigned = imagePresignedUrls[idx];
+        if (presigned) {
+          uploadPromises.push(
+            fetch(presigned.presignedUrl, {
+              method: "PUT",
+              body: file,
+              headers: {
+                "Content-Type": file.type,
+              },
+            })
+          );
+          finalImageUrls.push(presigned.imageUrl);
+        }
+      });
+
+      if (uploadPromises.length > 0) {
+        await Promise.all(uploadPromises);
+      }
+
+      // PATCH /media 요청
+      const patchThumbnailInfo = thumbnailImageUrl
+        ? { imageUrl: thumbnailImageUrl }
+        : undefined;
+
+      const patchFileInfoList =
+        finalImageUrls.length > 0
+          ? finalImageUrls.map((url) => ({ imageUrl: url }))
+          : [];
+
+      await api.patch("/media", {
+        articleId,
+        thumbnailInfo: patchThumbnailInfo,
+        fileInfoList: patchFileInfoList,
+      });
+
+      // PATCH /article/{articleId} 이미지를 제외한 게시글 정보 수정
       await api.patch(`/article/${articleId}`, {
         title: data.title,
         organization: data.organization,
@@ -108,7 +248,6 @@ export default function AdminArticleEdit() {
         endAt: new Date(data.endAt).toISOString(),
         registrationUrl: data.registrationUrl,
         tags: data.tags,
-        // mediaIds: ... (이미지 처리 추가하기)
       });
 
       alert("행사가 성공적으로 수정되었습니다!");
