@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
@@ -33,7 +33,6 @@ export default function ArticleListPage() {
   // articles를 useState로 관리
   const [articleList, setArticleList] = React.useState<Article[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const location = useLocation();
   const navigate = useNavigate();
 
   // 필터 상태
@@ -42,10 +41,6 @@ export default function ArticleListPage() {
     types: [],
     includePast: true,
   });
-
-  // 쿼리스트링으로 스크랩 필터 상태 결정
-  const params = new URLSearchParams(location.search);
-  const showScrapOnly = params.get("scrapOnly") === "1";
 
   // API: 게시글 목록 조회
   const fetchArticles = async () => {
@@ -60,32 +55,11 @@ export default function ArticleListPage() {
           includePast: filterState.includePast,
         }
       });
-      setArticleList(response.data.articles || []);
+      // 백엔드 응답이 배열인지 객체인지에 따라 조정
+      setArticleList(Array.isArray(response.data) ? response.data : response.data.articles || []);
     } catch (error) {
       console.error("게시글 목록 조회 실패:", error);
       alert("게시글 목록을 불러오는 중 오류가 발생했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // API: 스크랩한 게시글 목록 조회
-  const fetchScrapedArticles = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("/scraps", {
-        params: {
-          sort: selectedSegment === "많이 본" ? "viewCount" : 
-                selectedSegment === "많이 찜한" ? "scrapCount" : "startAt",
-          order: selectedSegment === "임박한" ? "asc" : "desc",
-          types: filterState.types.length > 0 ? filterState.types.join(",") : undefined,
-          includePast: filterState.includePast,
-        }
-      });
-      setArticleList(response.data.articles || []);
-    } catch (error) {
-      console.error("스크랩 게시글 목록 조회 실패:", error);
-      alert("스크랩한 게시글 목록을 불러오는 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
@@ -103,24 +77,15 @@ export default function ArticleListPage() {
         await api.post(`/scrap/${id}`);
       }
 
-      // 로컬 상태 업데이트
-      setArticleList((prev) =>
-        prev.map((a) =>
-          a.id === id
-            ? {
-                ...a,
-                isLiked: !a.isLiked,
-                scrapCount: a.isLiked ? a.scrapCount - 1 : a.scrapCount + 1,
-                scrapUsers: a.isLiked
-                  ? a.scrapUsers.filter((userId) => userId !== "currentUser")
-                  : [...a.scrapUsers, "currentUser"],
-              }
-            : a
-        )
-      );
+      // 서버에서 최신 데이터를 다시 가져와서 동기화
+      await fetchArticles();
     } catch (error: any) {
       if (error.response?.status === 401) {
         navigate("/login");
+      } else if (error.response?.status === 404) {
+        alert("해당 게시글이 존재하지 않습니다.");
+      } else if (error.response?.status === 409) {
+        alert("이미 스크랩한 게시글입니다.");
       } else {
         console.error("스크랩 처리 실패:", error);
         alert("스크랩 처리 중 오류가 발생했습니다.");
@@ -130,22 +95,12 @@ export default function ArticleListPage() {
 
   // 게시글 목록 조회 (페이지 로드 시, 필터 변경 시)
   React.useEffect(() => {
-    if (showScrapOnly) {
-      fetchScrapedArticles();
-    } else {
-      fetchArticles();
-    }
-  }, [selectedSegment, filterState, showScrapOnly]);
+    fetchArticles();
+  }, [selectedSegment, filterState]);
 
-  // 상단 하트 클릭 핸들러
-  const handleScrapIconClick = () => {
-    if (showScrapOnly) {
-      params.delete("scrapOnly");
-      navigate({ search: params.toString() });
-    } else {
-      params.set("scrapOnly", "1");
-      navigate({ search: params.toString() });
-    }
+  // 스크랩 페이지로 이동 핸들러
+  const handleGoToScrapPage = () => {
+    navigate("/scrap");
   };
 
   // 필터 버튼 클릭
@@ -157,7 +112,7 @@ export default function ArticleListPage() {
     return (
       <div className="w-full min-h-screen flex flex-col items-center bg-white">
         <div className="w-full max-w-[375px] px-[20px] box-border">
-          <HeaderFrame onClickScrap={handleScrapIconClick} />
+          <HeaderFrame onClickScrap={handleGoToScrapPage} />
           <div className="flex items-center justify-center py-8">
             <div className="text-lg text-gray-500">로딩 중...</div>
           </div>
@@ -169,7 +124,7 @@ export default function ArticleListPage() {
   return (
     <div className="w-full min-h-screen flex flex-col items-center bg-white">
       <div className="w-full max-w-[375px] px-[20px] box-border">
-        <HeaderFrame onClickScrap={handleScrapIconClick} />
+        <HeaderFrame onClickScrap={handleGoToScrapPage} />
         {/* 필터 버튼 */}
         <MobileHeaderSection
           eventCount={articleList.length}
