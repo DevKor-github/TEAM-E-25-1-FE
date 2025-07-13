@@ -25,9 +25,15 @@ export default function ArticleUploadPage() {
         formData.append("registrationUrl", data.registrationUrl);
       }
 
-      // tags 처리 - ArticleForm에서 배열로 오므로 JSON 문자열로 변환
+      // tags 처리 - 배열을 tags[]로 전송 (Express.js에서 배열로 파싱됨)
+      console.log("전송할 태그들:", data.tags);
       if (data.tags && Array.isArray(data.tags) && data.tags.length > 0) {
-        formData.append("tags", JSON.stringify(data.tags));
+        data.tags.forEach((tag: string) => {
+          console.log(`태그 추가: ${tag}`);
+          formData.append("tags[]", tag);
+        });
+      } else {
+        console.log("태그가 없거나 배열이 아닙니다.");
       }
 
       // 썸네일 이미지 처리
