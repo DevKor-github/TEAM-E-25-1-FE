@@ -46,7 +46,11 @@ export default function ScrapPage() {
       setLoading(true);
       // 스크랩 목록은 파라미터 없이 조회 
       const response = await api.get("/scrap");
-      const articles = Array.isArray(response.data) ? response.data : [];
+      console.log("스크랩 API 응답:", response.data);
+      
+      // API 응답 구조에 따라 배열 추출
+      const articles = Array.isArray(response.data) ? response.data : (response.data.articles || response.data.data || []);
+      console.log("추출된 스크랩 articles:", articles);
       
       // 필터링 적용
       let filteredArticles = [...articles];

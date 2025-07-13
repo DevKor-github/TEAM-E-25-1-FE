@@ -44,6 +44,8 @@ export default function ArticleListPage() {
   const fetchArticles = async () => {
     try {
       setLoading(true);
+      
+      // 1. 게시글 목록 조회
       const response = await api.get("/article", {
         params: {
           tags: filterState.types.length > 0 ? filterState.types : undefined,
@@ -54,8 +56,32 @@ export default function ArticleListPage() {
           limit: 50, // 한 번에 가져올 게시글 수
         }
       });
-      // 백엔드 응답이 배열로 오는 것으로 보임
-      setArticleList(Array.isArray(response.data) ? response.data : []);
+      
+      const articles = Array.isArray(response.data) ? response.data : [];
+      console.log("게시글 목록 API 응답:", articles);
+      
+      // 2. 스크랩 목록 조회 (로그인된 경우에만)
+      let scrapIds: string[] = [];
+      try {
+        const scrapResponse = await api.get("/scrap");
+        const scrapList = Array.isArray(scrapResponse.data) 
+          ? scrapResponse.data 
+          : (scrapResponse.data.articles || scrapResponse.data.data || []);
+        scrapIds = scrapList.map((item: any) => item.id);
+        console.log("스크랩 ID 목록:", scrapIds);
+      } catch (scrapError) {
+        // 스크랩 목록 조회 실패 시 (비로그인 등) 빈 배열로 처리
+        console.log("스크랩 목록 조회 실패:", scrapError);
+      }
+      
+      // 3. 각 게시글에 isScrapped 상태 추가
+      const articlesWithScrapStatus = articles.map((article: Article) => ({
+        ...article,
+        isScrapped: scrapIds.includes(article.id)
+      }));
+      
+      console.log("스크랩 상태가 추가된 게시글 목록:", articlesWithScrapStatus);
+      setArticleList(articlesWithScrapStatus);
     } catch (error) {
       console.error("게시글 목록 조회 실패:", error);
       alert("게시글 목록을 불러오는 중 오류가 발생했습니다.");
@@ -70,15 +96,31 @@ export default function ArticleListPage() {
       const article = articleList.find(a => a.id === id);
       if (!article) return;
 
+      // 즉시 UI 업데이트
+      setArticleList(prev => 
+        prev.map(a => 
+          a.id === id 
+            ? { ...a, isScrapped: !a.isScrapped, scrapCount: a.isScrapped ? a.scrapCount - 1 : a.scrapCount + 1 }
+            : a
+        )
+      );
+
+      // API 호출
       if (article.isScrapped) {
         await api.delete(`/scrap/${id}`);
       } else {
         await api.post(`/scrap/${id}`);
       }
-
-      // 서버에서 최신 데이터를 다시 가져와서 동기화
-      await fetchArticles();
     } catch (error: any) {
+      // 오류 발생 시 원래 상태로 되돌리기
+      setArticleList(prev => 
+        prev.map(a => 
+          a.id === id 
+            ? { ...a, isScrapped: !a.isScrapped, scrapCount: a.isScrapped ? a.scrapCount + 1 : a.scrapCount - 1 }
+            : a
+        )
+      );
+
       if (error.response?.status === 401) {
         navigate("/login");
       } else if (error.response?.status === 404) {
