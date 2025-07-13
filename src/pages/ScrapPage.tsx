@@ -4,7 +4,6 @@ import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
-import { Button } from "../components/ui/button";
 import { api } from "../lib/axios";
 
 // Article 타입: 백엔드 스웨거 기준
