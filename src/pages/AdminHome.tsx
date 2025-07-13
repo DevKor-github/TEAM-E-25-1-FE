@@ -98,7 +98,7 @@ export default function AdminHome() {
       <div className="container mx-auto py-8 pt-20">
         <div className="mb-6 flex justify-between items-center">
           <h1 className="text-2xl font-bold">행사 관리</h1>
-          <Button onClick={() => navigate("/event/upload")}>행사 등록</Button>
+          <Button onClick={() => navigate("/admin/event/upload")}>행사 등록</Button>
         </div>
 
         {error ? (
@@ -115,7 +115,7 @@ export default function AdminHome() {
             <Button
               variant="outline"
               className="mt-4"
-              onClick={() => navigate("/event/upload")}
+              onClick={() => navigate("/admin/event/upload")}
             >
               첫 행사 등록하기
             </Button>
