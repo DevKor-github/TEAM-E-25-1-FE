@@ -2,7 +2,6 @@ import EventTypeIndicator from "./EventTypeIndicator";
 import EventDateIndicator from "./EventDateIndicator";
 import heartRed from "@/assets/heart_red500.svg";
 import heartGray from "@/assets/heart_gray.svg";
-import heartNon from "@/assets/heart_nothing.svg";
 
 export type Article = {
   id: string;
@@ -58,7 +57,17 @@ export default function EventCard({
       ? `${safeStartAt.split("T")[0]} ~ ${safeEndAt.split("T")[0]}`
       : "";
   const likeCount = scrapCount;
-  const imageUrl = thumbnailPath;
+  
+  // 썸네일 이미지 URL 처리 (백엔드 baseURL 추가)
+  const getImageUrl = (path: string) => {
+    if (!path) return "/eventThumbnail.png"; // 기본 이미지
+    if (path.startsWith("http")) return path; // 이미 완전한 URL
+    // 상대 경로인 경우 백엔드 baseURL 추가
+    const baseUrl = import.meta.env.VITE_BASE_URL || "http://localhost:8080";
+    return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+  
+  const imageUrl = getImageUrl(thumbnailPath);
   const org = organization;
 
   return (
@@ -66,11 +75,11 @@ export default function EventCard({
       <div className="relative mb-2">
         <img
           src={imageUrl}
-        
+          alt={`${title} 썸네일`}
           className="rounded-xl w-full h-[120px] object-cover"
         />
         <button
-          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center"
+          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center bg-white/80 rounded-full"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -78,7 +87,7 @@ export default function EventCard({
           }}
         >
           <img
-            src={isScrapped ? heartRed : heartNon}
+            src={isScrapped ? heartRed : heartGray}
             alt="like"
             className="w-7 h-7"
           />
