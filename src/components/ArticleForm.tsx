@@ -13,13 +13,6 @@ import {
 import { Input } from "@components/ui/input";
 import { Textarea } from "@components/ui/textarea";
 import { Button } from "@components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@components/ui/select";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png"];
@@ -40,12 +33,9 @@ const articleFormSchema = z
       .min(1, { message: "주관 기관을 입력하세요." })
       .max(100, { message: "기관명은 100자를 초과할 수 없습니다." }),
 
-    tags: z.array(
-      z.enum(["축제", "강연", "설명회", "박람회", "공모전", "대회"]),
-      {
-        required_error: "행사 종류를 선택해주세요.",
-      }
-    ),
+    tags: z
+      .array(z.enum(["축제", "강연", "설명회", "박람회", "공모전", "대회"]))
+      .min(1, { message: "최소 1개의 행사 종류를 선택해주세요." }),
 
     location: z
       .string({
@@ -224,26 +214,34 @@ export function ArticleForm({
           name="tags"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>행사 종류</FormLabel>
-              <Select
-                value={field.value?.[0] || ""}
-                onValueChange={(val) => field.onChange([val])}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="태그를 선택하세요" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {["축제", "강연", "설명회", "박람회", "공모전", "대회"].map(
-                    (tag) => (
-                      <SelectItem key={tag} value={tag}>
-                        {tag}
-                      </SelectItem>
-                    )
-                  )}
-                </SelectContent>
-              </Select>
+              <FormLabel>행사 종류 (복수 선택 가능)</FormLabel>
+              <div className="grid grid-cols-2 gap-2">
+                {(["축제", "강연", "설명회", "박람회", "공모전", "대회"] as const).map(
+                  (tag) => (
+                    <label
+                      key={tag}
+                      className="flex items-center space-x-2 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={field.value?.includes(tag) || false}
+                        onChange={(e) => {
+                          const currentTags = field.value || [];
+                          if (e.target.checked) {
+                            field.onChange([...currentTags, tag]);
+                          } else {
+                            field.onChange(
+                              currentTags.filter((t) => t !== tag)
+                            );
+                          }
+                        }}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm">{tag}</span>
+                    </label>
+                  )
+                )}
+              </div>
               <FormMessage>{fieldState.error?.message}</FormMessage>
             </FormItem>
           )}
