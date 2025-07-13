@@ -175,6 +175,9 @@ export default function ScrapPage() {
                 to={`/article/${article.id}`}
                 style={{ textDecoration: "none" }}
                 className="w-full"
+                onClick={() => {
+                  console.log(`스크랩 페이지에서 게시글 클릭: ${article.id}`);
+                }}
               >
                 <EventCard
                   {...article}

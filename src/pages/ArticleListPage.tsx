@@ -96,20 +96,27 @@ export default function ArticleListPage() {
       const article = articleList.find(a => a.id === id);
       if (!article) return;
 
-      // 즉시 UI 업데이트
+      const newScrapStatus = !article.isScrapped;
+      const newScrapCount = article.isScrapped ? article.scrapCount - 1 : article.scrapCount + 1;
+
+      // 즉시 UI 업데이트 (Optimistic Update)
       setArticleList(prev => 
         prev.map(a => 
           a.id === id 
-            ? { ...a, isScrapped: !a.isScrapped, scrapCount: a.isScrapped ? a.scrapCount - 1 : a.scrapCount + 1 }
+            ? { ...a, isScrapped: newScrapStatus, scrapCount: newScrapCount }
             : a
         )
       );
 
+      console.log(`스크랩 토글: ${id}, 새 상태: ${newScrapStatus}`);
+
       // API 호출
       if (article.isScrapped) {
         await api.delete(`/scrap/${id}`);
+        console.log(`스크랩 해제 성공: ${id}`);
       } else {
         await api.post(`/scrap/${id}`);
+        console.log(`스크랩 추가 성공: ${id}`);
       }
     } catch (error: any) {
       // 오류 발생 시 원래 상태로 되돌리기
@@ -120,6 +127,8 @@ export default function ArticleListPage() {
             : a
         )
       );
+
+      console.error(`스크랩 토글 실패: ${id}`, error);
 
       if (error.response?.status === 401) {
         navigate("/login");
@@ -196,6 +205,9 @@ export default function ArticleListPage() {
                 to={`/article/${article.id}`}
                 style={{ textDecoration: "none" }}
                 className="w-full"
+                onClick={() => {
+                  console.log(`목록 페이지에서 게시글 클릭: ${article.id}, 스크랩 상태: ${article.isScrapped}`);
+                }}
               >
                 <EventCard
                   {...article}
