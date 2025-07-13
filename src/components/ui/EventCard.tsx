@@ -88,7 +88,7 @@ export default function EventCard({
           onError={handleImageError}
         />
         <button
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/90 rounded-full shadow-sm hover:bg-white transition-colors"
+          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -98,7 +98,7 @@ export default function EventCard({
           <img
             src={isScrapped ? heartRed : heartGray}
             alt="like"
-            className="w-6 h-6"
+            className="w-7 h-7"
           />
         </button>
       </div>
