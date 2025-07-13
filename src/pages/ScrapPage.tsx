@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
@@ -51,6 +51,11 @@ export default function ScrapPage() {
       // API 응답 구조에 따라 배열 추출
       const articles = Array.isArray(response.data) ? response.data : (response.data.articles || response.data.data || []);
       console.log("추출된 스크랩 articles:", articles);
+      
+      // 각 게시글의 썸네일 경로 확인
+      articles.forEach((article: any, index: number) => {
+        console.log(`스크랩 게시글 ${index + 1}: ID=${article.id}, 제목="${article.title}", 썸네일="${article.thumbnailPath}"`);
+      });
       
       // 필터링 적용
       let filteredArticles = [...articles];
@@ -169,23 +174,29 @@ export default function ScrapPage() {
               </button>
             </div>
           ) : (
-            articleList.map((article) => (
-              <Link
-                key={article.id}
-                to={`/article/${article.id}`}
-                style={{ textDecoration: "none" }}
-                className="w-full"
-                onClick={() => {
-                  console.log(`스크랩 페이지에서 게시글 클릭: ${article.id}`);
-                }}
-              >
-                <EventCard
-                  {...article}
-                  isScrapped={true} // 스크랩 페이지의 모든 게시글은 스크랩된 상태
-                  onToggleScrap={() => handleToggleScrap(article.id)}
-                />
-              </Link>
-            ))
+            articleList.map((article) => {
+              console.log(`렌더링할 스크랩 게시글: ${article.id} - ${article.title} - 썸네일: ${article.thumbnailPath}`);
+              return (
+                <div
+                  key={article.id}
+                  className="w-full cursor-pointer"
+                  onClick={() => {
+                    console.log(`스크랩 페이지에서 게시글 div 클릭: ${article.id} - 제목: ${article.title}`);
+                    console.log(`이동할 경로: /article/${article.id}`);
+                    navigate(`/article/${article.id}`);
+                  }}
+                >
+                  <EventCard
+                    {...article}
+                    isScrapped={true} // 스크랩 페이지의 모든 게시글은 스크랩된 상태
+                    onToggleScrap={() => {
+                      console.log(`하트 클릭: ${article.id}`);
+                      handleToggleScrap(article.id);
+                    }}
+                  />
+                </div>
+              );
+            })
           )}
         </div>
       </div>

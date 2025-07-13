@@ -15,6 +15,13 @@ export default defineConfig({
       "Service-Worker-Allowed": "/",
       "Access-Control-Allow-Origin": "*",
     },
+    proxy: {
+      '/api': {
+        target: 'https://goyangeyaong.shop',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
   },
   resolve: {
     alias: {

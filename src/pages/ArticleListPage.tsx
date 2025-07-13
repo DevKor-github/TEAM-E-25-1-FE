@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
@@ -200,20 +200,19 @@ export default function ArticleListPage() {
             </div>
           ) : (
             articleList.map((article) => (
-              <Link
+              <div
                 key={article.id}
-                to={`/article/${article.id}`}
-                style={{ textDecoration: "none" }}
-                className="w-full"
+                className="w-full cursor-pointer"
                 onClick={() => {
-                  console.log(`목록 페이지에서 게시글 클릭: ${article.id}, 스크랩 상태: ${article.isScrapped}`);
+                  console.log(`목록 페이지에서 게시글 div 클릭: ${article.id}, 스크랩 상태: ${article.isScrapped}`);
+                  navigate(`/article/${article.id}`);
                 }}
               >
                 <EventCard
                   {...article}
                   onToggleScrap={() => handleToggleScrap(article.id)}
                 />
-              </Link>
+              </div>
             ))
           )}
         </div>

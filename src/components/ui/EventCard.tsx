@@ -84,14 +84,15 @@ export default function EventCard({
         <img
           src={imageUrl}
           alt={`${title} 썸네일`}
-          className="rounded-xl w-full h-[120px] object-cover"
+          className="rounded-xl w-full h-[120px] object-cover pointer-events-none"
           onError={handleImageError}
         />
         <button
-          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center"
+          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center z-10"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            console.log(`EventCard 하트 버튼 클릭: ${title}`);
             onToggleScrap && onToggleScrap();
           }}
         >
