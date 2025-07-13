@@ -58,28 +58,37 @@ export default function EventCard({
       : "";
   const likeCount = scrapCount;
   
-  // 썸네일 이미지 URL 처리 (백엔드 baseURL 추가)
+  // 썸네일 이미지 URL 처리
   const getImageUrl = (path: string) => {
-    if (!path) return "/eventThumbnail.png"; // 기본 이미지
-    if (path.startsWith("http")) return path; // 이미 완전한 URL
-    // 상대 경로인 경우 백엔드 baseURL 추가
-    const baseUrl = import.meta.env.VITE_BASE_URL || "http://localhost:8080";
-    return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+    console.log(`EventCard 썸네일 경로: "${path}"`);
+    if (!path) {
+      console.log("썸네일 경로가 비어있음, 기본 이미지 사용");
+      return "/eventThumbnail.png"; // 기본 이미지
+    }
+    console.log(`최종 이미지 URL: "${path}"`);
+    return path; // 백엔드에서 전체 URL을 반환한다고 가정
   };
   
   const imageUrl = getImageUrl(thumbnailPath);
   const org = organization;
 
+  // 이미지 로드 에러 처리
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    console.log(`이미지 로드 실패: ${imageUrl}, 기본 이미지로 대체`);
+    e.currentTarget.src = "/eventThumbnail.png";
+  };
+
   return (
-    <div className="flex flex-col w-[335px] rounded-2xl bg-white p-4 shadow-sm">
+    <div className="flex flex-col w-[335px] rounded-2xl bg-white p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow">
       <div className="relative mb-2">
         <img
           src={imageUrl}
           alt={`${title} 썸네일`}
           className="rounded-xl w-full h-[120px] object-cover"
+          onError={handleImageError}
         />
         <button
-          className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center bg-white/80 rounded-full"
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/90 rounded-full shadow-sm hover:bg-white transition-colors"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -89,7 +98,7 @@ export default function EventCard({
           <img
             src={isScrapped ? heartRed : heartGray}
             alt="like"
-            className="w-7 h-7"
+            className="w-6 h-6"
           />
         </button>
       </div>
