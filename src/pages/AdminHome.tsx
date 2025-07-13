@@ -76,7 +76,13 @@ export default function AdminHome() {
           sort: "",
         },
       });
-      setArticles(data);
+      
+      // API 응답 구조에 따라 배열 추출
+      const articlesArray = Array.isArray(data) ? data : (data.articles || data.data || []);
+      console.log("API 응답:", data);
+      console.log("추출된 articles:", articlesArray);
+      
+      setArticles(articlesArray);
     } catch (error: any) {
       console.error("Failed to fetch articles:", error);
       setError(
@@ -109,7 +115,7 @@ export default function AdminHome() {
               <LoadingCard key={i} />
             ))}
           </div>
-        ) : articles.length === 0 ? (
+        ) : !Array.isArray(articles) || articles.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500">등록된 행사가 없습니다.</p>
             <Button
@@ -122,7 +128,7 @@ export default function AdminHome() {
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {articles.map((article) => (
+            {Array.isArray(articles) && articles.map((article) => (
               <div
                 key={article.id}
                 className="cursor-pointer"
