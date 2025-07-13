@@ -11,33 +11,55 @@ export default function ArticleUploadPage() {
   const handleSubmit = async (data: any) => {
     try {
       setError(null);
+      console.log("제출 데이터:", data);
 
       const formData = new FormData();
       formData.append("title", data.title);
       formData.append("organization", data.organization);
-      formData.append("description", data.description);
+      formData.append("description", data.description || "");
       formData.append("location", data.location);
       formData.append("startAt", new Date(data.startAt).toISOString());
       formData.append("endAt", new Date(data.endAt).toISOString());
-      if (data.registrationUrl)
+      
+      if (data.registrationUrl) {
         formData.append("registrationUrl", data.registrationUrl);
-      formData.append("tags", data.tags);
+      }
 
-      // Handle file uploads
+      // tags 처리 - ArticleForm에서 배열로 오므로 JSON 문자열로 변환
+      if (data.tags && Array.isArray(data.tags) && data.tags.length > 0) {
+        formData.append("tags", JSON.stringify(data.tags));
+      }
+
+      // 썸네일 이미지 처리
       if (data.thumbnailPath?.[0]) {
         formData.append("thumbnail", data.thumbnailPath[0]);
       }
 
+      // 상세 이미지들 처리 
       if (data.imagePaths?.length) {
         Array.from(data.imagePaths as File[]).forEach((file: File) => {
-          formData.append("media", file);
+          formData.append("images", file); //백엔드 스펙 맞춤
         });
       }
 
-      await api.post("/article", formData);
+      // FormData 내용 확인용 로그
+      console.log("FormData 내용:");
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      const response = await api.post("/article", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      console.log("게시글 생성 성공:", response.data);
       alert("행사가 성공적으로 등록되었습니다!");
       navigate("/admin/home");
     } catch (err: any) {
+      console.error("게시글 생성 실패:", err);
+      console.error("에러 응답:", err.response?.data);
       setError(
         err.response?.data?.message || "행사 등록 중 오류가 발생했습니다."
       );
