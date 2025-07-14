@@ -44,39 +44,44 @@ export default function ScrapPage() {
   const fetchScrapedArticles = async () => {
     try {
       setLoading(true);
-      // 스크랩 목록은 파라미터 없이 조회 
+      // 스크랩 목록은 파라미터 없이 조회
       const response = await api.get("/scrap");
-      
+
       // API 응답 구조에 따라 배열 추출
-      const articles = Array.isArray(response.data) ? response.data : (response.data.articles || response.data.data || []);
-      
+      const articles = Array.isArray(response.data)
+        ? response.data
+        : response.data.articles || response.data.data || [];
+
       // 필터링 적용
       let filteredArticles = [...articles];
-      
+
       // 타입 필터링
       if (filterState.types.length > 0) {
-        filteredArticles = filteredArticles.filter(article => 
-          filterState.types.some(type => article.tags.includes(type))
+        filteredArticles = filteredArticles.filter((article) =>
+          filterState.types.some((type) => article.tags.includes(type))
         );
       }
-      
+
       // 종료된 행사 포함/제외 필터링
       if (!filterState.includePast) {
         const now = new Date();
-        filteredArticles = filteredArticles.filter(article => 
-          new Date(article.endAt) >= now
+        filteredArticles = filteredArticles.filter(
+          (article) => new Date(article.endAt) >= now
         );
       }
-      
+
       // 클라이언트에서 정렬 처리
       if (selectedSegment === "많이 본") {
         filteredArticles.sort((a, b) => b.viewCount - a.viewCount);
       } else if (selectedSegment === "많이 찜한") {
         filteredArticles.sort((a, b) => b.scrapCount - a.scrapCount);
       } else if (selectedSegment === "임박한") {
-        filteredArticles.sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime());
+        filteredArticles.sort(
+          (a, b) =>
+            new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
+        );
       }
-      
+
       setArticleList(filteredArticles);
     } catch (error) {
       console.error("스크랩 게시글 목록 조회 실패:", error);
@@ -109,11 +114,6 @@ export default function ScrapPage() {
     fetchScrapedArticles();
   }, [selectedSegment, filterState]);
 
-  // 홈으로 돌아가기 핸들러
-  const handleBackToHome = () => {
-    navigate("/");
-  };
-
   // 필터 버튼 클릭
   const handleOpenFilter = () => setFilterSheetOpen(true);
   const handleCloseFilter = () => setFilterSheetOpen(false);
@@ -123,7 +123,7 @@ export default function ScrapPage() {
     return (
       <div className="w-full min-h-screen flex flex-col items-center bg-white">
         <div className="w-full max-w-[375px] px-[20px] box-border">
-          <HeaderFrame onClickScrap={handleBackToHome} />
+          <HeaderFrame />
           <div className="flex items-center justify-center py-8">
             <div className="text-lg text-gray-500">로딩 중...</div>
           </div>
@@ -135,7 +135,7 @@ export default function ScrapPage() {
   return (
     <div className="w-full min-h-screen flex flex-col items-center bg-white">
       <div className="w-full max-w-[375px] px-[20px] box-border">
-        <HeaderFrame onClickScrap={handleBackToHome} />
+        <HeaderFrame />
         {/* 필터 및 정렬 기능 */}
         <MobileHeaderSection
           eventCount={articleList.length}
@@ -159,7 +159,7 @@ export default function ScrapPage() {
             <div className="text-center py-8">
               <div className="text-gray-500">스크랩한 게시글이 없습니다.</div>
               <button
-                onClick={handleBackToHome}
+                onClick={() => navigate("/")}
                 className="mt-4 px-4 py-2 bg-sky-500 font-pretendard text-white rounded-lg"
               >
                 홈으로 돌아가기

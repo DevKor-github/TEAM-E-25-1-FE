@@ -3,11 +3,7 @@ import logo from "../assets/logo.svg";
 import heartIcon from "../assets/heartIcon.svg";
 import userIcon from "../assets/userIcon.svg";
 
-interface HeaderFrameProps {
-  onClickScrap?: () => void;
-}
-
-const HeaderFrame = ({ onClickScrap }: HeaderFrameProps) => {
+const HeaderFrame = () => {
   const navigate = useNavigate();
 
   return (
@@ -23,7 +19,7 @@ const HeaderFrame = ({ onClickScrap }: HeaderFrameProps) => {
           src={heartIcon}
           alt="scrap"
           className="cursor-pointer"
-          onClick={onClickScrap}
+          onClick={() => navigate("/scrap")}
         />
         <img
           src={userIcon}

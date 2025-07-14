@@ -21,7 +21,7 @@ export type Article = {
   endAt: string;
   imagePaths: string[];
   registrationUrl: string;
-  isScrapped?: boolean; // 스크랩 여부 
+  isScrapped?: boolean; // 스크랩 여부
 };
 
 export default function ArticleListPage() {
@@ -44,39 +44,43 @@ export default function ArticleListPage() {
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      
+
       // 1. 게시글 목록 조회
       const response = await api.get("/article", {
         params: {
           tags: filterState.types.length > 0 ? filterState.types : undefined,
           isFinished: filterState.includePast ? undefined : false,
-          sortBy: selectedSegment === "많이 본" ? "viewCount" : 
-                 selectedSegment === "많이 찜한" ? "scrapCount" : "createdAt",
+          sortBy:
+            selectedSegment === "많이 본"
+              ? "viewCount"
+              : selectedSegment === "많이 찜한"
+                ? "scrapCount"
+                : "createdAt",
           page: 1,
           limit: 50, // 한 번에 가져올 게시글 수
-        }
+        },
       });
-      
+
       const articles = Array.isArray(response.data) ? response.data : [];
-      
+
       // 2. 스크랩 목록 조회 (로그인된 경우에만)
       let scrapIds: string[] = [];
       try {
         const scrapResponse = await api.get("/scrap");
-        const scrapList = Array.isArray(scrapResponse.data) 
-          ? scrapResponse.data 
-          : (scrapResponse.data.articles || scrapResponse.data.data || []);
+        const scrapList = Array.isArray(scrapResponse.data)
+          ? scrapResponse.data
+          : scrapResponse.data.articles || scrapResponse.data.data || [];
         scrapIds = scrapList.map((item: any) => item.id);
       } catch (scrapError) {
         // 스크랩 목록 조회 실패 시 (비로그인 등) 빈 배열로 처리
       }
-      
+
       // 3. 각 게시글에 isScrapped 상태 처리 (이미지는 백엔드 URL 직접 사용)
       const articlesWithScrapStatus = articles.map((article: Article) => ({
         ...article,
-        isScrapped: scrapIds.includes(article.id)
+        isScrapped: scrapIds.includes(article.id),
       }));
-      
+
       setArticleList(articlesWithScrapStatus);
     } catch (error) {
       console.error("게시글 목록 조회 실패:", error);
@@ -89,16 +93,18 @@ export default function ArticleListPage() {
   // API: 스크랩 토글
   const handleToggleScrap = async (id: string) => {
     try {
-      const article = articleList.find(a => a.id === id);
+      const article = articleList.find((a) => a.id === id);
       if (!article) return;
 
       const newScrapStatus = !article.isScrapped;
-      const newScrapCount = article.isScrapped ? article.scrapCount - 1 : article.scrapCount + 1;
+      const newScrapCount = article.isScrapped
+        ? article.scrapCount - 1
+        : article.scrapCount + 1;
 
       // 즉시 UI 업데이트 (Optimistic Update)
-      setArticleList(prev => 
-        prev.map(a => 
-          a.id === id 
+      setArticleList((prev) =>
+        prev.map((a) =>
+          a.id === id
             ? { ...a, isScrapped: newScrapStatus, scrapCount: newScrapCount }
             : a
         )
@@ -112,10 +118,14 @@ export default function ArticleListPage() {
       }
     } catch (error: any) {
       // 오류 발생 시 원래 상태로 되돌리기
-      setArticleList(prev => 
-        prev.map(a => 
-          a.id === id 
-            ? { ...a, isScrapped: !a.isScrapped, scrapCount: a.isScrapped ? a.scrapCount + 1 : a.scrapCount - 1 }
+      setArticleList((prev) =>
+        prev.map((a) =>
+          a.id === id
+            ? {
+                ...a,
+                isScrapped: !a.isScrapped,
+                scrapCount: a.isScrapped ? a.scrapCount + 1 : a.scrapCount - 1,
+              }
             : a
         )
       );
@@ -139,11 +149,6 @@ export default function ArticleListPage() {
     fetchArticles();
   }, [selectedSegment, filterState]);
 
-  // 스크랩 페이지로 이동 핸들러
-  const handleGoToScrapPage = () => {
-    navigate("/scrap");
-  };
-
   // 필터 버튼 클릭
   const handleOpenFilter = () => setFilterSheetOpen(true);
   const handleCloseFilter = () => setFilterSheetOpen(false);
@@ -153,7 +158,7 @@ export default function ArticleListPage() {
     return (
       <div className="w-full min-h-screen flex flex-col items-center bg-white">
         <div className="w-full max-w-[375px] px-[20px] box-border">
-          <HeaderFrame onClickScrap={handleGoToScrapPage} />
+          <HeaderFrame />
           <div className="flex items-center justify-center py-8">
             <div className="text-lg text-gray-500">로딩 중...</div>
           </div>
@@ -165,7 +170,7 @@ export default function ArticleListPage() {
   return (
     <div className="w-full min-h-screen flex flex-col items-center bg-white">
       <div className="w-full max-w-[375px] px-[20px] box-border">
-        <HeaderFrame onClickScrap={handleGoToScrapPage} />
+        <HeaderFrame />
         {/* 필터 버튼 */}
         <MobileHeaderSection
           eventCount={articleList.length}
