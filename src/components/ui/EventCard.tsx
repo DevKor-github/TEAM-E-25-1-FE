@@ -83,7 +83,7 @@ export default function EventCard({
           loading="lazy"
         />
         <button
-          className="absolute top-3 right-3 w-6 h-6 flex items-center justify-center z-10 bg-white/20 backdrop-blur-sm rounded-full"
+          className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center z-10"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
