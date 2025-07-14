@@ -46,14 +46,13 @@ export default function MyPage() {
         const res = await api.get<{ email: string }>("/user/me");
         setEmail(res.data.email);
       } catch (err: any) {
-        if (err.response?.status === 401) {
-          alert("로그인 상태가 아닙니다.");
-        } else if (err.response?.status === 404) {
-          alert("존재하지 않는 사용자입니다.");
+        if (err.response?.status === 401 || err.response?.status === 404) {
+          // 유효하지 않은 access token 또는 존재하지 않는 사용자
+          navigate("/login", { replace: true });
         } else {
-          alert("이메일 정보를 불러올 수 없습니다.");
+          alert("사용자 정보를 불러오는 중 오류가 발생했습니다.");
+          navigate("/", { replace: true });
         }
-        navigate("/login", { replace: true });
         return;
       }
     };
