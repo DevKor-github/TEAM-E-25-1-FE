@@ -83,9 +83,13 @@ export default function ScrapPage() {
       }
 
       setArticleList(filteredArticles);
-    } catch (error) {
-      console.error("스크랩 게시글 목록 조회 실패:", error);
-      alert("스크랩한 게시글 목록을 불러오는 중 오류가 발생했습니다.");
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        navigate("/login", { replace: true });
+      } else {
+        console.error("스크랩 게시글 목록 조회 실패:", err);
+        alert("스크랩한 게시글 목록을 불러오는 중 오류가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }
