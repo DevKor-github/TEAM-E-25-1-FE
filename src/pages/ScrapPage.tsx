@@ -55,8 +55,16 @@ export default function ScrapPage() {
       console.log("스크랩 API 응답:", response.data); // 디버깅용
       console.log("추출된 articles:", articles); // 디버깅용
 
+      // API 응답의 articleId를 id로 매핑
+      const mappedArticles = articles.map((article: any) => ({
+        ...article,
+        id: article.articleId, // articleId를 id로 복사
+      }));
+
+      console.log("매핑된 articles:", mappedArticles); // 디버깅용
+
       // 필터링 적용
-      let filteredArticles = [...articles];
+      let filteredArticles = [...mappedArticles];
 
       // 타입 필터링
       if (filterState.types.length > 0) {
@@ -100,12 +108,34 @@ export default function ScrapPage() {
 
   // API: 스크랩 토글 (스크랩 해제만 가능)
   const handleToggleScrap = async (id: string) => {
+    if (!id) {
+      console.error("handleToggleScrap: article ID is missing");
+      return;
+    }
     try {
+      // UI 즉시 업데이트 (Optimistic Update)
+      setArticleList(prev => 
+        prev.map(article => 
+          article.id === id 
+            ? { ...article, isScrapped: false, scrapCount: article.scrapCount - 1 }
+            : article
+        )
+      );
+
       await api.delete(`/scrap/${id}`);
 
-      // 스크랩 해제 후 목록 다시 조회
-      await fetchScrapedArticles();
+      // 성공 시 목록에서 해당 아이템 제거 (스크랩 페이지이므로)
+      setArticleList(prev => prev.filter(article => article.id !== id));
     } catch (error: any) {
+      // 실패 시 원래 상태로 되돌리기
+      setArticleList(prev => 
+        prev.map(article => 
+          article.id === id 
+            ? { ...article, isScrapped: true, scrapCount: article.scrapCount + 1 }
+            : article
+        )
+      );
+
       if (error.response?.status === 401) {
         navigate("/login");
       } else if (error.response?.status === 404) {
@@ -178,7 +208,7 @@ export default function ScrapPage() {
               <EventCard
                 key={article.id}
                 {...article}
-                isScrapped={true} // 스크랩 페이지의 모든 게시글은 스크랩된 상태
+                isScrapped={article.isScrapped !== false} // 동적으로 처리, 기본값은 true (스크랩 페이지이므로)
                 onCardClick={() => {
                   console.log("event ID:", article.id); // 디버깅용
                   if (article.id) {

@@ -62,6 +62,7 @@ export default function ArticleListPage() {
       });
 
       const articles = Array.isArray(response.data) ? response.data : [];
+      console.log("API 응답 데이터:", articles); // API 응답 데이터 확인용 로그
 
       // 2. 스크랩 목록 조회 (로그인된 경우에만)
       let scrapIds: string[] = [];
@@ -70,12 +71,13 @@ export default function ArticleListPage() {
         const scrapList = Array.isArray(scrapResponse.data)
           ? scrapResponse.data
           : scrapResponse.data.articles || scrapResponse.data.data || [];
-        scrapIds = scrapList.map((item: any) => item.id);
+        // 스크랩 목록의 articleId를 추출하여 게시글의 id와 비교
+        scrapIds = scrapList.map((item: any) => item.articleId);
       } catch (scrapError) {
         // 스크랩 목록 조회 실패 시 (비로그인 등) 빈 배열로 처리
       }
 
-      // 3. 각 게시글에 isScrapped 상태 처리 (이미지는 백엔드 URL 직접 사용)
+      // 3. 각 게시글에 isScrapped 상태 처리
       const articlesWithScrapStatus = articles.map((article: Article) => ({
         ...article,
         isScrapped: scrapIds.includes(article.id),
