@@ -108,12 +108,11 @@ export default function ArticleDetailPage() {
       const res = await api.get(`/scrap/article/${articleId}`);
       setIsScrapped(res.data.isScrapped);
     } catch (err: any) {
+      setIsScrapped(false);
       if (err.response?.status === 401) {
-        // 비로그인 상태
-        setIsScrapped(false);
+        // 비로그인 상태이므로 스크랩 여부를 알 수 없는 게 정상
         return;
       } else {
-        setIsScrapped(false);
         alert("스크랩 상태를 불러오는 중 오류가 발생했습니다.");
       }
     }
@@ -178,17 +177,17 @@ export default function ArticleDetailPage() {
           <div className="w-full h-full font-semibold text-title4 text-gray-800 font-pretendard">
             {article.title}
           </div>
-          <div className="flex flew-row w-full h-[26px] gap-5">
-            <div className="flex flew-row w-full max-w-[186px] gap-2">
+          <div className="flex flex-row w-full h-[26px] gap-5">
+            <div className="flex flex-row w-full max-w-[186px] gap-2">
               {article.tags.map((tag) => (
                 <EventTypeIndicator key={tag} type={tag} />
               ))}
             </div>
-            <div className="flex flew-row gap-3">
+            <div className="flex flex-row gap-3">
               <div className="font-normal text-body3 text-gray-500 font-pretendard">
                 조회 {article.viewCount}
               </div>
-              <div className="flex flew-row gap-1">
+              <div className="flex flex-row gap-1">
                 <img src={heartGray} alt="like-count" className="w-5 h-5" />
                 <div className="font-normal text-body3 text-gray-500 font-pretendard">
                   {article.scrapCount > 999 ? "999+" : article.scrapCount}
@@ -201,7 +200,7 @@ export default function ArticleDetailPage() {
 
       {/* 탭 컨트롤 */}
       {!modalOpen && (
-        <div className="sticky top-0 z-20 bg-white flex flew-col w-full border-b border-solid border-gray-200 pt-3 px-4 gap-2.5">
+        <div className="sticky top-0 z-20 bg-white flex flex-col w-full border-b border-solid border-gray-200 pt-3 px-4 gap-2.5">
           <TabbedControl
             tabs={[
               { label: "행사 일시 ∙ 장소", id: "tab1" },
@@ -365,22 +364,30 @@ export default function ArticleDetailPage() {
           }}
           heartScrapped={isScrapped ?? false} // isScrapped 값이 올 때까지 false로 처리
           onHeartClick={async () => {
-            if (!articleId) return;
+            if (!articleId || !article) return;
 
             try {
               if (isScrapped) {
                 await api.delete(`/scrap/${articleId}`);
+                setIsScrapped(false);
+                setArticle({
+                  ...article,
+                  // 스크랩 취소할 때 scrapCount가 음수가 되지 않도록 안전하게 처리
+                  scrapCount: Math.max(0, article.scrapCount - 1),
+                });
               } else {
                 await api.post(`/scrap/${articleId}`);
+                setIsScrapped(true);
+                setArticle({
+                  ...article,
+                  scrapCount: article.scrapCount + 1,
+                });
               }
-              await fetchScrapStatus(); // 서버의 최신 스크랩 상태로 동기화
             } catch (err: any) {
               if (err.response?.status === 401) {
                 navigate("/login");
               } else if (err.response?.status === 404) {
-                alert("해당 게시글이 존재하지 않습니다.");
-              } else if (err.response?.status === 409) {
-                alert("이미 스크랩한 게시글입니다.");
+                alert("해당 행사가 존재하지 않습니다.");
               } else {
                 alert("스크랩 처리 중 오류가 발생했습니다.");
               }
