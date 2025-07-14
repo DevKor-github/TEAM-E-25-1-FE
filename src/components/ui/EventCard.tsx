@@ -2,7 +2,7 @@ import EventTypeIndicator from "./EventTypeIndicator";
 import EventDateIndicator from "./EventDateIndicator";
 import heartRed from "@/assets/heart_red500.svg";
 import heartGray from "@/assets/heart_gray.svg";
-
+import heartNothing from "@/assets/heart_nothing.svg";
 export type Article = {
   id: string;
   title: string;
@@ -116,9 +116,9 @@ export default function EventCard({
           }}
         >
           <img
-            src={isScrapped ? heartRed : heartGray}
+            src={isScrapped ? heartRed : heartNothing}
             alt="like"
-            className="w-5 h-5"
+            className="w-12 h-12"
           />
         </button>
       </div>
