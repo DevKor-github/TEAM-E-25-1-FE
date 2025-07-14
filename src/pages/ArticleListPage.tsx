@@ -40,12 +40,6 @@ export default function ArticleListPage() {
     includePast: true,
   });
 
-  // 이미지 URL 처리 함수 (EventCard에서 이동)
-  const processImageUrl = (path: string) => {
-    if (!path) return "/eventThumbnail.png";
-    return path; // 백엔드 URL을 그대로 사용
-  };
-
   // API: 게시글 목록 조회
   const fetchArticles = async () => {
     try {
@@ -64,7 +58,6 @@ export default function ArticleListPage() {
       });
       
       const articles = Array.isArray(response.data) ? response.data : [];
-      console.log("게시글 목록 API 응답:", articles);
       
       // 2. 스크랩 목록 조회 (로그인된 경우에만)
       let scrapIds: string[] = [];
@@ -74,20 +67,16 @@ export default function ArticleListPage() {
           ? scrapResponse.data 
           : (scrapResponse.data.articles || scrapResponse.data.data || []);
         scrapIds = scrapList.map((item: any) => item.id);
-        console.log("스크랩 ID 목록:", scrapIds);
       } catch (scrapError) {
         // 스크랩 목록 조회 실패 시 (비로그인 등) 빈 배열로 처리
-        console.log("스크랩 목록 조회 실패:", scrapError);
       }
       
-      // 3. 각 게시글에 isScrapped 상태 및 이미지 URL 처리
+      // 3. 각 게시글에 isScrapped 상태 처리 (이미지는 백엔드 URL 직접 사용)
       const articlesWithScrapStatus = articles.map((article: Article) => ({
         ...article,
-        isScrapped: scrapIds.includes(article.id),
-        thumbnailPath: processImageUrl(article.thumbnailPath)
+        isScrapped: scrapIds.includes(article.id)
       }));
       
-      console.log("스크랩 상태가 추가된 게시글 목록:", articlesWithScrapStatus);
       setArticleList(articlesWithScrapStatus);
     } catch (error) {
       console.error("게시글 목록 조회 실패:", error);
@@ -115,15 +104,11 @@ export default function ArticleListPage() {
         )
       );
 
-      console.log(`스크랩 토글: ${id}, 새 상태: ${newScrapStatus}`);
-
       // API 호출
       if (article.isScrapped) {
         await api.delete(`/scrap/${id}`);
-        console.log(`스크랩 해제 성공: ${id}`);
       } else {
         await api.post(`/scrap/${id}`);
-        console.log(`스크랩 추가 성공: ${id}`);
       }
     } catch (error: any) {
       // 오류 발생 시 원래 상태로 되돌리기
@@ -144,7 +129,6 @@ export default function ArticleListPage() {
       } else if (error.response?.status === 409) {
         alert("이미 스크랩한 게시글입니다.");
       } else {
-        console.error("스크랩 처리 실패:", error);
         alert("스크랩 처리 중 오류가 발생했습니다.");
       }
     }
@@ -207,20 +191,16 @@ export default function ArticleListPage() {
             </div>
           ) : (
             articleList.map((article) => (
-              <div
+              <EventCard
                 key={article.id}
-                className="w-full cursor-pointer"
-                onClick={() => {
-                  console.log(`목록 페이지에서 게시글 div 클릭: ${article.id}, 스크랩 상태: ${article.isScrapped}`);
-                  navigate(`/article/${article.id}`);
+                {...article}
+                onCardClick={() => {
+                  if (article.id) {
+                    navigate(`/article/${article.id}`);
+                  }
                 }}
-              >
-                <EventCard
-                  {...article}
-                  fallbackImage="/eventThumbnail.png" // 기본 이미지 경로 전달
-                  onToggleScrap={() => handleToggleScrap(article.id)}
-                />
-              </div>
+                onToggleScrap={() => handleToggleScrap(article.id)}
+              />
             ))
           )}
         </div>

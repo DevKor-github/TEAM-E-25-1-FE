@@ -23,7 +23,6 @@ export type Article = {
 interface EventCardProps extends Article {
   onToggleScrap?: () => void;
   onCardClick?: () => void; // 카드 클릭 핸들러 추가
-  fallbackImage?: string; // 기본 이미지 경로
 }
 
 export default function EventCard({
@@ -37,7 +36,6 @@ export default function EventCard({
   isScrapped,
   onToggleScrap,
   onCardClick,
-  fallbackImage = "/eventThumbnail.png", // 기본값
 }: EventCardProps) {
   // dday 계산 (타임존 이슈 없이 날짜만 비교, 한국시간 기준, startAt 유효성 체크)
   let diff: number | undefined = undefined;
@@ -65,13 +63,6 @@ export default function EventCard({
   const imageUrl = thumbnailPath;
   const org = organization;
 
-  // 단순한 이미지 로드 에러 처리 (페이지에서 전달받은 fallback 이미지 사용)
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    if (fallbackImage && e.currentTarget.src !== fallbackImage) {
-      e.currentTarget.src = fallbackImage;
-    }
-  };
-
   return (
     <div 
       className="flex flex-col w-[335px] rounded-2xl bg-white p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
@@ -79,13 +70,7 @@ export default function EventCard({
         // 하트 버튼 클릭이 아닌 경우에만 카드 클릭 이벤트 실행
         const target = e.target as HTMLElement;
         const isHeartButton = target.closest('button');
-        console.log("카드 클릭 이벤트:", { 
-          isHeartButton: !!isHeartButton, 
-          target: target.tagName,
-          onCardClick: !!onCardClick 
-        });
         if (!isHeartButton && onCardClick) {
-          console.log("카드 클릭 핸들러 실행");
           onCardClick();
         }
       }}
@@ -95,7 +80,6 @@ export default function EventCard({
           src={imageUrl}
           alt={`${title} 썸네일`}
           className="rounded-xl w-full h-[120px] object-cover pointer-events-none"
-          onError={handleImageError}
           loading="lazy"
           crossOrigin="anonymous"
         />
@@ -104,21 +88,15 @@ export default function EventCard({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log("하트 버튼 클릭, 스크랩 토글 실행", { 
-              isScrapped, 
-              onToggleScrap: !!onToggleScrap 
-            });
             if (onToggleScrap) {
               onToggleScrap();
-            } else {
-              console.warn("onToggleScrap 핸들러가 없습니다");
             }
           }}
         >
           <img
             src={isScrapped ? heartRed : heartNothing}
             alt="like"
-            className="w-12 h-12"
+            className="w-9 h-9"
           />
         </button>
       </div>

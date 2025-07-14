@@ -40,45 +40,18 @@ export default function ScrapPage() {
     includePast: true,
   });
 
-  // 이미지 URL 처리 함수 (EventCard에서 이동)
-  const processImageUrl = (path: string) => {
-    console.log(`ScrapPage 썸네일 경로 처리: "${path}"`);
-    
-    if (!path) {
-      console.log("썸네일 경로가 비어있음, 기본 이미지 사용");
-      return "/eventThumbnail.png";
-    }
-    
-    // 백엔드 URL을 그대로 사용 (상세페이지와 동일한 방식)
-    console.log(`최종 이미지 URL: "${path}"`);
-    return path;
-  };
-
   // API: 스크랩한 게시글 목록 조회
   const fetchScrapedArticles = async () => {
     try {
       setLoading(true);
       // 스크랩 목록은 파라미터 없이 조회 
       const response = await api.get("/scrap");
-      console.log("스크랩 API 응답:", response.data);
       
       // API 응답 구조에 따라 배열 추출
       const articles = Array.isArray(response.data) ? response.data : (response.data.articles || response.data.data || []);
-      console.log("추출된 스크랩 articles:", articles);
-      
-      // 각 게시글의 썸네일 경로 확인 및 처리
-      articles.forEach((article: any, index: number) => {
-        console.log(`스크랩 게시글 ${index + 1}: ID=${article.id}, 제목="${article.title}", 썸네일="${article.thumbnailPath}"`);
-      });
-      
-      // 이미지 URL 전처리
-      const articlesWithProcessedImages = articles.map((article: any) => ({
-        ...article,
-        thumbnailPath: processImageUrl(article.thumbnailPath)
-      }));
       
       // 필터링 적용
-      let filteredArticles = [...articlesWithProcessedImages];
+      let filteredArticles = [...articles];
       
       // 타입 필터링
       if (filterState.types.length > 0) {
@@ -126,7 +99,6 @@ export default function ScrapPage() {
       } else if (error.response?.status === 404) {
         alert("해당 게시글이 존재하지 않습니다.");
       } else {
-        console.error("스크랩 해제 실패:", error);
         alert("스크랩 해제 중 오류가 발생했습니다.");
       }
     }
@@ -194,30 +166,23 @@ export default function ScrapPage() {
               </button>
             </div>
           ) : (
-            articleList.map((article) => {
-              console.log(`렌더링할 스크랩 게시글: ${article.id} - ${article.title} - 썸네일: ${article.thumbnailPath}`);
-              return (
-                <div
-                  key={article.id}
-                  className="w-full cursor-pointer"
-                  onClick={() => {
-                    console.log(`스크랩 페이지에서 게시글 div 클릭: ${article.id} - 제목: ${article.title}`);
-                    console.log(`이동할 경로: /article/${article.id}`);
-                    navigate(`/article/${article.id}`);
+            articleList.map((article) => (
+              <div
+                key={article.id}
+                className="w-full cursor-pointer"
+                onClick={() => {
+                  navigate(`/article/${article.id}`);
+                }}
+              >
+                <EventCard
+                  {...article}
+                  isScrapped={true} // 스크랩 페이지의 모든 게시글은 스크랩된 상태
+                  onToggleScrap={() => {
+                    handleToggleScrap(article.id);
                   }}
-                >
-                  <EventCard
-                    {...article}
-                    isScrapped={true} // 스크랩 페이지의 모든 게시글은 스크랩된 상태
-                    fallbackImage="/eventThumbnail.png" // 기본 이미지 경로 전달
-                    onToggleScrap={() => {
-                      console.log(`하트 클릭: ${article.id}`);
-                      handleToggleScrap(article.id);
-                    }}
-                  />
-                </div>
-              );
-            })
+                />
+              </div>
+            ))
           )}
         </div>
       </div>
