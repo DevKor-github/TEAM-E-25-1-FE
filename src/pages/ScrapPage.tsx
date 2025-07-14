@@ -52,6 +52,9 @@ export default function ScrapPage() {
         ? response.data
         : response.data.articles || response.data.data || [];
 
+      console.log("스크랩 API 응답:", response.data); // 디버깅용
+      console.log("추출된 articles:", articles); // 디버깅용
+
       // 필터링 적용
       let filteredArticles = [...articles];
 
@@ -177,7 +180,12 @@ export default function ScrapPage() {
                 {...article}
                 isScrapped={true} // 스크랩 페이지의 모든 게시글은 스크랩된 상태
                 onCardClick={() => {
-                  navigate(`/event/${article.id}`);
+                  console.log("event ID:", article.id); // 디버깅용
+                  if (article.id) {
+                    navigate(`/event/${article.id}`);
+                  } else {
+                    console.error("Event ID가 없습니다:", article);
+                  }
                 }}
                 onToggleScrap={() => {
                   handleToggleScrap(article.id);

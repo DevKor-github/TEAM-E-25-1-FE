@@ -19,6 +19,12 @@ export default function ArticleUploadPage() {
         ? (Array.from(data.imagePaths) as File[])
         : [];
 
+      // 썸네일 이미지 필수 검사 (업로드 시에만)
+      if (!newThumbnailFile) {
+        setError("썸네일 이미지를 업로드해주세요.");
+        return;
+      }
+
       // 썸네일 이미지 정보
       let thumbnailInfo = null;
       if (newThumbnailFile) {
@@ -56,8 +62,14 @@ export default function ArticleUploadPage() {
         },
       });
 
+      console.log("게시글 생성 API 응답:", articleResponse.data); // 디버깅용
       const articleId = articleResponse.data.id;
       console.log("게시글 생성 성공, ID:", articleId);
+      
+      // articleId 유효성 검사 추가
+      if (!articleId) {
+        throw new Error("게시글 ID가 생성되지 않았습니다.");
+      }
 
       // 2단계: 이미지가 있는 경우 presigned URL 요청 및 업로드
       if (thumbnailInfo || fileInfoList.length > 0) {
@@ -112,8 +124,15 @@ export default function ArticleUploadPage() {
         // 모든 파일 업로드 완료 대기
         if (uploadPromises.length > 0) {
           console.log("파일 업로드 시작...");
-          await Promise.all(uploadPromises);
+          const uploadResults = await Promise.all(uploadPromises);
           console.log("파일 업로드 완료");
+          
+          // 업로드 실패 확인
+          uploadResults.forEach((result, index) => {
+            if (!result.ok) {
+              throw new Error(`파일 업로드 실패 (${index + 1}번째 파일): ${result.statusText}`);
+            }
+          });
         }
 
         // 3단계: PATCH /media로 이미지 정보 등록
