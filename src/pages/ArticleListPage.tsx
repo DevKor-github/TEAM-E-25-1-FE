@@ -40,6 +40,12 @@ export default function ArticleListPage() {
     includePast: true,
   });
 
+  // 이미지 URL 처리 함수 (EventCard에서 이동)
+  const processImageUrl = (path: string) => {
+    if (!path) return "/eventThumbnail.png";
+    return path; // 백엔드 URL을 그대로 사용
+  };
+
   // API: 게시글 목록 조회
   const fetchArticles = async () => {
     try {
@@ -74,10 +80,11 @@ export default function ArticleListPage() {
         console.log("스크랩 목록 조회 실패:", scrapError);
       }
       
-      // 3. 각 게시글에 isScrapped 상태 추가
+      // 3. 각 게시글에 isScrapped 상태 및 이미지 URL 처리
       const articlesWithScrapStatus = articles.map((article: Article) => ({
         ...article,
-        isScrapped: scrapIds.includes(article.id)
+        isScrapped: scrapIds.includes(article.id),
+        thumbnailPath: processImageUrl(article.thumbnailPath)
       }));
       
       console.log("스크랩 상태가 추가된 게시글 목록:", articlesWithScrapStatus);
@@ -210,6 +217,7 @@ export default function ArticleListPage() {
               >
                 <EventCard
                   {...article}
+                  fallbackImage="/eventThumbnail.png" // 기본 이미지 경로 전달
                   onToggleScrap={() => handleToggleScrap(article.id)}
                 />
               </div>

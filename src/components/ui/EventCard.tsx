@@ -22,6 +22,7 @@ export type Article = {
 
 interface EventCardProps extends Article {
   onToggleScrap?: () => void;
+  fallbackImage?: string; // 기본 이미지 경로
 }
 
 export default function EventCard({
@@ -34,6 +35,7 @@ export default function EventCard({
   endAt,
   isScrapped,
   onToggleScrap,
+  fallbackImage = "/eventThumbnail.png", // 기본값
 }: EventCardProps) {
   // dday 계산 (타임존 이슈 없이 날짜만 비교, 한국시간 기준, startAt 유효성 체크)
   let diff: number | undefined = undefined;
@@ -58,24 +60,14 @@ export default function EventCard({
       : "";
   const likeCount = scrapCount;
   
-  // 썸네일 이미지 URL 처리
-  const getImageUrl = (path: string) => {
-    console.log(`EventCard 썸네일 경로: "${path}"`);
-    if (!path) {
-      console.log("썸네일 경로가 비어있음, 기본 이미지 사용");
-      return "/eventThumbnail.png"; // 기본 이미지
-    }
-    console.log(`최종 이미지 URL: "${path}"`);
-    return path; // 백엔드에서 전체 URL을 반환한다고 가정
-  };
-  
-  const imageUrl = getImageUrl(thumbnailPath);
+  const imageUrl = thumbnailPath;
   const org = organization;
 
-  // 이미지 로드 에러 처리
+  // 단순한 이미지 로드 에러 처리 (페이지에서 전달받은 fallback 이미지 사용)
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    console.log(`이미지 로드 실패: ${imageUrl}, 기본 이미지로 대체`);
-    e.currentTarget.src = "/eventThumbnail.png";
+    if (fallbackImage && e.currentTarget.src !== fallbackImage) {
+      e.currentTarget.src = fallbackImage;
+    }
   };
 
   return (
@@ -86,13 +78,14 @@ export default function EventCard({
           alt={`${title} 썸네일`}
           className="rounded-xl w-full h-[120px] object-cover pointer-events-none"
           onError={handleImageError}
+          loading="lazy"
+          crossOrigin="anonymous"
         />
         <button
           className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center z-10"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log(`EventCard 하트 버튼 클릭: ${title}`);
             onToggleScrap && onToggleScrap();
           }}
         >
