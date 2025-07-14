@@ -47,6 +47,7 @@ export default function ArticleDetailPage() {
   const [article, setArticle] = useState<Article | null>(null);
   const [isScrapped, setIsScrapped] = useState<boolean | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
@@ -124,6 +125,8 @@ export default function ArticleDetailPage() {
 
     const fetchArticle = async () => {
       try {
+        setLoading(true);
+
         const { data } = await api.get(`/article/${articleId}`);
         setArticle({
           ...data,
@@ -140,6 +143,8 @@ export default function ArticleDetailPage() {
           alert("행사 정보를 불러오는 중 오류가 발생했습니다.");
         }
         navigate("/", { replace: true });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -150,13 +155,23 @@ export default function ArticleDetailPage() {
     fetchScrapStatus();
   }, [articleId]);
 
+  if (loading) {
+    return (
+      <div className="w-[375px] mx-auto bg-white">
+        <HeaderFrame />
+        <div className="flex items-center justify-center py-8 text-lg text-gray-500">
+          로딩 중...
+        </div>
+      </div>
+    );
+  }
+
   if (!article)
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="text-center py-8">
-          <h2 className="text-xl font-semibold text-gray-600">
-            해당 행사를 찾을 수 없습니다.
-          </h2>
+      <div className="w-[375px] mx-auto bg-white">
+        <HeaderFrame />
+        <div className="flex items-center justify-center py-8 text-lg text-gray-500">
+          해당 행사를 찾을 수 없습니다.
         </div>
       </div>
     );
