@@ -201,7 +201,7 @@ export default function ArticleListPage() {
                 {...article}
                 onCardClick={() => {
                   if (article.id) {
-                    navigate(`/article/${article.id}`);
+                    navigate(`/event/${article.id}`);
                   }
                 }}
                 onToggleScrap={() => handleToggleScrap(article.id)}

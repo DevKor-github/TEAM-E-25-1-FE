@@ -172,7 +172,7 @@ export default function ScrapPage() {
                 {...article}
                 isScrapped={true} // 스크랩 페이지의 모든 게시글은 스크랩된 상태
                 onCardClick={() => {
-                  navigate(`/article/${article.id}`);
+                  navigate(`/event/${article.id}`);
                 }}
                 onToggleScrap={() => {
                   handleToggleScrap(article.id);

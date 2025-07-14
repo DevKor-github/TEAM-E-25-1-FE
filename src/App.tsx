@@ -36,7 +36,7 @@ export default function App() {
           {/* 사용자 라우트 */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/event" element={<ArticleListPage />} />
-          <Route path="/article/:articleId" element={<ArticleDetailPage />} />
+          <Route path="/event/:articleId" element={<ArticleDetailPage />} />
           <Route path="/scrap" element={<ScrapPage />} />
           <Route path="/error" element={<ErrorPage />} />
           <Route path="/mypage" element={<MyPage />} />
