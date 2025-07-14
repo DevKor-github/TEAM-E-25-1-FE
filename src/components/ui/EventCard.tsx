@@ -81,7 +81,6 @@ export default function EventCard({
           alt={`${title} 썸네일`}
           className="rounded-xl w-full h-[120px] object-cover pointer-events-none"
           loading="lazy"
-          crossOrigin="anonymous"
         />
         <button
           className="absolute top-3 right-3 w-6 h-6 flex items-center justify-center z-10 bg-white/20 backdrop-blur-sm rounded-full"

@@ -167,21 +167,17 @@ export default function ScrapPage() {
             </div>
           ) : (
             articleList.map((article) => (
-              <div
+              <EventCard
                 key={article.id}
-                className="w-full cursor-pointer"
-                onClick={() => {
+                {...article}
+                isScrapped={true} // 스크랩 페이지의 모든 게시글은 스크랩된 상태
+                onCardClick={() => {
                   navigate(`/article/${article.id}`);
                 }}
-              >
-                <EventCard
-                  {...article}
-                  isScrapped={true} // 스크랩 페이지의 모든 게시글은 스크랩된 상태
-                  onToggleScrap={() => {
-                    handleToggleScrap(article.id);
-                  }}
-                />
-              </div>
+                onToggleScrap={() => {
+                  handleToggleScrap(article.id);
+                }}
+              />
             ))
           )}
         </div>
