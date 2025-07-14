@@ -138,6 +138,7 @@ export default function ScrapPage() {
         <HeaderFrame />
         {/* 필터 및 정렬 기능 */}
         <MobileHeaderSection
+          title="찜한 행사"
           eventCount={articleList.length}
           segments={segments}
           selectedSegment={selectedSegment}

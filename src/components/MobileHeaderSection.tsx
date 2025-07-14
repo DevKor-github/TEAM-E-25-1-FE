@@ -11,6 +11,7 @@ interface MobileHeaderSectionProps {
   onSegmentChange: (value: string) => void;
   onReset: () => void;
   onFilter?: () => void;
+  title?: string; // 제목을 prop으로 받을 수 있도록 추가
 }
 
 export default function MobileHeaderSection({
@@ -21,12 +22,13 @@ export default function MobileHeaderSection({
   onSegmentChange,
   onReset,
   onFilter,
+  title = "행사", // 기본값을 "행사"로 설정
 }: MobileHeaderSectionProps) {
   return (
     <div className="w-full bg-white rounded-2xl p-0 flex flex-col gap-4">
       {/* 상단: 행사, 개수, dot, 초기화 */}
       <div className="flex items-center justify-between pt-5 px-5">
-        <span className="text-[23px] font-pretendard font-semibold text-black">행사</span>
+        <span className="text-[23px] font-pretendard font-semibold text-black">{title}</span>
         <div className="flex items-center">
           <span className="text-[17px] font-pretendard font-medium text-gray-400 pr-2">
             {eventCount}개
