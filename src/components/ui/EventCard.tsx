@@ -37,27 +37,51 @@ export default function EventCard({
   onToggleScrap,
   onCardClick,
 }: EventCardProps) {
-  // dday 계산 (타임존 이슈 없이 날짜만 비교, 한국시간 기준, startAt 유효성 체크)
+  // dday 계산 (백엔드 데이터가 있을 때만)
   let diff: number | undefined = undefined;
-  const isValidStart = !!startAt && !isNaN(new Date(startAt).getTime());
-  if (isValidStart) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const start = new Date(startAt);
-    start.setHours(0, 0, 0, 0);
-    diff = Math.ceil(
-      (start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
+  
+  if (startAt) {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const start = new Date(startAt);
+      start.setHours(0, 0, 0, 0);
+      diff = Math.ceil(
+        (start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+    } catch (e) {
+      console.warn("Invalid startAt date:", startAt);
+      diff = undefined;
+    }
   }
   // tags: 배열
   const safeTags = Array.isArray(tags) ? tags : [];
-  // date, period (startAt, endAt이 undefined일 때 안전 처리)
-  const safeStartAt = startAt ?? "";
-  const safeEndAt = endAt ?? "";
-  const date =
-    safeStartAt && safeEndAt
-      ? `${safeStartAt.split("T")[0]} ~ ${safeEndAt.split("T")[0]}`
-      : "";
+  
+  // 날짜 포맷팅 함수 (YYYY.MM.DD)
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "";
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}.${month}.${day}`;
+    } catch (e) {
+      return "";
+    }
+  };
+  
+  // 날짜 기간 포맷팅 - 백엔드 데이터가 있을 때만 표시
+  let date = "";
+  if (startAt && endAt) {
+    const formattedStart = formatDate(startAt);
+    const formattedEnd = formatDate(endAt);
+    if (formattedStart && formattedEnd) {
+      date = `${formattedStart} ~ ${formattedEnd}`;
+    }
+  }
+  
   const likeCount = scrapCount;
   
   const imageUrl = thumbnailPath;
@@ -106,13 +130,13 @@ export default function EventCard({
         {title}
       </div>
       <div className="font-pretendard text-[16px] leading-[22px] text-gray-500 font-normal mb-3">
-        {date}
+        {date || " "} {/* 백엔드 데이터가 없으면 빈 공간 */}
       </div>
       <div className="flex gap-2 items-center mb-2">
         {safeTags.map((tag) => (
           <EventTypeIndicator key={tag} type={tag} />
         ))}
-        <EventDateIndicator dday={diff} />
+        {diff !== undefined && <EventDateIndicator dday={diff} />} {/* D-day는 백엔드 데이터가 있을 때만 표시 */}
         <div className="flex items-center gap-1 ml-auto min-w-[52px] pr-1">
           <img src={heartGray} alt="like-count" className="w-5 h-5" />
           <span className="font-pretendard text-sm font-body-3 text-gray-500">
