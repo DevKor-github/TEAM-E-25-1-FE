@@ -42,8 +42,7 @@ api.interceptors.response.use(
     if (status === 500) {
       if (!isRedirecting) {
         isRedirecting = true;
-        alert("인증 정보 처리 중 오류가 발생했습니다. 다시 로그인 해주세요.");
-        window.location.href = "/login";
+        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
       }
       return Promise.reject(err);
     }

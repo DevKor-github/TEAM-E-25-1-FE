@@ -255,6 +255,8 @@ export default function AdminArticleEdit() {
     } catch (err: any) {
       if (err.response?.status === 404) {
         setError("수정할 행사를 찾을 수 없습니다.");
+      } else if (err.response?.status === 500) {
+        setError("행사 수정 중 서버 오류가 발생했습니다.");
       } else {
         setError("행사 수정 중 오류가 발생했습니다.");
       }
