@@ -6,7 +6,7 @@ import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
 
-// Article 타입: 백엔드 스웨거 기준
+
 export type Article = {
   id: string;
   title: string;
@@ -52,19 +52,31 @@ export default function ScrapPage() {
         ? response.data
         : response.data.articles || response.data.data || [];
 
-      console.log("스크랩 API 응답:", response.data); // 디버깅용
-      console.log("추출된 articles:", articles); // 디버깅용
-
-      // API 응답의 articleId를 id로 매핑
-      const mappedArticles = articles.map((article: any) => ({
-        ...article,
-        id: article.articleId, // articleId를 id로 복사
-      }));
-
-      console.log("매핑된 articles:", mappedArticles); // 디버깅용
+      // 스크랩 목록에서 게시글 상세 정보 조회
+      const articlesWithDetails = await Promise.all(
+        articles.map(async (article: any) => {
+          try {
+            const articleId = article.articleId || article.id;
+            const detailResponse = await api.get(`/article/${articleId}`);
+            const detailData = detailResponse.data;
+            
+            return {
+              ...detailData,
+              id: articleId,
+            };
+          } catch (detailError) {
+            console.warn(`게시글 상세 정보 조회 실패:`, detailError);
+            // 실패시 원본 데이터 사용
+            return {
+              ...article,
+              id: article.articleId || article.id,
+            };
+          }
+        })
+      );
 
       // 필터링 적용
-      let filteredArticles = [...mappedArticles];
+      let filteredArticles = [...articlesWithDetails];
 
       // 타입 필터링
       if (filterState.types.length > 0) {
@@ -108,10 +120,6 @@ export default function ScrapPage() {
 
   // API: 스크랩 토글 (스크랩 해제만 가능)
   const handleToggleScrap = async (id: string) => {
-    if (!id) {
-      console.error("handleToggleScrap: article ID is missing");
-      return;
-    }
     try {
       // UI 즉시 업데이트 (Optimistic Update)
       setArticleList(prev => 
@@ -210,11 +218,8 @@ export default function ScrapPage() {
                 {...article}
                 isScrapped={article.isScrapped !== false} // 동적으로 처리, 기본값은 true (스크랩 페이지이므로)
                 onCardClick={() => {
-                  console.log("event ID:", article.id); // 디버깅용
                   if (article.id) {
                     navigate(`/event/${article.id}`);
-                  } else {
-                    console.error("Event ID가 없습니다:", article);
                   }
                 }}
                 onToggleScrap={() => {
