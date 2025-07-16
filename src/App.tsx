@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-
+import { useEffect } from "react";
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
 
 import LoginPage from "./pages/LoginPage";
@@ -23,6 +23,12 @@ import ArticleListPage from "./pages/ArticleListPage";
 // 관리자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
 function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
   const isLoggedIn = useAdminAuthStore((state) => state.isLoggedIn);
+
+  // 관리자 라우트 접근 시마다 로그인 만료 체크
+  useEffect(() => {
+    useAdminAuthStore.getState().checkExpiration();
+  }, []);
+
   return isLoggedIn ? children : <Navigate to="/admin/login" replace />;
 }
 

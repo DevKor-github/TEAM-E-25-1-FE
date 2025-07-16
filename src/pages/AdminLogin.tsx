@@ -1,9 +1,14 @@
 import { LoginForm } from "@/components/LoginForm";
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import { Navigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function AdminLogin() {
   const isLoggedIn = useAdminAuthStore((state) => state.isLoggedIn);
+
+  useEffect(() => {
+    useAdminAuthStore.getState().checkExpiration();
+  }, []);
 
   if (isLoggedIn) {
     return <Navigate to="/admin/home" replace />;
