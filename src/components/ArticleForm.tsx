@@ -131,10 +131,43 @@ export function ArticleForm({
   const [previewThumbnail, setPreviewThumbnail] = useState<string | undefined>(
     thumbnailPreviewUrl
   );
+  const [accumulatedFiles, setAccumulatedFiles] = useState<File[]>([]);
 
   // 상세 이미지 삭제 핸들러
   const handleRemovePreviewImage = (idx: number) => {
     setPreviewImages((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  // 누적된 파일 삭제 핸들러 250718
+  const handleRemoveAccumulatedFile = (idx: number) => {
+    setAccumulatedFiles((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  // 파일 누적 핸들러
+  const handleFileAccumulation = (newFiles: FileList | null, onChange: (files: FileList | null) => void) => {
+    if (!newFiles || newFiles.length === 0) return;
+    
+    const newFileArray = Array.from(newFiles);
+    
+    setAccumulatedFiles((prev) => {
+      // 중복 파일 제거 (파일명과 크기로 비교)
+      const uniqueFiles = [...prev];
+      newFileArray.forEach(newFile => {
+        const isDuplicate = uniqueFiles.some(existingFile => 
+          existingFile.name === newFile.name && existingFile.size === newFile.size
+        );
+        if (!isDuplicate && uniqueFiles.length < 10) {
+          uniqueFiles.push(newFile);
+        }
+      });
+      
+      // FileList 객체로 변환하여 react-hook-form에 전달
+      const dt = new DataTransfer();
+      uniqueFiles.forEach(file => dt.items.add(file));
+      onChange(dt.files);
+      
+      return uniqueFiles;
+    });
   };
 
   // 썸네일 이미지 삭제 핸들러
@@ -386,15 +419,47 @@ export function ArticleForm({
                   ))}
                 </div>
               )}
+              
+              {/* 누적된 새 파일들 미리보기 */}
+              {accumulatedFiles.length > 0 && (
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {accumulatedFiles.map((file, idx) => (
+                    <div key={`new-${idx}`} className="relative inline-block">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`새 이미지 ${idx + 1}`}
+                        className="w-24 h-24 object-cover rounded border"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-white/80 rounded-full px-2 py-0.5 text-xs border"
+                        onClick={() => handleRemoveAccumulatedFile(idx)}
+                      >
+                        삭제
+                      </button>
+                      <div className="text-xs text-blue-600 text-center">
+                        새 이미지
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               <FormControl>
                 <Input
                   type="file"
                   multiple
                   accept="image/png, image/jpeg"
-                  onChange={(e) => onChange(e.target.files)}
+                  onChange={(e) => handleFileAccumulation(e.target.files, onChange)}
                   {...field}
                 />
               </FormControl>
+              
+              {/* 파일 선택 도움말 */}
+              <div className="text-sm text-gray-600 mt-1">
+                💡 파일 선택 시 여러 번 클릭하여 이미지를 누적할 수 있습니다. (현재: {accumulatedFiles.length}/10개)
+              </div>
+              
               <FormMessage>{fieldState.error?.message}</FormMessage>
             </FormItem>
           )}

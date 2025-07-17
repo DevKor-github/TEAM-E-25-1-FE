@@ -14,14 +14,14 @@ export type Article = {
   thumbnailPath: string;
   scrapCount: number;
   viewCount: number;
-  tags: string[]; // 백엔드에서 string 배열로 오는 것으로 보임
+  tags: string[]; 
   description: string;
   location: string;
   startAt: string;
   endAt: string;
   imagePaths: string[];
   registrationUrl: string;
-  isScrapped?: boolean; // 스크랩 여부
+  isScrapped?: boolean; 
 };
 
 export default function ArticleListPage() {
@@ -46,23 +46,24 @@ export default function ArticleListPage() {
       setLoading(true);
 
       // 1. 게시글 목록 조회
+      const apiParams = {
+        tags: filterState.types.length > 0 ? filterState.types.join(',') : undefined,
+        isFinished: filterState.includePast ? undefined : false,
+        sortBy:
+          selectedSegment === "많이 본"
+            ? "viewCount"
+            : selectedSegment === "많이 찜한"
+              ? "scrapCount"
+              : "createdAt",
+        page: 1,
+        limit: 10,
+      };
+
       const response = await api.get("/article", {
-        params: {
-          tags: filterState.types.length > 0 ? filterState.types : undefined,
-          isFinished: filterState.includePast ? undefined : false,
-          sortBy:
-            selectedSegment === "많이 본"
-              ? "viewCount"
-              : selectedSegment === "많이 찜한"
-                ? "scrapCount"
-                : "createdAt",
-          page: 1,
-          limit: 50, // 한 번에 가져올 게시글 수
-        },
+        params: apiParams,
       });
 
       const articles = Array.isArray(response.data) ? response.data : [];
-      console.log("API 응답 데이터:", articles); // API 응답 데이터 확인용 로그
 
       // 2. 스크랩 목록 조회 (로그인된 경우에만)
       let scrapIds: string[] = [];
@@ -71,7 +72,6 @@ export default function ArticleListPage() {
         const scrapList = Array.isArray(scrapResponse.data)
           ? scrapResponse.data
           : scrapResponse.data.articles || scrapResponse.data.data || [];
-        // 스크랩 목록의 articleId를 추출하여 게시글의 id와 비교
         scrapIds = scrapList.map((item: any) => item.articleId);
       } catch (scrapError) {
         // 스크랩 목록 조회 실패 시 (비로그인 등) 빈 배열로 처리
@@ -154,7 +154,9 @@ export default function ArticleListPage() {
   // 필터 버튼 클릭
   const handleOpenFilter = () => setFilterSheetOpen(true);
   const handleCloseFilter = () => setFilterSheetOpen(false);
-  const handleApplyFilter = () => setFilterSheetOpen(false);
+  const handleApplyFilter = () => {
+    setFilterSheetOpen(false);
+  };
 
   if (loading) {
     return (
