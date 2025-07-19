@@ -17,6 +17,13 @@ import { Button } from "@components/ui/button";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png"];
 
+// 상세 이미지 미리보기용 타입 정의
+type DetailImageItem = {
+  url: string; // 미리보기용 URL (기존 이미지 URL 또는 createObjectURL)
+  file?: File; // 새로 추가된 파일일 경우만 존재
+  isNew: boolean; // 새 파일 여부
+};
+
 const articleFormSchema = z
   .object({
     title: z
@@ -125,54 +132,58 @@ export function ArticleForm({
   thumbnailPreviewUrl?: string;
   imagePreviewUrls?: string[];
 }) {
-  const [previewImages, setPreviewImages] = useState<string[]>(
-    imagePreviewUrls ?? []
-  );
   const [previewThumbnail, setPreviewThumbnail] = useState<string | undefined>(
     thumbnailPreviewUrl
   );
-  const [accumulatedFiles, setAccumulatedFiles] = useState<File[]>([]);
-
-  // 상세 이미지 삭제 핸들러
-  const handleRemovePreviewImage = (idx: number) => {
-    setPreviewImages((prev) => prev.filter((_, i) => i !== idx));
-  };
-
-  // 누적된 파일 삭제 핸들러 250718
-  const handleRemoveAccumulatedFile = (idx: number) => {
-    setAccumulatedFiles((prev) => prev.filter((_, i) => i !== idx));
-  };
+  const [detailImages, setDetailImages] = useState<DetailImageItem[]>(
+    (imagePreviewUrls ?? []).map((url) => ({ url, isNew: false }))
+  );
 
   // 파일 누적 핸들러
-  const handleFileAccumulation = (newFiles: FileList | null, onChange: (files: FileList | null) => void) => {
+  const handleFileAccumulation = (
+    newFiles: FileList | null,
+    onChange: (files: FileList | null) => void
+  ) => {
     if (!newFiles || newFiles.length === 0) return;
-    
+
     const newFileArray = Array.from(newFiles);
-    
-    setAccumulatedFiles((prev) => {
+
+    setDetailImages((prev) => {
       // 중복 파일 제거 (파일명과 크기로 비교)
       const uniqueFiles = [...prev];
-      newFileArray.forEach(newFile => {
-        const isDuplicate = uniqueFiles.some(existingFile => 
-          existingFile.name === newFile.name && existingFile.size === newFile.size
+
+      newFileArray.forEach((file) => {
+        const isDuplicate = uniqueFiles.some((item) =>
+          !item.isNew
+            ? false
+            : item.file?.name === file.name && item.file?.size === file.size
         );
         if (!isDuplicate && uniqueFiles.length < 10) {
-          uniqueFiles.push(newFile);
+          uniqueFiles.push({
+            url: URL.createObjectURL(file),
+            file,
+            isNew: true,
+          });
         }
       });
-      
-      // FileList 객체로 변환하여 react-hook-form에 전달
-      const dt = new DataTransfer();
-      uniqueFiles.forEach(file => dt.items.add(file));
-      onChange(dt.files);
-      
+
       return uniqueFiles;
     });
+
+    // FileList 객체로 변환하여 react-hook-form에 전달 (새 파일만)
+    const dt = new DataTransfer();
+    Array.from(newFiles).forEach((file) => dt.items.add(file));
+    onChange(dt.files);
   };
 
   // 썸네일 이미지 삭제 핸들러
   const handleRemoveThumbnail = () => {
     setPreviewThumbnail(undefined);
+  };
+
+  // 상세 이미지 삭제 핸들러
+  const handleRemoveDetailImage = (idx: number) => {
+    setDetailImages((prev) => prev.filter((_, i) => i !== idx));
   };
 
   // 폼 제출 전 썸네일 이미지 유효성 검사
@@ -185,8 +196,11 @@ export function ArticleForm({
       alert("썸네일 이미지를 첨부해주세요.");
       return;
     }
-    // 정상 처리
-    onSubmit(values, previewImages, previewThumbnail);
+    // 정상 처리 (그대로 남겨둘 기존 이미지 URL만 추출)
+    const remainingImageUrls = detailImages
+      .filter((item) => !item.isNew)
+      .map((item) => item.url);
+    onSubmit(values, remainingImageUrls, previewThumbnail);
   };
 
   const form = useForm<ArticleFormValues>({
@@ -249,31 +263,36 @@ export function ArticleForm({
             <FormItem>
               <FormLabel>행사 종류 (복수 선택 가능)</FormLabel>
               <div className="grid grid-cols-2 gap-2">
-                {(["축제", "강연", "설명회", "박람회", "공모전", "대회"] as const).map(
-                  (tag) => (
-                    <label
-                      key={tag}
-                      className="flex items-center space-x-2 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={field.value?.includes(tag) || false}
-                        onChange={(e) => {
-                          const currentTags = field.value || [];
-                          if (e.target.checked) {
-                            field.onChange([...currentTags, tag]);
-                          } else {
-                            field.onChange(
-                              currentTags.filter((t) => t !== tag)
-                            );
-                          }
-                        }}
-                        className="rounded border-gray-300"
-                      />
-                      <span className="text-sm">{tag}</span>
-                    </label>
-                  )
-                )}
+                {(
+                  [
+                    "축제",
+                    "강연",
+                    "설명회",
+                    "박람회",
+                    "공모전",
+                    "대회",
+                  ] as const
+                ).map((tag) => (
+                  <label
+                    key={tag}
+                    className="flex items-center space-x-2 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={field.value?.includes(tag) || false}
+                      onChange={(e) => {
+                        const currentTags = field.value || [];
+                        if (e.target.checked) {
+                          field.onChange([...currentTags, tag]);
+                        } else {
+                          field.onChange(currentTags.filter((t) => t !== tag));
+                        }
+                      }}
+                      className="rounded border-gray-300"
+                    />
+                    <span className="text-sm">{tag}</span>
+                  </label>
+                ))}
               </div>
               <FormMessage>{fieldState.error?.message}</FormMessage>
             </FormItem>
@@ -396,70 +415,57 @@ export function ArticleForm({
           render={({ field: { value, onChange, ...field }, fieldState }) => (
             <FormItem>
               <FormLabel>상세 이미지 (선택, 최대 10개)</FormLabel>
-              {previewImages.length > 0 && (
+              {detailImages.length > 0 && (
                 <div className="mb-2 flex flex-wrap gap-2">
-                  {previewImages.map((url, idx) => (
-                    <div key={idx} className="relative inline-block">
+                  {detailImages.map((item, idx) => (
+                    <div
+                      key={item.isNew ? `new-${idx}` : `old-${idx}`}
+                      className="relative inline-block"
+                    >
                       <img
-                        src={url}
-                        alt={`상세 이미지 ${idx + 1}`}
+                        src={item.url}
+                        alt={
+                          item.isNew
+                            ? `새 이미지 ${idx + 1}`
+                            : `기존 이미지 ${idx + 1}`
+                        }
                         className="w-24 h-24 object-cover rounded border"
                       />
                       <button
                         type="button"
                         className="absolute top-1 right-1 bg-white/80 rounded-full px-2 py-0.5 text-xs border"
-                        onClick={() => handleRemovePreviewImage(idx)}
+                        onClick={() => handleRemoveDetailImage(idx)}
                       >
                         삭제
                       </button>
-                      <div className="text-xs text-gray-500 text-center">
-                        기존 이미지
+                      <div
+                        className={`text-xs text-center ${item.isNew ? "text-blue-600" : "text-gray-500"}`}
+                      >
+                        {item.isNew ? "새 이미지" : "기존 이미지"}
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-              
-              {/* 누적된 새 파일들 미리보기 */}
-              {accumulatedFiles.length > 0 && (
-                <div className="mb-2 flex flex-wrap gap-2">
-                  {accumulatedFiles.map((file, idx) => (
-                    <div key={`new-${idx}`} className="relative inline-block">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={`새 이미지 ${idx + 1}`}
-                        className="w-24 h-24 object-cover rounded border"
-                      />
-                      <button
-                        type="button"
-                        className="absolute top-1 right-1 bg-white/80 rounded-full px-2 py-0.5 text-xs border"
-                        onClick={() => handleRemoveAccumulatedFile(idx)}
-                      >
-                        삭제
-                      </button>
-                      <div className="text-xs text-blue-600 text-center">
-                        새 이미지
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
+
               <FormControl>
                 <Input
                   type="file"
                   multiple
                   accept="image/png, image/jpeg"
-                  onChange={(e) => handleFileAccumulation(e.target.files, onChange)}
+                  onChange={(e) =>
+                    handleFileAccumulation(e.target.files, onChange)
+                  }
                   {...field}
                 />
               </FormControl>
-              
+
               {/* 파일 선택 도움말 */}
               <div className="text-sm text-gray-600 mt-1">
-                💡 파일 선택 시 여러 번 클릭하여 이미지를 누적할 수 있습니다. (현재: {accumulatedFiles.length}/10개)
+                💡 파일 선택 시 여러 번 클릭하여 이미지를 누적할 수 있습니다.
+                (현재: {detailImages.length}/10개)
               </div>
-              
+
               <FormMessage>{fieldState.error?.message}</FormMessage>
             </FormItem>
           )}
