@@ -157,7 +157,7 @@ export default function ArticleDetailPage() {
 
   if (loading) {
     return (
-      <div className="w-[375px] mx-auto bg-white">
+      <div className="w-[375px] mx-auto min-h-screen bg-white">
         <HeaderFrame />
         <div className="flex items-center justify-center py-8 text-lg text-gray-500">
           로딩 중...
@@ -168,7 +168,7 @@ export default function ArticleDetailPage() {
 
   if (!article)
     return (
-      <div className="w-[375px] mx-auto bg-white">
+      <div className="w-[375px] mx-auto min-h-screen bg-white">
         <HeaderFrame />
         <div className="flex items-center justify-center py-8 text-lg text-gray-500">
           해당 행사를 찾을 수 없습니다.
@@ -297,6 +297,7 @@ export default function ArticleDetailPage() {
           </div>
         )}
       </div>
+
       {/* 상세이미지 모달 */}
       {modalOpen && modalImage && (
         <div className="min-h-[100vh] fixed inset-0 flex items-center justify-center">
@@ -316,9 +317,11 @@ export default function ArticleDetailPage() {
 
             {/* Image Section */}
             <div className="flex flex-col w-[375px] h-fit gap-[28px] mt-[121px] mb-[180px]">
-              <div className="flex-1 flex items-center justify-center w-full">
-                <img src={modalImage} alt={`행사 이미지 ${modalIndex + 1}`} />
-              </div>
+              <img
+                src={modalImage}
+                alt={`행사 이미지 ${modalIndex + 1}`}
+                className="flex-1 flex items-center justify-center w-full"
+              />
 
               {/* 하단 화살표 버튼 */}
               <div className="flex flex-row w-full pb-8">
