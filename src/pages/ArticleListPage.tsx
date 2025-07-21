@@ -38,6 +38,7 @@ export default function ArticleListPage() {
   const [filterState, setFilterState] = React.useState<FilterState>({
     types: [],
     includePast: true,
+    hasExplicitDateFilter: false,
   });
 
   // API: 게시글 목록 조회
@@ -167,9 +168,9 @@ export default function ArticleListPage() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center bg-white">
-        <div className="w-full max-w-[375px] px-[20px] box-border">
-          <HeaderFrame />
+      <div className="w-[375px] mx-auto bg-white min-h-screen">
+        <HeaderFrame />
+        <div className="flex flex-col items-center px-5">
           <div className="flex items-center justify-center py-8">
             <div className="text-lg text-gray-500">로딩 중...</div>
           </div>
@@ -179,9 +180,9 @@ export default function ArticleListPage() {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center bg-white">
-      <div className="w-full max-w-[375px] px-[20px] box-border">
-        <HeaderFrame />
+    <div className="w-[375px] mx-auto bg-white min-h-screen">
+      <HeaderFrame />
+      <div className="flex flex-col items-center px-5">
         {/* 필터 버튼 */}
         <MobileHeaderSection
           eventCount={articleList.length}
@@ -189,9 +190,29 @@ export default function ArticleListPage() {
           selectedSegment={selectedSegment}
           onSegmentChange={setSelectedSegment}
           onReset={() => {
-            setFilterState({ types: [], includePast: true });
+            setFilterState({ types: [], includePast: true, hasExplicitDateFilter: false });
           }}
           onFilter={handleOpenFilter}
+          hasActiveFilters={filterState.types.length > 0 || filterState.hasExplicitDateFilter}
+          selectedChips={(() => {
+            const chips: string[] = [];
+            
+            // 행사 종류 칩
+            if (filterState.types.length > 0) {
+              if (filterState.types.length === 1) {
+                chips.push(filterState.types[0]);
+              } else {
+                chips.push(`${filterState.types[0]} 외 ${filterState.types.length - 1}개`);
+              }
+            }
+            
+            // 행사 일정 칩 (사용자가 명시적으로 설정했을 때만)
+            if (filterState.hasExplicitDateFilter) {
+              chips.push(filterState.includePast ? "지난 행사 포함" : "지난 행사 제외");
+            }
+            
+            return chips;
+          })()}
         />
         <FilterSheet
           open={filterSheetOpen}
@@ -200,7 +221,7 @@ export default function ArticleListPage() {
           setFilterState={setFilterState}
           onApply={handleApplyFilter}
         />
-        <div className="flex flex-col gap-4 mt-4 w-full">
+        <div className="flex flex-col gap-4 mt-4 w-full items-center">
           {articleList.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-gray-500">표시할 게시글이 없습니다.</div>

@@ -27,7 +27,6 @@ interface EventCardProps extends Article {
 
 export default function EventCard({
   title,
-  organization,
   thumbnailPath,
   scrapCount,
   tags,
@@ -85,11 +84,10 @@ export default function EventCard({
   const likeCount = scrapCount;
   
   const imageUrl = thumbnailPath;
-  const org = organization;
 
   return (
     <div 
-      className="flex flex-col w-[335px] rounded-2xl bg-white p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+      className="flex flex-col w-[335px] cursor-pointer"
       onClick={(e) => {
         // 하트 버튼 클릭이 아닌 경우에만 카드 클릭 이벤트 실행
         const target = e.target as HTMLElement;
@@ -103,7 +101,7 @@ export default function EventCard({
         <img
           src={imageUrl}
           alt={`${title} 썸네일`}
-          className="rounded-xl w-full h-[120px] object-cover pointer-events-none"
+          className="rounded-xl w-full h-[188px] object-cover pointer-events-none"
           loading="lazy"
         />
         <button
@@ -122,9 +120,6 @@ export default function EventCard({
             className="w-9 h-9"
           />
         </button>
-      </div>
-      <div className="text-xs font-medium text-[#B0A8C6] mb-1 leading-[18px]">
-        {org}
       </div>
       <div className="font-pretendard font-semibold text-[17px] leading-[24px] text-gray800 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">
         {title}
