@@ -37,7 +37,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative w-[375px] h-[812px] mx-auto">
+    <div className="relative w-[375px] mx-auto min-h-screen bg-white">
       <div className="w-[375px] h-[60px] flex flex-row items-center px-[20px] py-[10px] gap-[10px]">
         <img
           src={chevronLeft}

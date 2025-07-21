@@ -178,7 +178,7 @@ export default function ArticleDetailPage() {
 
   return (
     // 전체 프레임
-    <div className="w-[375px] mx-auto bg-white">
+    <div className="w-[375px] mx-auto min-h-screen bg-white">
       <HeaderFrame />
 
       <div className="flex flex-col w-full pt-5 pr-5 pb-2 pl-5 gap-5">

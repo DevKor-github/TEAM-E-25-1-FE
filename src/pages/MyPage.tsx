@@ -61,7 +61,7 @@ export default function MyPage() {
   }, []);
 
   return (
-    <div className="relative w-[375px] mx-auto bg-white">
+    <div className="relative w-[375px] mx-auto min-h-screen bg-white">
       <HeaderFrame />
 
       <div className="absolute top-[80px] left-[20px] w-[100px] h-[32px] font-semibold text-title3 font-pretendard">
