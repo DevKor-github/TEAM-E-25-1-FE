@@ -38,6 +38,7 @@ export default function EventCard({
 }: EventCardProps) {
   // dday 계산 (백엔드 데이터가 있을 때만)
   let diff: number | undefined = undefined;
+  let status: "upcoming" | "imminent" | "critical" | "ongoing" | "ended" = "upcoming";
   
   if (startAt) {
     try {
@@ -48,6 +49,19 @@ export default function EventCard({
       diff = Math.ceil(
         (start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
       );
+      
+      // status 계산
+      if (diff < 0) {
+        status = "ended"; // 종료
+      } else if (diff === 0) {
+        status = "ongoing"; // 행사중 (당일)
+      } else if (diff <= 3) {
+        status = "critical"; // 매우 임박 (3일 이내, 경계선 있음)
+      } else if (diff <= 7) {
+        status = "imminent"; // 임박 (7일 이내, 경계선 없음)
+      } else {
+        status = "upcoming"; // 일반
+      }
     } catch (e) {
       console.warn("Invalid startAt date:", startAt);
       diff = undefined;
@@ -131,7 +145,7 @@ export default function EventCard({
         {safeTags.map((tag) => (
           <EventTypeIndicator key={tag} type={tag} />
         ))}
-        {diff !== undefined && <EventDateIndicator dday={diff} />} {/* D-day는 백엔드 데이터가 있을 때만 표시 */}
+        {diff !== undefined && <EventDateIndicator dday={diff} status={status} />} {/* D-day는 백엔드 데이터가 있을 때만 표시 */}
         <div className="flex items-center gap-1 ml-auto min-w-[52px] pr-1">
           <img src={heartGray} alt="like-count" className="w-5 h-5" />
           <span className="font-pretendard text-sm font-body-3 text-gray-500">
