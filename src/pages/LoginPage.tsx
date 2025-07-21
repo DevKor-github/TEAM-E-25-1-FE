@@ -23,17 +23,8 @@ export default function LoginPage() {
     checkLoginStatus();
   }, [navigate]);
 
-  const handleKakaoLogin = async () => {
-    try {
-      window.location.href =
-        "https://api.goyangeyaong.shop/auth/oauth/authorization";
-    } catch (err: any) {
-      if (err.response?.status === 401) {
-        alert("유효하지 않은 인증 코드입니다.");
-      } else {
-        alert("카카오 로그인 요청에 실패했습니다.");
-      }
-    }
+  const handleKakaoLogin = () => {
+    window.location.href = `${import.meta.env.VITE_BASE_URL}auth/oauth/authorization`;
   };
 
   return (
