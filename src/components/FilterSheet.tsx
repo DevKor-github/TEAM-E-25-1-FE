@@ -8,6 +8,7 @@ import { EventType } from "./ui/EventTypeIndicator";
 export type FilterState = {
   types: EventType[];
   includePast: boolean;
+  hasExplicitDateFilter?: boolean; // 사용자가 명시적으로 날짜 필터를 설정했는지 여부
 };
 
 const ALL_TYPES: EventType[] = [
@@ -53,7 +54,11 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
 
   // 저장하기 버튼 클릭 시 실제 필터 상태에 적용
   const handleApply = () => {
-    setFilterState(tempFilterState);
+    // 저장하기를 누르면 항상 명시적으로 필터를 설정한 것으로 처리
+    setFilterState({
+      ...tempFilterState,
+      hasExplicitDateFilter: true
+    });
     onApply();
   };
 
@@ -99,7 +104,11 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
                   <SegmentedControl
                     segments={["지난 행사 포함", "지난 행사 제외"]}
                     selected={tempFilterState.includePast ? "지난 행사 포함" : "지난 행사 제외"}
-                    onChange={(val: string) => setTempFilterState({ ...tempFilterState, includePast: val === "지난 행사 포함" })}
+                    onChange={(val: string) => setTempFilterState({ 
+                      ...tempFilterState, 
+                      includePast: val === "지난 행사 포함",
+                      hasExplicitDateFilter: true // 사용자가 명시적으로 선택했음을 표시
+                    })}
                   />
                 </div>
               </div>
