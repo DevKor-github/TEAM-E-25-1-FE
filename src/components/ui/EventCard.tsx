@@ -70,7 +70,7 @@ export default function EventCard({
 
   return (
     <div
-      className="flex flex-col w-[335px] cursor-pointer"
+      className="flex flex-col w-full cursor-pointer"
       onClick={(e) => {
         // 하트 버튼 클릭이 아닌 경우에만 카드 클릭 이벤트 실행
         const target = e.target as HTMLElement;

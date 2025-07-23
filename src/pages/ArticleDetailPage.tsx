@@ -162,7 +162,7 @@ export default function ArticleDetailPage() {
 
   return (
     // 전체 프레임
-    <div className="w-[375px] mx-auto min-h-screen bg-white">
+    <div className="w-full max-w-[460px] mx-auto bg-white min-h-screen">
       <HeaderFrame />
 
       <div className="flex flex-col w-full pt-5 pr-5 pb-2 pl-5 gap-5">
@@ -285,9 +285,9 @@ export default function ArticleDetailPage() {
       {/* 상세이미지 모달 */}
       {modalOpen && modalImage && (
         <div className="min-h-[100vh] fixed inset-0 flex items-center justify-center">
-          <div className="relative bg-white overflow-y-scroll scrollbar-hide w-[375px] h-screen flex flex-col items-center">
+          <div className="relative bg-white overflow-y-scroll scrollbar-hide w-full max-w-[460px] h-screen flex flex-col items-center">
             {/* 상단 바: 닫기 버튼 + 인덱스 */}
-            <div className="relative flex items-center w-[375px] h-[60px] min-h-[60px] pt-[10px] pr-[20px] pb-[10px] pl-[20px] gap-[10px]">
+            <div className="relative flex items-center w-full h-[60px] min-h-[60px] pt-[10px] pr-[20px] pb-[10px] pl-[20px] gap-[10px]">
               <img
                 className="cursor-pointer"
                 onClick={handleModalClose}
@@ -300,7 +300,7 @@ export default function ArticleDetailPage() {
             </div>
 
             {/* Image Section */}
-            <div className="flex flex-col w-[375px] h-fit gap-[28px] mt-[121px] mb-[180px]">
+            <div className="flex flex-col w-full h-fit gap-[28px] mt-[121px] mb-[180px]">
               <img
                 src={modalImage}
                 alt={`행사 이미지 ${modalIndex + 1}`}

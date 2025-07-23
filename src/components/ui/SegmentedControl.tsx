@@ -14,7 +14,7 @@ export default function SegmentedControl({
 }: SegmentedControlProps) {
   return (
     <div
-      className="flex p-[2px] bg-gray-50 rounded-[12px] w-full max-w-[335px]"
+      className="flex p-[2px] bg-gray-50 rounded-[12px] w-full"
       style={{ minHeight: 40 }}
     >
       {segments.map((label) => (

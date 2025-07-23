@@ -185,7 +185,7 @@ export default function ArticleListPage() {
 
   if (loading) {
     return (
-      <div className="w-[375px] mx-auto bg-white min-h-screen">
+      <div className="w-full max-w-[460px] mx-auto bg-white min-h-screen">
         <HeaderFrame />
         <div className="flex flex-col items-center px-5">
           <div className="flex items-center justify-center py-8">
@@ -197,9 +197,9 @@ export default function ArticleListPage() {
   }
 
   return (
-    <div className="w-[375px] mx-auto bg-white min-h-screen">
+    <div className="w-full max-w-[460px] mx-auto bg-white min-h-screen">
       <HeaderFrame />
-      <div className="flex flex-col items-center px-5">
+      <div className="flex flex-col px-5">
         {/* 필터 버튼 */}
         <MobileHeaderSection
           eventCount={articleList.length}

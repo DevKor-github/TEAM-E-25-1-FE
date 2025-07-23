@@ -167,7 +167,7 @@ export default function ScrapPage() {
   if (loading) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center bg-white">
-        <div className="w-full max-w-[375px] px-[20px] box-border">
+        <div className="w-full max-w-[460px] px-[20px] box-border">
           <HeaderFrame />
           <div className="flex items-center justify-center py-8">
             <div className="text-lg text-gray-500">로딩 중...</div>
@@ -179,7 +179,7 @@ export default function ScrapPage() {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center bg-white">
-      <div className="w-full max-w-[375px] px-[20px] box-border">
+      <div className="w-full max-w-[460px] px-[20px] box-border">
         <HeaderFrame />
         {/* 필터 및 정렬 기능 */}
         <MobileHeaderSection

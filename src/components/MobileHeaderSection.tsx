@@ -27,7 +27,7 @@ export default function MobileHeaderSection({
   hasActiveFilters = false,
 }: MobileHeaderSectionProps) {
   return (
-    <div className="w-[335px] bg-white rounded-2xl p-0 flex flex-col gap-4">
+    <div className="w-full bg-white rounded-2xl p-0 flex flex-col gap-4">
       {/* 상단: 행사, 개수, dot, 필터/초기화 */}
       <div className="flex items-center justify-between pt-5">
         <span className="text-[23px] font-pretendard font-semibold text-black">{title}</span>
