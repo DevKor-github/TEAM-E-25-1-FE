@@ -69,13 +69,7 @@ export default function AdminHome() {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.get("/article", {
-        params: {
-          tags: "",
-          isFinished: "",
-          sort: "",
-        },
-      });
+      const { data } = await api.get("/article");
       
       // API 응답 구조에 따라 배열 추출
       const articlesArray = Array.isArray(data) ? data : (data.articles || data.data || []);
