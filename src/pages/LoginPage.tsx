@@ -28,27 +28,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative w-[375px] mx-auto min-h-screen bg-white">
-      <div className="w-[375px] h-[60px] flex flex-row items-center px-[20px] py-[10px] gap-[10px]">
-        <img
-          src={chevronLeft}
-          alt="이전으로 돌아가기"
-          className="w-6 h-6 cursor-pointer"
-          onClick={() => navigate(-1)}
-        />
-      </div>
+    // 바깥 프레임
+    <div className="w-full min-h-screen bg-gray-100">
+      {/* 중앙 컨텐츠 프레임 */}
+      <div className="relative w-full max-w-[460px] mx-auto bg-white min-h-screen">
+        <div className="w-[375px] h-[60px] flex flex-row items-center px-[20px] py-[10px] gap-[10px]">
+          <img
+            src={chevronLeft}
+            alt="이전으로 돌아가기"
+            className="w-6 h-6 cursor-pointer"
+            onClick={() => navigate(-1)}
+          />
+        </div>
 
-      <div className="absolute top-[80px] left-[20px] w-[165px] h-[64px] font-semibold text-title3 font-pretendard">
-        로그인이
-        <br /> 필요한 기능이에요
-      </div>
+        <div className="absolute top-[80px] left-[20px] w-[165px] h-[64px] font-semibold text-title3 font-pretendard">
+          로그인이
+          <br /> 필요한 기능이에요
+        </div>
 
-      <div className="absolute top-[184px] left-[58px] w-[260px] h-[140px] rounded-[20px] px-[100px] py-[40px] gap-[10px] bg-gradient-to-b from-[#EFFAFF] to-[#DEF3FF]">
-        <img src={logo} alt="univent logo" className="w-[60px] h-[60px]" />
-      </div>
+        <div className="absolute top-[184px] left-[58px] right-[58px] flex justify-center items-center max-w-[344px] h-[140px] rounded-[20px] py-[40px] gap-[10px] bg-gradient-to-b from-[#EFFAFF] to-[#DEF3FF]">
+          <img src={logo} alt="univent logo" className="-[60px] h-[60px]" />
+        </div>
 
-      <div className="absolute top-[364px] left-[20px]">
-        <KakaoLoginBtn onClick={handleKakaoLogin} />
+        <div className="absolute w-full max-w-[460px] top-[364px] px-[20px]">
+          <KakaoLoginBtn onClick={handleKakaoLogin} />
+        </div>
       </div>
     </div>
   );

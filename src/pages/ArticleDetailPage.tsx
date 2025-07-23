@@ -141,10 +141,12 @@ export default function ArticleDetailPage() {
 
   if (loading) {
     return (
-      <div className="w-[375px] mx-auto min-h-screen bg-white">
-        <HeaderFrame />
-        <div className="flex items-center justify-center py-8 text-lg text-gray-500">
-          로딩 중...
+      <div className="w-full min-h-screen bg-gray-100">
+        <div className="w-full max-w-[460px] mx-auto bg-white min-h-screen">
+          <HeaderFrame />
+          <div className="flex items-center justify-center py-8 text-lg text-gray-500">
+            로딩 중...
+          </div>
         </div>
       </div>
     );
@@ -152,258 +154,266 @@ export default function ArticleDetailPage() {
 
   if (!article)
     return (
-      <div className="w-[375px] mx-auto min-h-screen bg-white">
-        <HeaderFrame />
-        <div className="flex items-center justify-center py-8 text-lg text-gray-500">
-          해당 행사를 찾을 수 없습니다.
+      <div className="w-full min-h-screen bg-gray-100">
+        <div className="w-full max-w-[460px] mx-auto bg-white min-h-screen">
+          <HeaderFrame />
+          <div className="flex items-center justify-center py-8 text-lg text-gray-500">
+            해당 행사를 찾을 수 없습니다.
+          </div>
         </div>
       </div>
     );
 
   return (
-    // 전체 프레임
-    <div className="w-full max-w-[460px] mx-auto bg-white min-h-screen">
-      <HeaderFrame />
+    // 바깥 프레임
+    <div className="w-full min-h-screen bg-gray-100">
+      {/* 중앙 컨텐츠 프레임 */}
+      <div className="w-full max-w-[460px] mx-auto bg-white min-h-screen">
+        <HeaderFrame />
 
-      <div className="flex flex-col w-full pt-5 pr-5 pb-2 pl-5 gap-5">
-        <img
-          src={article.thumbnailPath}
-          alt="썸네일 이미지"
-          className="w-full h-[188px] min-w-[240px] min-h-[135px] rounded-lg border border-gray-200 flex flex-col gap-[10px]"
-        />
+        <div className="flex flex-col w-full pt-5 pr-5 pb-2 pl-5 gap-5">
+          <img
+            src={article.thumbnailPath}
+            alt="썸네일 이미지"
+            className="w-full h-[188px] min-w-[240px] min-h-[135px] rounded-lg border border-gray-200 flex flex-col gap-[10px]"
+          />
 
-        <div className="flex flex-col w-full h-[94px] gap-3">
-          <div className="w-full h-full font-semibold text-title4 text-gray-800 font-pretendard">
-            {article.title}
-          </div>
-          <div className="flex flex-row w-full h-[26px] gap-5">
-            <div className="flex flex-row w-full max-w-[186px] gap-2">
-              {article.tags.map((tag) => (
-                <EventTypeIndicator key={tag} type={tag} />
-              ))}
+          <div className="flex flex-col w-full h-[94px] gap-3">
+            <div className="w-full h-full font-semibold text-title4 text-gray-800 font-pretendard">
+              {article.title}
             </div>
-            <div className="flex flex-row gap-3">
-              <div className="font-normal text-body3 text-gray-500 font-pretendard">
-                조회 {article.viewCount}
+            <div className="flex flex-row w-full h-[26px]">
+              <div className="flex flex-row w-fit gap-2">
+                {article.tags.map((tag) => (
+                  <EventTypeIndicator key={tag} type={tag} />
+                ))}
               </div>
-              <div className="flex flex-row gap-1">
-                <img src={heartGray} alt="like-count" className="w-5 h-5" />
+              <div className="flex flex-row ml-auto gap-3">
                 <div className="font-normal text-body3 text-gray-500 font-pretendard">
-                  {article.scrapCount > 999 ? "999+" : article.scrapCount}
+                  조회 {article.viewCount}
+                </div>
+                <div className="flex flex-row gap-1">
+                  <img src={heartGray} alt="like-count" className="w-5 h-5" />
+                  <div className="font-normal text-body3 text-gray-500 font-pretendard">
+                    {article.scrapCount > 999 ? "999+" : article.scrapCount}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* 탭 컨트롤 */}
-      {!modalOpen && (
-        <div className="sticky top-0 z-20 bg-white flex flex-col w-full border-b border-solid border-gray-200 pt-3 px-4 gap-2.5">
-          <TabbedControl
-            tabs={[
-              { label: "행사 일시 ∙ 장소", id: "tab1" },
-              { label: "행사 주최기관", id: "tab2" },
-              {
-                label: "행사 이미지",
-                id: "tab3",
-                numbering: article.imagePaths?.length ?? 0,
-              },
-              { label: "행사 소개", id: "tab4" },
-            ]}
-            onTabChange={handleTabChange}
-          />
-        </div>
-      )}
+        {/* 탭 컨트롤 */}
+        {!modalOpen && (
+          <div className="sticky top-0 z-20 bg-white flex flex-col w-full border-b border-solid border-gray-200 pt-3 px-4 gap-2.5">
+            <TabbedControl
+              tabs={[
+                { label: "행사 일시 ∙ 장소", id: "tab1" },
+                { label: "행사 주최기관", id: "tab2" },
+                {
+                  label: "행사 이미지",
+                  id: "tab3",
+                  numbering: article.imagePaths?.length ?? 0,
+                },
+                { label: "행사 소개", id: "tab4" },
+              ]}
+              onTabChange={handleTabChange}
+            />
+          </div>
+        )}
 
-      <div
-        ref={datePlaceRef}
-        className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1"
-      >
-        <div className="font-medium text-body3 text-gray-500 font-pretendard">
-          행사 일시
+        <div
+          ref={datePlaceRef}
+          className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1"
+        >
+          <div className="font-medium text-body3 text-gray-500 font-pretendard">
+            행사 일시
+          </div>
+          <div className="font-normal text-body1 text-gray-800 font-pretendard">
+            {formatDate(article.startAt, article.endAt)}
+          </div>
+          <div>
+            <EventDateIndicator
+              startAt={article.startAt}
+              endAt={article.endAt}
+            />
+          </div>
         </div>
-        <div className="font-normal text-body1 text-gray-800 font-pretendard">
-          {formatDate(article.startAt, article.endAt)}
+        <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1">
+          <div className="font-medium text-body3 text-gray-500 font-pretendard">
+            행사 장소
+          </div>
+          <div className="font-normal text-body1 text-gray-800 font-pretendard">
+            {article.location}
+          </div>
+          <div>
+            <Button
+              styleType="gray"
+              size="md"
+              onClick={() => {
+                navigator.clipboard.writeText(article.location);
+                setToastMessage("주소가 복사되었습니다");
+                setTimeout(() => setToastMessage(null), 2000);
+              }}
+            >
+              주소 복사
+            </Button>
+          </div>
+        </div>
+        <div ref={orgRef} className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1">
+          <div className="font-medium text-body3 text-gray-500 font-pretendard">
+            행사 주최기관
+          </div>
+          <div className="font-normal text-body1 text-gray-800 font-pretendard">
+            {article.organization}
+          </div>
+        </div>
+        <div ref={imageRef} className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-3">
+          <div className="font-medium text-body3 text-gray-500 font-pretendard">
+            행사 이미지 ({article.imagePaths?.length ?? 0})
+          </div>
+          {article.imagePaths && article.imagePaths.length > 0 ? (
+            <div className="flex flex-row gap-4 overflow-x-auto">
+              {article.imagePaths.map((src, index) => (
+                <div
+                  key={index}
+                  onClick={() => handleImageClick(src, index)}
+                  className="cursor-pointer flex-shrink-0 w-[160px]"
+                >
+                  <EventImage src={src} alt={`행사 이미지 ${index + 1}`} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="font-normal text-body1 text-gray-800 font-pretendard">
+              이미지가 없습니다.
+            </div>
+          )}
+        </div>
+
+        {/* 상세이미지 모달 */}
+        {modalOpen && modalImage && (
+          <div className="min-h-[100vh] fixed inset-0 flex items-center justify-center">
+            <div className="relative bg-white overflow-y-scroll scrollbar-hide w-full max-w-[460px] h-screen flex flex-col items-center">
+              {/* 상단 바: 닫기 버튼 + 인덱스 */}
+              <div className="relative flex items-center w-full h-[60px] min-h-[60px] pt-[10px] pr-[20px] pb-[10px] pl-[20px] gap-[10px]">
+                <img
+                  className="cursor-pointer"
+                  onClick={handleModalClose}
+                  src={closeIcon}
+                  alt="닫기"
+                />
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-normal text-body1 text-gray-700 font-pretendard">
+                  {modalIndex + 1} / {article.imagePaths?.length}
+                </div>
+              </div>
+
+              {/* Image Section */}
+              <div className="flex flex-col w-full h-fit gap-[28px] mt-[121px] mb-[180px]">
+                <img
+                  src={modalImage}
+                  alt={`행사 이미지 ${modalIndex + 1}`}
+                  className="flex-1 flex items-center justify-center w-full"
+                />
+
+                {/* 하단 화살표 버튼 */}
+                <div className="flex flex-row w-full pb-8">
+                  {/* 왼쪽 영역 */}
+                  <div className="flex-1 flex justify-center">
+                    <Button
+                      buttonType="symbol"
+                      styleType="gray"
+                      iconType="chevronLeft"
+                      onClick={() => {
+                        if (modalIndex > 0) {
+                          setModalImage(
+                            article.imagePaths?.[modalIndex - 1] ?? null
+                          );
+                          setModalIndex(modalIndex - 1);
+                        }
+                      }}
+                    />
+                  </div>
+                  {/* 오른쪽 영역 */}
+                  <div className="flex-1 flex justify-center">
+                    <Button
+                      buttonType="symbol"
+                      styleType="gray"
+                      iconType="chevronRight"
+                      onClick={() => {
+                        if (
+                          article.imagePaths &&
+                          modalIndex < article.imagePaths.length - 1
+                        ) {
+                          setModalImage(article.imagePaths[modalIndex + 1]);
+                          setModalIndex(modalIndex + 1);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={descRef} className="pt-8 pr-5 pb-10 pl-5 gap-2.5">
+          <div className="whitespace-pre-line font-normal text-body1 text-gray-800 font-pretendard">
+            {article.description}
+          </div>
         </div>
         <div>
-          <EventDateIndicator startAt={article.startAt} endAt={article.endAt} />
-        </div>
-      </div>
-      <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1">
-        <div className="font-medium text-body3 text-gray-500 font-pretendard">
-          행사 장소
-        </div>
-        <div className="font-normal text-body1 text-gray-800 font-pretendard">
-          {article.location}
-        </div>
-        <div>
-          <Button
-            styleType="gray"
-            size="md"
-            onClick={() => {
-              navigator.clipboard.writeText(article.location);
-              setToastMessage("주소가 복사되었습니다");
+          <BottomButtonsCombo3
+            onShareClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              setToastMessage("공유링크가 복사되었습니다");
               setTimeout(() => setToastMessage(null), 2000);
             }}
-          >
-            주소 복사
-          </Button>
+            label="신청하기"
+            labelDisabled={!article.registrationUrl}
+            onLabelClick={() => {
+              window.open(article.registrationUrl, "_blank");
+            }}
+            heartScrapped={isScrapped ?? false} // isScrapped 값이 올 때까지 false로 처리
+            onHeartClick={async () => {
+              if (!articleId || !article) return;
+
+              try {
+                if (isScrapped) {
+                  await api.delete(`/scrap/${articleId}`);
+                  setIsScrapped(false);
+                  setArticle({
+                    ...article,
+                    // 스크랩 취소할 때 scrapCount가 음수가 되지 않도록 안전하게 처리
+                    scrapCount: Math.max(0, article.scrapCount - 1),
+                  });
+                } else {
+                  await api.post(`/scrap/${articleId}`);
+                  setIsScrapped(true);
+                  setArticle({
+                    ...article,
+                    scrapCount: article.scrapCount + 1,
+                  });
+                }
+              } catch (err: any) {
+                if (err.response?.status === 401) {
+                  navigate("/login");
+                } else if (err.response?.status === 404) {
+                  alert("해당 행사가 존재하지 않습니다.");
+                } else {
+                  alert("스크랩 처리 중 오류가 발생했습니다.");
+                }
+              }
+            }}
+          />
         </div>
-      </div>
-      <div ref={orgRef} className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1">
-        <div className="font-medium text-body3 text-gray-500 font-pretendard">
-          행사 주최기관
-        </div>
-        <div className="font-normal text-body1 text-gray-800 font-pretendard">
-          {article.organization}
-        </div>
-      </div>
-      <div ref={imageRef} className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-3">
-        <div className="font-medium text-body3 text-gray-500 font-pretendard">
-          행사 이미지 ({article.imagePaths?.length ?? 0})
-        </div>
-        {article.imagePaths && article.imagePaths.length > 0 ? (
-          <div className="flex flex-row gap-4 overflow-x-auto">
-            {article.imagePaths.map((src, index) => (
-              <div
-                key={index}
-                onClick={() => handleImageClick(src, index)}
-                className="cursor-pointer flex-shrink-0 w-[160px]"
-              >
-                <EventImage src={src} alt={`행사 이미지 ${index + 1}`} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="font-normal text-body1 text-gray-800 font-pretendard">
-            이미지가 없습니다.
+
+        {/* Toast 메시지 띄우기 */}
+        {toastMessage && (
+          <div className="w-screen flex justify-center max-w-[300px] fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+            <Toast message={toastMessage} />
           </div>
         )}
       </div>
-
-      {/* 상세이미지 모달 */}
-      {modalOpen && modalImage && (
-        <div className="min-h-[100vh] fixed inset-0 flex items-center justify-center">
-          <div className="relative bg-white overflow-y-scroll scrollbar-hide w-full max-w-[460px] h-screen flex flex-col items-center">
-            {/* 상단 바: 닫기 버튼 + 인덱스 */}
-            <div className="relative flex items-center w-full h-[60px] min-h-[60px] pt-[10px] pr-[20px] pb-[10px] pl-[20px] gap-[10px]">
-              <img
-                className="cursor-pointer"
-                onClick={handleModalClose}
-                src={closeIcon}
-                alt="닫기"
-              />
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-normal text-body1 text-gray-700 font-pretendard">
-                {modalIndex + 1} / {article.imagePaths?.length}
-              </div>
-            </div>
-
-            {/* Image Section */}
-            <div className="flex flex-col w-full h-fit gap-[28px] mt-[121px] mb-[180px]">
-              <img
-                src={modalImage}
-                alt={`행사 이미지 ${modalIndex + 1}`}
-                className="flex-1 flex items-center justify-center w-full"
-              />
-
-              {/* 하단 화살표 버튼 */}
-              <div className="flex flex-row w-full pb-8">
-                {/* 왼쪽 영역 */}
-                <div className="flex-1 flex justify-center">
-                  <Button
-                    buttonType="symbol"
-                    styleType="gray"
-                    iconType="chevronLeft"
-                    onClick={() => {
-                      if (modalIndex > 0) {
-                        setModalImage(
-                          article.imagePaths?.[modalIndex - 1] ?? null
-                        );
-                        setModalIndex(modalIndex - 1);
-                      }
-                    }}
-                  />
-                </div>
-                {/* 오른쪽 영역 */}
-                <div className="flex-1 flex justify-center">
-                  <Button
-                    buttonType="symbol"
-                    styleType="gray"
-                    iconType="chevronRight"
-                    onClick={() => {
-                      if (
-                        article.imagePaths &&
-                        modalIndex < article.imagePaths.length - 1
-                      ) {
-                        setModalImage(article.imagePaths[modalIndex + 1]);
-                        setModalIndex(modalIndex + 1);
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      <div ref={descRef} className="pt-8 pr-5 pb-10 pl-5 gap-2.5">
-        <div className="whitespace-pre-line font-normal text-body1 text-gray-800 font-pretendard">
-          {article.description}
-        </div>
-      </div>
-      <div>
-        <BottomButtonsCombo3
-          onShareClick={() => {
-            navigator.clipboard.writeText(window.location.href);
-            setToastMessage("공유링크가 복사되었습니다");
-            setTimeout(() => setToastMessage(null), 2000);
-          }}
-          label="신청하기"
-          labelDisabled={!article.registrationUrl}
-          onLabelClick={() => {
-            window.open(article.registrationUrl, "_blank");
-          }}
-          heartScrapped={isScrapped ?? false} // isScrapped 값이 올 때까지 false로 처리
-          onHeartClick={async () => {
-            if (!articleId || !article) return;
-
-            try {
-              if (isScrapped) {
-                await api.delete(`/scrap/${articleId}`);
-                setIsScrapped(false);
-                setArticle({
-                  ...article,
-                  // 스크랩 취소할 때 scrapCount가 음수가 되지 않도록 안전하게 처리
-                  scrapCount: Math.max(0, article.scrapCount - 1),
-                });
-              } else {
-                await api.post(`/scrap/${articleId}`);
-                setIsScrapped(true);
-                setArticle({
-                  ...article,
-                  scrapCount: article.scrapCount + 1,
-                });
-              }
-            } catch (err: any) {
-              if (err.response?.status === 401) {
-                navigate("/login");
-              } else if (err.response?.status === 404) {
-                alert("해당 행사가 존재하지 않습니다.");
-              } else {
-                alert("스크랩 처리 중 오류가 발생했습니다.");
-              }
-            }
-          }}
-        />
-      </div>
-
-      {/* Toast 메시지 띄우기 */}
-      {toastMessage && (
-        <div className="w-screen flex justify-center max-w-[300px] fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-          <Toast message={toastMessage} />
-        </div>
-      )}
     </div>
   );
 }
