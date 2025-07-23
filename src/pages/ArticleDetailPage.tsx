@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/buttons";
 import { BottomButtonsCombo3 } from "@components/ui/bottomButtonsCombo";
 import closeIcon from "../assets/closeIcon.svg";
 import heartGray from "@/assets/heart_gray.svg";
+import copyIcon from "@/assets/copyIcon.svg";
 
 type Article = {
   id: string;
@@ -240,27 +241,26 @@ export default function ArticleDetailPage() {
           </div>
         </div>
         <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1">
-          <div className="font-medium text-body3 text-gray-500 font-pretendard">
-            행사 장소
+          <div className="flex flex-row gap-1">
+            <div className="font-medium text-body3 text-gray-500 font-pretendard">
+              행사 장소
+            </div>
+            <img
+              src={copyIcon}
+              alt="copy"
+              className="w-5 h-5 cursor-pointer"
+              onClick={() => {
+                navigator.clipboard.writeText(article.location);
+                setToastMessage("장소가 복사되었습니다");
+                setTimeout(() => setToastMessage(null), 2000);
+              }}
+            />
           </div>
           <div className="font-normal text-body1 text-gray-800 font-pretendard">
             {article.location}
           </div>
-          <div>
-            <Button
-              styleType="gray"
-              size="md"
-              onClick={() => {
-                navigator.clipboard.writeText(article.location);
-                setToastMessage("주소가 복사되었습니다");
-                setTimeout(() => setToastMessage(null), 2000);
-              }}
-            >
-              주소 복사
-            </Button>
-          </div>
         </div>
-        <div ref={orgRef} className="flex flex-col pt-8 pr-5 pb-4 pl-5 gap-1">
+        <div ref={orgRef} className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1">
           <div className="font-medium text-body3 text-gray-500 font-pretendard">
             행사 주최기관
           </div>
