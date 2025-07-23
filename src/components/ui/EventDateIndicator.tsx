@@ -3,16 +3,56 @@ import liveIndicator from "@/assets/live_Indicator_sky500.svg";
 type DateStatus = "upcoming" | "imminent" | "critical" | "ongoing" | "ended";
 
 interface EventDateIndicatorProps {
-  dday?: number;
-  status?: DateStatus;
+  startAt: string;
+  endAt: string;
   className?: string;
 }
 
 export default function EventDateIndicator({
-  dday,
-  status = "upcoming",
+  startAt,
+  endAt,
   className = "",
 }: EventDateIndicatorProps) {
+  // diff, status 계산
+  let diff: number | undefined = undefined;
+  let status: "upcoming" | "imminent" | "critical" | "ongoing" | "ended" =
+    "upcoming";
+
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = new Date(startAt);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endAt);
+    end.setHours(23, 59, 59, 999); // 종료일의 마지막 시간
+
+    diff = Math.ceil(
+      (start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    // status 계산 - startAt과 endAt 모두 고려
+    const todayTime = today.getTime();
+    const startTime = start.getTime();
+    const endTime = end.getTime();
+
+    if (endTime < todayTime) {
+      status = "ended"; // 종료일이 지난 경우만 종료
+    } else if (startTime <= todayTime && endTime >= todayTime) {
+      status = "ongoing"; // 시작일과 종료일 사이에 현재 날짜가 있는 경우 진행중
+    } else if (diff === 0) {
+      status = "ongoing"; // 시작일이 오늘인 경우 진행중
+    } else if (diff <= 3) {
+      status = "critical"; // 매우 임박 (3일 이내, 경계선 있음)
+    } else if (diff <= 7) {
+      status = "imminent"; // 임박 (7일 이내, 경계선 없음)
+    } else {
+      status = "upcoming"; // 일반
+    }
+  } catch (e) {
+    console.warn("Invalid date:", { startAt, endAt });
+    diff = undefined;
+  }
+
   const getStatusStyles = (status: DateStatus) => {
     switch (status) {
       case "upcoming":
@@ -31,11 +71,11 @@ export default function EventDateIndicator({
   };
 
   const getDateText = () => {
-    if (typeof dday !== "number") return "";
-    if (status === "ongoing" || dday === 0) return "행사중";
-    if (status === "ended" || dday < 0) return "종료";
-    if (dday === 1) return "내일 시작";
-    return `D-${dday}`;
+    if (typeof diff !== "number") return "";
+    if (status === "ongoing" || diff === 0) return "행사중";
+    if (status === "ended" || diff < 0) return "종료";
+    if (diff === 1) return "내일 시작";
+    return `D-${diff}`;
   };
 
   return (

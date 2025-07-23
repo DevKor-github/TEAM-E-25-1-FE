@@ -52,22 +52,6 @@ export default function ArticleDetailPage() {
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
 
-  // dday 계산 (타임존 이슈 없이 날짜만 비교, 한국시간 기준, startAt 유효성 체크)
-  let diff: number | undefined = undefined;
-  if (article) {
-    const isValidStart =
-      !!article.startAt && !isNaN(new Date(article.startAt).getTime());
-    if (isValidStart) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const start = new Date(article.startAt);
-      start.setHours(0, 0, 0, 0);
-      diff = Math.ceil(
-        (start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-      );
-    }
-  }
-
   const TAB_HEIGHT = 40; // sticky tabbed control의 height(px)
   const datePlaceRef = useRef<HTMLDivElement>(null);
   const orgRef = useRef<HTMLDivElement>(null);
@@ -243,7 +227,7 @@ export default function ArticleDetailPage() {
           {formatDate(article.startAt, article.endAt)}
         </div>
         <div>
-          <EventDateIndicator dday={diff} />
+          <EventDateIndicator startAt={article.startAt} endAt={article.endAt} />
         </div>
       </div>
       <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1">
