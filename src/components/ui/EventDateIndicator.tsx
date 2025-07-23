@@ -1,6 +1,6 @@
 import liveIndicator from "@/assets/live_Indicator_sky500.svg";
 
-type DateStatus = "upcoming" | "imminent" | "ongoing" | "ended";
+type DateStatus = "upcoming" | "imminent" | "critical" | "ongoing" | "ended";
 
 interface EventDateIndicatorProps {
   dday?: number;
@@ -18,9 +18,11 @@ export default function EventDateIndicator({
       case "upcoming":
         return "bg-gray-50 text-gray-500"; // 일반 (D-117)
       case "imminent":
-        return "bg-sky-50 text-sky-500 border border-sky-100"; // 임박 (D-7, D-3)
+        return "bg-sky-50 text-sky-500"; // 임박 (D-7~D-4, 경계선 없음)
+      case "critical":
+        return "bg-sky-50 text-sky-500 border-2 border-sky-100"; // 매우 임박 (D-3~D-1, 경계선 있음)
       case "ongoing":
-        return "bg-sky-50 text-sky-500 border border-sky-100"; // 행사중
+        return "bg-sky-50 text-sky-500 border-2 border-sky-100"; // 행사중
       case "ended":
         return "bg-gray-50 text-gray-500"; // 종료
       default:

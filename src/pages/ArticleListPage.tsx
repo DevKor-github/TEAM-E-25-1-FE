@@ -84,14 +84,31 @@ export default function ArticleListPage() {
         isScrapped: scrapIds.includes(article.id),
       }));
 
+      // 클라이언트 사이드 필터링: 지난 행사 제외가 설정된 경우
+      let filteredArticles = articlesWithScrapStatus;
+      if (!filterState.includePast) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        filteredArticles = articlesWithScrapStatus.filter((article) => {
+          try {
+            const endDate = new Date(article.endAt);
+            endDate.setHours(23, 59, 59, 999); // 해당 일의 마지막 시간
+            return endDate >= today; // 종료일이 오늘 이후인 행사만
+          } catch (e) {
+            return true; // 날짜 파싱 실패 시 포함
+          }
+        });
+      }
+
       // 4. '임박한' 선택 시 클라이언트에서 startAt 기준 정렬
       if (selectedSegment === "임박한") {
-        articlesWithScrapStatus.sort(
+        filteredArticles.sort(
           (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
         );
       }
 
-      setArticleList(articlesWithScrapStatus);
+      setArticleList(filteredArticles);
     } catch (error) {
       console.error("게시글 목록 조회 실패:", error);
       alert("게시글 목록을 불러오는 중 오류가 발생했습니다.");
