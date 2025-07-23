@@ -371,7 +371,13 @@ export default function ArticleDetailPage() {
             label="신청하기"
             labelDisabled={!article.registrationUrl}
             onLabelClick={() => {
-              window.open(article.registrationUrl, "_blank");
+              if (!article.registrationUrl) return;
+              const url =
+                article.registrationUrl.startsWith("http://") ||
+                article.registrationUrl.startsWith("https://")
+                  ? article.registrationUrl
+                  : `https://${article.registrationUrl}`;
+              window.open(url, "_blank");
             }}
             heartScrapped={isScrapped ?? false} // isScrapped 값이 올 때까지 false로 처리
             onHeartClick={async () => {
