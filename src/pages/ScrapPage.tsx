@@ -38,6 +38,7 @@ export default function ScrapPage() {
   const [filterState, setFilterState] = React.useState<FilterState>({
     types: [],
     includePast: false, // 기본값을 '지난행사제외'로 변경
+    hasExplicitDateFilter: false,
   });
 
   // API: 스크랩한 게시글 목록 조회
@@ -199,7 +200,9 @@ export default function ScrapPage() {
   // 필터 버튼 클릭
   const handleOpenFilter = () => setFilterSheetOpen(true);
   const handleCloseFilter = () => setFilterSheetOpen(false);
-  const handleApplyFilter = () => setFilterSheetOpen(false);
+  const handleApplyFilter = () => {
+    setFilterSheetOpen(false);
+  };
 
   if (loading) {
     return (
@@ -231,9 +234,39 @@ export default function ScrapPage() {
             selectedSegment={selectedSegment}
             onSegmentChange={setSelectedSegment}
             onReset={() => {
-              setFilterState({ types: [], includePast: false }); // 리셋할 때도 '지난행사제외'로
+              setFilterState({
+                types: [],
+                includePast: false, // 리셋할 때도 '지난행사제외'로
+                hasExplicitDateFilter: false,
+              });
             }}
             onFilter={handleOpenFilter}
+            hasActiveFilters={
+              filterState.types.length > 0 || filterState.hasExplicitDateFilter
+            }
+            selectedChips={(() => {
+              const chips: string[] = [];
+
+              // 행사 종류 칩
+              if (filterState.types.length > 0) {
+                if (filterState.types.length === 1) {
+                  chips.push(filterState.types[0]);
+                } else {
+                  chips.push(
+                    `${filterState.types[0]} 외 ${filterState.types.length - 1}개`
+                  );
+                }
+              }
+
+              // 행사 일정 칩 (사용자가 명시적으로 설정했을 때만)
+              if (filterState.hasExplicitDateFilter) {
+                chips.push(
+                  filterState.includePast ? "지난 행사 포함" : "지난 행사 제외"
+                );
+              }
+
+              return chips;
+            })()}
           />
           <FilterSheet
             open={filterSheetOpen}
