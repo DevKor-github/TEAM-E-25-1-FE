@@ -126,7 +126,7 @@ export function BottomButtonsCombo3({
         buttonType="text"
         size="lg"
         styleType="brand"
-        className="w-[215px]"
+        className="w-full"
         onClick={onLabelClick}
         disabled={labelDisabled}
         loading={labelLoading}
