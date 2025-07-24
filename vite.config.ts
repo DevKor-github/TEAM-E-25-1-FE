@@ -17,9 +17,11 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'https://goyangeyaong.shop',
+        target: 'https://api.goyangeyaong.shop',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: true,
+        ws: true,
       },
     },
   },

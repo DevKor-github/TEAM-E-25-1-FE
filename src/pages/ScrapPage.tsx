@@ -141,26 +141,41 @@ export default function ScrapPage() {
   // API: 스크랩 토글 (스크랩 해제만 가능)
   const handleToggleScrap = async (id: string) => {
     try {
-      // UI 즉시 업데이트 (Optimistic Update)
-      setArticleList(prev => 
-        prev.map(article => 
-          article.id === id 
-            ? { ...article, isScrapped: false, scrapCount: article.scrapCount - 1 }
-            : article
+      const article = articleList.find((a) => a.id === id);
+      if (!article) return;
+
+      const newScrapStatus = !article.isScrapped;
+      const newScrapCount = article.isScrapped
+        ? article.scrapCount - 1
+        : article.scrapCount + 1;
+
+      // 즉시 UI 업데이트 
+      setArticleList((prev) =>
+        prev.map((a) =>
+          a.id === id
+            ? { ...a, isScrapped: newScrapStatus, scrapCount: newScrapCount }
+            : a
         )
       );
 
-      await api.delete(`/scrap/${id}`);
-
-      // 성공 시 목록에서 해당 아이템 제거 (스크랩 페이지이므로)
-      setArticleList(prev => prev.filter(article => article.id !== id));
+      // API 호출
+      if (article.isScrapped) {
+        await api.delete(`/scrap/${id}`);
+        // 스크랩 해제 시에는 즉시 목록에서 제거하지 않음 (UI에서만 하트 상태 변경)
+      } else {
+        await api.post(`/scrap/${id}`);
+      }
     } catch (error: any) {
-      // 실패 시 원래 상태로 되돌리기
-      setArticleList(prev => 
-        prev.map(article => 
-          article.id === id 
-            ? { ...article, isScrapped: true, scrapCount: article.scrapCount + 1 }
-            : article
+      // 오류 발생 시 원래 상태로 되돌리기
+      setArticleList((prev) =>
+        prev.map((a) =>
+          a.id === id
+            ? {
+                ...a,
+                isScrapped: !a.isScrapped,
+                scrapCount: a.isScrapped ? a.scrapCount + 1 : a.scrapCount - 1,
+              }
+            : a
         )
       );
 
@@ -168,8 +183,10 @@ export default function ScrapPage() {
         navigate("/login");
       } else if (error.response?.status === 404) {
         alert("해당 게시글이 존재하지 않습니다.");
+      } else if (error.response?.status === 409) {
+        alert("이미 스크랩한 게시글입니다.");
       } else {
-        alert("스크랩 해제 중 오류가 발생했습니다.");
+        alert("스크랩 처리 중 오류가 발생했습니다.");
       }
     }
   };
