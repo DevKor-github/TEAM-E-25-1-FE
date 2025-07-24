@@ -28,7 +28,7 @@ export default function MobileHeaderSection({
 }: MobileHeaderSectionProps) {
   return (
     <div className="w-full bg-white rounded-2xl p-0 flex flex-col gap-4">
-      {/* 상단: 행사, 개수, dot, 필터/초기화 */}
+      {/* 상단: 행사, 개수, dot, 필터 */}
       <div className="flex items-center justify-between pt-5">
         <span className="text-[23px] font-pretendard font-semibold text-black">{title}</span>
         <div className="flex items-center">
@@ -37,28 +37,36 @@ export default function MobileHeaderSection({
           </span>
           <img src={dotIcon} alt="dot" className="w-1.5 h-1.5 mr-3" />
           <FilterButton 
-            label={hasActiveFilters ? "초기화" : "필터"} 
-            onClick={hasActiveFilters ? onReset : (onFilter || onReset)} 
+            label="필터" 
+            onClick={onFilter || onReset} 
           />
         </div>
       </div>
       
-      {/* chips과 Divider: hasActiveFilters가 true일 때만 렌더링 */}
+      {/* chips과 초기화 버튼: hasActiveFilters가 true일 때만 렌더링 */}
       {hasActiveFilters && (
         <>
-          {/* chips: selectedChips가 있을 때만 렌더링 */}
-          {selectedChips && selectedChips.length > 0 && (
-            <div className="flex gap-2 flex-wrap">
-              {selectedChips.map((chip, index) => (
-                <span 
-                  key={index}
-                  className="inline-flex items-center px-2 py-1 rounded-[6px] bg-sky-50 text-sky-500 text-[15px] font-pretendard font-medium"
-                >
-                  {chip}
-                </span>
-              ))}
+          {/* chips와 초기화 버튼 */}
+          <div className="flex items-center justify-between gap-2">
+            {/* chips: selectedChips가 있을 때만 렌더링 */}
+            <div className="flex gap-2 flex-wrap flex-1">
+              {selectedChips && selectedChips.length > 0 && 
+                selectedChips.map((chip, index) => (
+                  <span 
+                    key={index}
+                    className="inline-flex items-center px-2 py-1 rounded-[6px] bg-sky-50 text-sky-500 text-[15px] font-pretendard font-medium"
+                  >
+                    {chip}
+                  </span>
+                ))
+              }
             </div>
-          )}
+            {/* 초기화 버튼 */}
+            <FilterButton 
+              label="초기화" 
+              onClick={onReset} 
+            />
+          </div>
           {/* Divider */}
           <div>
             <Divider />
