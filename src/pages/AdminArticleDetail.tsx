@@ -76,7 +76,9 @@ export default function AdminArticleDetail() {
       <AdminHeader />
       <div className="pt-20 py-8 max-w-4xl mx-auto">
         {error ? (
-          <div className="text-red-600">{error}</div>
+          <div className="flex items-center justify-center text-red-600">
+            {error}
+          </div>
         ) : (
           /* 정상 데이터 렌더링 */
           article && (

@@ -167,13 +167,20 @@ export function ArticleForm({
         }
       });
 
+      // FileList 객체로 변환하여 react-hook-form에 전달 (새 파일만)
+      // setTimeout으로 render 이후(setDetailImages가 완료된 이후) onChange 호출
+      setTimeout(() => {
+        const dt = new DataTransfer();
+        uniqueFiles.forEach((item) => {
+          if (item.isNew && item.file) {
+            dt.items.add(item.file);
+          }
+        });
+        onChange(dt.files);
+      }, 0);
+
       return uniqueFiles;
     });
-
-    // FileList 객체로 변환하여 react-hook-form에 전달 (새 파일만)
-    const dt = new DataTransfer();
-    Array.from(newFiles).forEach((file) => dt.items.add(file));
-    onChange(dt.files);
   };
 
   // 썸네일 이미지 삭제 핸들러
