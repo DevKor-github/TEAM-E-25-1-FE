@@ -37,7 +37,7 @@ export default function ArticleListPage() {
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
   const [filterState, setFilterState] = React.useState<FilterState>({
     types: [],
-    includePast: true,
+    includePast: false, // 기본값을 '지난행사제외'로 변경
     hasExplicitDateFilter: false,
   });
 
@@ -218,7 +218,7 @@ export default function ArticleListPage() {
             onReset={() => {
               setFilterState({
                 types: [],
-                includePast: true,
+                includePast: false, // 리셋할 때도 '지난행사제외'로
                 hasExplicitDateFilter: false,
               });
             }}

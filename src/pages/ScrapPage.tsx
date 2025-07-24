@@ -37,45 +37,58 @@ export default function ScrapPage() {
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
   const [filterState, setFilterState] = React.useState<FilterState>({
     types: [],
-    includePast: true,
+    includePast: false, // 기본값을 '지난행사제외'로 변경
   });
 
   // API: 스크랩한 게시글 목록 조회
   const fetchScrapedArticles = React.useCallback(async () => {
     try {
       setLoading(true);
-      // 스크랩 목록은 파라미터 없이 조회
+      
+      // 1. 스크랩 목록 조회
       const response = await api.get("/scrap");
 
       // API 응답 구조에 따라 배열 추출
-      const articles = Array.isArray(response.data)
+      const scrapList = Array.isArray(response.data)
         ? response.data
         : response.data.articles || response.data.data || [];
 
-      const articlesWithScrapStatus = articles.map((article: any) => {
-        // 스크랩 응답에서 필요한 필드들이 있는지 확인
-        const articleData = article.article || article; // 중첩된 구조일 가능성 확인
-        
-        return {
-          id: article.articleId || articleData.id || article.id,
-          title: articleData.title || "제목 없음",
-          organization: articleData.organization || "주최기관 정보 없음",
-          thumbnailPath: articleData.thumbnailPath || articleData.thumbnail_path || "",
-          scrapCount: articleData.scrapCount || 0,
-          viewCount: articleData.viewCount || 0,
-          tags: Array.isArray(articleData.tags) ? articleData.tags : [],
-          description: articleData.description || "",
-          location: articleData.location || "",
-          startAt: articleData.startAt || articleData.start_at || "",
-          endAt: articleData.endAt || articleData.end_at || "",
-          imagePaths: articleData.imagePaths || [],
-          registrationUrl: articleData.registrationUrl || "",
-          isScrapped: true, // 스크랩 페이지이므로 기본값 true
-        };
+      if (scrapList.length === 0) {
+        setArticleList([]);
+        return;
+      }
+
+      // 2. 각 스크랩된 게시글의 상세 정보 가져오기
+      const articlePromises = scrapList.map(async (scrapItem: any) => {
+        try {
+          const articleId = scrapItem.articleId || scrapItem.id;
+          const detailResponse = await api.get(`/article/${articleId}`);
+          return {
+            ...detailResponse.data,
+            id: articleId,
+            isScrapped: true,
+          };
+        } catch (error) {
+          console.error(`게시글 ${scrapItem.articleId} 상세 정보 조회 실패:`, error);
+          // 상세 정보 조회 실패 시 스크랩 목록의 기본 정보 사용
+          return {
+            ...scrapItem,
+            id: scrapItem.articleId || scrapItem.id,
+            startAt: "", // 날짜 정보가 없을 경우 빈 문자열
+            endAt: "",
+            description: "",
+            location: "",
+            imagePaths: [],
+            registrationUrl: "",
+            isScrapped: true,
+          };
+        }
       });
 
+      const articlesWithDetails = await Promise.all(articlePromises);
+
       // 필터링 적용
-      let filteredArticles = [...articlesWithScrapStatus];
+      let filteredArticles = [...articlesWithDetails];
 
       // 타입 필터링
       if (filterState.types.length > 0) {
@@ -86,10 +99,18 @@ export default function ScrapPage() {
 
       // 종료된 행사 포함/제외 필터링
       if (!filterState.includePast) {
-        const now = new Date();
-        filteredArticles = filteredArticles.filter(
-          (article) => new Date(article.endAt) >= now
-        );
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        filteredArticles = filteredArticles.filter((article) => {
+          try {
+            const endDate = new Date(article.endAt);
+            endDate.setHours(23, 59, 59, 999); // 해당 일의 마지막 시간
+            return endDate >= today; // 종료일이 오늘 이후인 행사만
+          } catch (e) {
+            return true; // 날짜 파싱 실패 시 포함
+          }
+        });
       }
 
       // 클라이언트에서 정렬 처리
@@ -188,7 +209,7 @@ export default function ScrapPage() {
           selectedSegment={selectedSegment}
           onSegmentChange={setSelectedSegment}
           onReset={() => {
-            setFilterState({ types: [], includePast: true });
+            setFilterState({ types: [], includePast: false }); // 리셋할 때도 '지난행사제외'로
           }}
           onFilter={handleOpenFilter}
         />
