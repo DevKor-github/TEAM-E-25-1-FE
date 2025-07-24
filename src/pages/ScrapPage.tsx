@@ -41,7 +41,7 @@ export default function ScrapPage() {
   });
 
   // API: 스크랩한 게시글 목록 조회
-  const fetchScrapedArticles = async () => {
+  const fetchScrapedArticles = React.useCallback(async () => {
     try {
       setLoading(true);
       // 스크랩 목록은 파라미터 없이 조회
@@ -52,31 +52,30 @@ export default function ScrapPage() {
         ? response.data
         : response.data.articles || response.data.data || [];
 
-      // 스크랩 목록에서 게시글 상세 정보 조회
-      const articlesWithDetails = await Promise.all(
-        articles.map(async (article: any) => {
-          try {
-            const articleId = article.articleId || article.id;
-            const detailResponse = await api.get(`/article/${articleId}`);
-            const detailData = detailResponse.data;
-            
-            return {
-              ...detailData,
-              id: articleId,
-            };
-          } catch (detailError) {
-            console.warn(`게시글 상세 정보 조회 실패:`, detailError);
-            // 실패시 원본 데이터 사용
-            return {
-              ...article,
-              id: article.articleId || article.id,
-            };
-          }
-        })
-      );
+      const articlesWithScrapStatus = articles.map((article: any) => {
+        // 스크랩 응답에서 필요한 필드들이 있는지 확인
+        const articleData = article.article || article; // 중첩된 구조일 가능성 확인
+        
+        return {
+          id: article.articleId || articleData.id || article.id,
+          title: articleData.title || "제목 없음",
+          organization: articleData.organization || "주최기관 정보 없음",
+          thumbnailPath: articleData.thumbnailPath || articleData.thumbnail_path || "",
+          scrapCount: articleData.scrapCount || 0,
+          viewCount: articleData.viewCount || 0,
+          tags: Array.isArray(articleData.tags) ? articleData.tags : [],
+          description: articleData.description || "",
+          location: articleData.location || "",
+          startAt: articleData.startAt || articleData.start_at || "",
+          endAt: articleData.endAt || articleData.end_at || "",
+          imagePaths: articleData.imagePaths || [],
+          registrationUrl: articleData.registrationUrl || "",
+          isScrapped: true, // 스크랩 페이지이므로 기본값 true
+        };
+      });
 
       // 필터링 적용
-      let filteredArticles = [...articlesWithDetails];
+      let filteredArticles = [...articlesWithScrapStatus];
 
       // 타입 필터링
       if (filterState.types.length > 0) {
@@ -116,7 +115,7 @@ export default function ScrapPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedSegment, filterState, navigate]);
 
   // API: 스크랩 토글 (스크랩 해제만 가능)
   const handleToggleScrap = async (id: string) => {
@@ -157,7 +156,7 @@ export default function ScrapPage() {
   // 게시글 목록 조회 (페이지 로드 시, 정렬 및 필터 변경 시)
   React.useEffect(() => {
     fetchScrapedArticles();
-  }, [selectedSegment, filterState]);
+  }, [fetchScrapedArticles]);
 
   // 필터 버튼 클릭
   const handleOpenFilter = () => setFilterSheetOpen(true);
