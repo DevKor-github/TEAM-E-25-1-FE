@@ -368,7 +368,7 @@ export default function ArticleDetailPage() {
               setToastMessage("공유링크가 복사되었습니다");
               setTimeout(() => setToastMessage(null), 2000);
             }}
-            label="신청하기"
+            label="바로가기"
             labelDisabled={!article.registrationUrl}
             onLabelClick={() => {
               if (!article.registrationUrl) return;
