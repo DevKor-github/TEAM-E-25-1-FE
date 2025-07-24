@@ -186,11 +186,13 @@ export default function ScrapPage() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center bg-white">
-        <div className="w-full max-w-[460px] px-[20px] box-border">
+      <div className="w-full min-h-screen bg-gray-100">
+        <div className="w-full max-w-[460px] mx-auto bg-white min-h-screen">
           <HeaderFrame />
-          <div className="flex items-center justify-center py-8">
-            <div className="text-lg text-gray-500">로딩 중...</div>
+          <div className="flex flex-col items-center px-5">
+            <div className="flex items-center justify-center py-8">
+              <div className="text-lg text-gray-500">로딩 중...</div>
+            </div>
           </div>
         </div>
       </div>
@@ -198,29 +200,32 @@ export default function ScrapPage() {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center bg-white">
-      <div className="w-full max-w-[460px] px-[20px] box-border">
+    // 바깥 프레임
+    <div className="w-full min-h-screen bg-gray-100">
+      {/* 중앙 컨텐츠 프레임 */}
+      <div className="w-full max-w-[460px] mx-auto bg-white min-h-screen">
         <HeaderFrame />
-        {/* 필터 및 정렬 기능 */}
-        <MobileHeaderSection
-          title="찜한 행사"
-          eventCount={articleList.length}
-          segments={segments}
-          selectedSegment={selectedSegment}
-          onSegmentChange={setSelectedSegment}
-          onReset={() => {
-            setFilterState({ types: [], includePast: false }); // 리셋할 때도 '지난행사제외'로
-          }}
-          onFilter={handleOpenFilter}
-        />
-        <FilterSheet
-          open={filterSheetOpen}
-          onClose={handleCloseFilter}
-          filterState={filterState}
-          setFilterState={setFilterState}
-          onApply={handleApplyFilter}
-        />
-        <div className="flex flex-col gap-4 mt-4 w-full">
+        <div className="flex flex-col px-5">
+          {/* 필터 및 정렬 기능 */}
+          <MobileHeaderSection
+            title="찜한 행사"
+            eventCount={articleList.length}
+            segments={segments}
+            selectedSegment={selectedSegment}
+            onSegmentChange={setSelectedSegment}
+            onReset={() => {
+              setFilterState({ types: [], includePast: false }); // 리셋할 때도 '지난행사제외'로
+            }}
+            onFilter={handleOpenFilter}
+          />
+          <FilterSheet
+            open={filterSheetOpen}
+            onClose={handleCloseFilter}
+            filterState={filterState}
+            setFilterState={setFilterState}
+            onApply={handleApplyFilter}
+          />
+          <div className="flex flex-col gap-4 mt-4 w-full items-center">
           {articleList.length === 0 ? (
             <div className="text-center py-8">
               <div className="text-gray-500">스크랩한 게시글이 없습니다.</div>
@@ -248,6 +253,7 @@ export default function ScrapPage() {
               />
             ))
           )}
+          </div>
         </div>
       </div>
     </div>
