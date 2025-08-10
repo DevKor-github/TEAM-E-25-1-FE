@@ -357,7 +357,7 @@ export default function ArticleDetailPage() {
           </div>
         )}
         <div ref={descRef} className="pt-8 pr-5 pb-10 pl-5 gap-2.5">
-          <div className="whitespace-pre-line font-normal text-body1 text-gray-800 font-pretendard">
+          <div className="whitespace-pre-line break-words font-normal text-body1 text-gray-800 font-pretendard">
             {article.description}
           </div>
         </div>
