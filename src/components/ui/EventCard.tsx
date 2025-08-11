@@ -84,7 +84,7 @@ export default function EventCard({
         <img
           src={imageUrl}
           alt={`${title} 썸네일`}
-          className="rounded-xl w-full h-[188px] object-cover pointer-events-none"
+          className="rounded-xl w-full aspect-video object-cover pointer-events-none"
           loading="lazy"
         />
         <button
