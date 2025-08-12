@@ -118,7 +118,7 @@ export default function AdminArticleDetail() {
                   {article.description && (
                     <div className="prose max-w-none mb-6">
                       <h2 className="text-lg font-semibold mb-2">행사 설명</h2>
-                      <p className="whitespace-pre-line">
+                      <p className="whitespace-pre-line break-words">
                         {article.description}
                       </p>
                     </div>
@@ -131,7 +131,7 @@ export default function AdminArticleDetail() {
                         href={article.registrationUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                        className="break-words text-blue-600 hover:underline"
                       >
                         {article.registrationUrl}
                       </a>

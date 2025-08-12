@@ -176,7 +176,7 @@ export default function ArticleDetailPage() {
           <img
             src={article.thumbnailPath}
             alt="썸네일 이미지"
-            className="w-full h-[188px] min-w-[240px] min-h-[135px] rounded-lg border border-gray-200 flex flex-col gap-[10px]"
+            className="w-full aspect-video object-cover rounded-lg border border-gray-200 flex flex-col gap-[10px]"
           />
 
           <div className="flex flex-col w-full h-[94px] gap-3">
@@ -357,7 +357,7 @@ export default function ArticleDetailPage() {
           </div>
         )}
         <div ref={descRef} className="pt-8 pr-5 pb-10 pl-5 gap-2.5">
-          <div className="whitespace-pre-line font-normal text-body1 text-gray-800 font-pretendard">
+          <div className="whitespace-pre-line break-words font-normal text-body1 text-gray-800 font-pretendard">
             {article.description}
           </div>
         </div>
