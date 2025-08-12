@@ -84,7 +84,7 @@ export default function EventCard({
         <img
           src={imageUrl}
           alt={`${title} 썸네일`}
-          className="rounded-xl w-full aspect-video object-cover pointer-events-none"
+          className="rounded-lg w-full aspect-video object-cover pointer-events-none"
           loading="lazy"
         />
         <button
@@ -104,7 +104,7 @@ export default function EventCard({
           />
         </button>
       </div>
-      <div className="font-pretendard font-semibold text-[17px] leading-[24px] text-gray800 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">
+      <div className="font-pretendard font-semibold text-[17px] leading-[24px] text-gray800 mb-1">
         {title}
       </div>
       <div className="font-pretendard text-[16px] leading-[22px] text-gray-500 font-normal mb-3">
