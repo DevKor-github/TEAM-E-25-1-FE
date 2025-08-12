@@ -176,7 +176,7 @@ export default function ArticleDetailPage() {
           <img
             src={article.thumbnailPath}
             alt="썸네일 이미지"
-            className="w-full h-[188px] min-w-[240px] min-h-[135px] rounded-lg border border-gray-200 flex flex-col gap-[10px]"
+            className="w-full aspect-video object-cover rounded-lg border border-gray-200 flex flex-col gap-[10px]"
           />
 
           <div className="flex flex-col w-full h-[94px] gap-3">
