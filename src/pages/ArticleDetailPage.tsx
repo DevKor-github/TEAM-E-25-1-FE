@@ -179,8 +179,8 @@ export default function ArticleDetailPage() {
             className="w-full aspect-video object-cover rounded-lg border border-gray-200 flex flex-col gap-[10px]"
           />
 
-          <div className="flex flex-col w-full h-[94px] gap-3">
-            <div className="w-full h-full font-semibold text-title4 text-gray-800 font-pretendard">
+          <div className="flex flex-col w-full gap-3">
+            <div className="w-full h-full break-words font-semibold text-title4 text-gray-800 font-pretendard">
               {article.title}
             </div>
             <div className="flex flex-row w-full h-[26px]">
