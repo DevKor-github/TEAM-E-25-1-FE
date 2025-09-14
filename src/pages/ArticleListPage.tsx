@@ -19,6 +19,8 @@ export type Article = {
   location: string;
   startAt: string;
   endAt: string;
+  registrationStartAt?: string;
+  registrationEndAt?: string;
   imagePaths: string[];
   registrationUrl: string;
   isScrapped?: boolean;
@@ -110,12 +112,14 @@ export default function ArticleListPage() {
         });
       }
 
-      // 4. '임박한' 선택 시 클라이언트에서 startAt 기준 정렬
+      // 4. '임박한' 선택 시 클라이언트에서 registrationEndAt 기준 정렬
       if (selectedSegment === "임박한") {
-        filteredArticles.sort(
-          (a, b) =>
-            new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
-        );
+        filteredArticles.sort((a, b) => {
+          // registrationEndAt가 없는 경우 startAt를 fallback으로 사용
+          const aDate = a.registrationEndAt ? new Date(a.registrationEndAt) : new Date(a.startAt);
+          const bDate = b.registrationEndAt ? new Date(b.registrationEndAt) : new Date(b.startAt);
+          return aDate.getTime() - bDate.getTime();
+        });
       }
 
       setArticleList(filteredArticles);
