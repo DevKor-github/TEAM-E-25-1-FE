@@ -15,6 +15,8 @@ export type Article = {
   location: string;
   startAt: string;
   endAt: string;
+  registrationStartAt?: string;
+  registrationEndAt?: string;
   imagePaths: string[];
   registrationUrl: string;
   isScrapped?: boolean; // 스크랩 여부
@@ -32,6 +34,8 @@ export default function EventCard({
   tags,
   startAt,
   endAt,
+  registrationStartAt,
+  registrationEndAt,
   isScrapped,
   onToggleScrap,
   onCardClick,
@@ -114,9 +118,15 @@ export default function EventCard({
         {safeTags.map((tag) => (
           <EventTypeIndicator key={tag} type={tag} />
         ))}
-        {startAt && endAt && (
+        {registrationStartAt && registrationEndAt ? (
+          <EventDateIndicator
+            startAt={registrationStartAt}
+            endAt={registrationEndAt}
+          />
+        ) : (
           <EventDateIndicator startAt={startAt} endAt={endAt} />
         )}
+
         {/* D-day는 백엔드 데이터가 있을 때만 표시 */}
         <div className="flex items-center gap-1 ml-auto min-w-[52px] pr-1">
           <img src={heartGray} alt="like-count" className="w-5 h-5" />
