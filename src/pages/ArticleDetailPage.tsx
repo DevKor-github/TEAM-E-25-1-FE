@@ -237,6 +237,7 @@ export default function ArticleDetailPage() {
           </div>
           {article.registrationStartAt && article.registrationEndAt && (
             <>
+              <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1"></div>
               <div className="font-medium text-body3 text-gray-500 font-pretendard">
                 신청 일시
               </div>
