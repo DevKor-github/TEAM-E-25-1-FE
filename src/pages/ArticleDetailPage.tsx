@@ -27,6 +27,8 @@ type Article = {
   location: string;
   startAt: string;
   endAt: string;
+  registrationStartAt?: string;
+  registrationEndAt?: string;
   imagePaths?: string[];
   registrationUrl?: string;
 };
@@ -233,11 +235,32 @@ export default function ArticleDetailPage() {
           <div className="font-normal text-body1 text-gray-800 font-pretendard">
             {formatDate(article.startAt, article.endAt)}
           </div>
+          {article.registrationStartAt && article.registrationEndAt && (
+            <>
+              <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1"></div>
+              <div className="font-medium text-body3 text-gray-500 font-pretendard">
+                신청 일시
+              </div>
+              <div className="font-normal text-body1 text-gray-800 font-pretendard">
+                {formatDate(
+                  article.registrationStartAt,
+                  article.registrationEndAt
+                )}
+              </div>
+            </>
+          )}
           <div>
-            <EventDateIndicator
-              startAt={article.startAt}
-              endAt={article.endAt}
-            />
+            {article.registrationStartAt && article.registrationEndAt ? (
+              <EventDateIndicator
+                startAt={article.registrationStartAt}
+                endAt={article.registrationEndAt}
+              />
+            ) : (
+              <EventDateIndicator
+                startAt={article.startAt}
+                endAt={article.endAt}
+              />
+            )}
           </div>
         </div>
         <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1">
