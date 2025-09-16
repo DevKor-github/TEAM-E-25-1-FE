@@ -60,7 +60,7 @@ export default function ArticleListPage() {
             ? "viewCount"
             : selectedSegment === "많이 찜한"
               ? "scrapCount"
-              : "createdAt",
+              : "registrationEndAt",
         page: 1,
         limit: 10,
       };
@@ -109,16 +109,6 @@ export default function ArticleListPage() {
           } catch (e) {
             return true; // 날짜 파싱 실패 시 포함
           }
-        });
-      }
-
-      // 4. '임박한' 선택 시 클라이언트에서 registrationEndAt 기준 정렬
-      if (selectedSegment === "임박한") {
-        filteredArticles.sort((a, b) => {
-          // registrationEndAt가 없는 경우 startAt를 fallback으로 사용
-          const aDate = a.registrationEndAt ? new Date(a.registrationEndAt) : new Date(a.startAt);
-          const bDate = b.registrationEndAt ? new Date(b.registrationEndAt) : new Date(b.startAt);
-          return aDate.getTime() - bDate.getTime();
         });
       }
 
