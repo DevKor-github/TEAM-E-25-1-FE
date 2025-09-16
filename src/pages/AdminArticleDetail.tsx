@@ -16,8 +16,6 @@ type Article = {
   location: string;
   startAt: string;
   endAt: string;
-  registrationStartAt?: string;
-  registrationEndAt?: string;
   imagePaths?: string[];
   registrationUrl?: string;
 };
@@ -103,22 +101,10 @@ export default function AdminArticleDetail() {
                       ))}
                     </p>
                     <p>
-                      <span className="font-semibold">행사 일시:</span>
+                      <span className="font-semibold">일시:</span>
                       {new Date(article.startAt).toLocaleString()} ~
                       {new Date(article.endAt).toLocaleString()}
                     </p>
-                    {article.registrationStartAt &&
-                      article.registrationEndAt && (
-                        <p>
-                          <span className="font-semibold">신청 일시:</span>
-                          {new Date(
-                            article.registrationStartAt
-                          ).toLocaleString()}
-                          ~
-                          {new Date(article.registrationEndAt).toLocaleString()}
-                        </p>
-                      )}
-
                     <p>
                       <span className="font-semibold">장소:</span>
                       {article.location}

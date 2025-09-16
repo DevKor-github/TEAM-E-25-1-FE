@@ -17,8 +17,6 @@ type Article = {
   location: string;
   startAt: string;
   endAt: string;
-  registrationStartAt?: string;
-  registrationEndAt?: string;
   imagePaths?: string[];
   registrationUrl?: string;
 };
@@ -64,12 +62,6 @@ export default function AdminArticleEdit() {
         ? toLocalDatetimeInputValue(article.startAt)
         : "",
       endAt: article.endAt ? toLocalDatetimeInputValue(article.endAt) : "",
-      registrationStartAt: article.registrationStartAt
-        ? toLocalDatetimeInputValue(article.registrationStartAt)
-        : "",
-      registrationEndAt: article.registrationEndAt
-        ? toLocalDatetimeInputValue(article.registrationEndAt)
-        : "",
 
       // 이미지 필드는 undefined로 처리
       thumbnailPath: undefined,
@@ -136,8 +128,6 @@ export default function AdminArticleEdit() {
           location: data.location,
           startAt: new Date(data.startAt).toISOString(),
           endAt: new Date(data.endAt).toISOString(),
-          registrationStartAt: new Date(data.registrationStartAt).toISOString(),
-          registrationEndAt: new Date(data.registrationEndAt).toISOString(),
           registrationUrl: data.registrationUrl,
           tags: data.tags,
         });
@@ -256,8 +246,6 @@ export default function AdminArticleEdit() {
         location: data.location,
         startAt: new Date(data.startAt).toISOString(),
         endAt: new Date(data.endAt).toISOString(),
-        registrationStartAt: new Date(data.registrationStartAt).toISOString(),
-        registrationEndAt: new Date(data.registrationEndAt).toISOString(),
         registrationUrl: data.registrationUrl,
         tags: data.tags,
       });

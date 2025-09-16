@@ -33,9 +33,6 @@ export default function ScrapPage() {
   const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
 
-  // API 중복 호출 방지를 위한 ref
-  const fetchingRef = React.useRef(false);
-
   // 필터 상태
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
   const [filterState, setFilterState] = React.useState<FilterState>({
@@ -46,13 +43,6 @@ export default function ScrapPage() {
 
   // API: 스크랩한 게시글 목록 조회
   const fetchScrapedArticles = React.useCallback(async () => {
-    // 중복 호출 방지
-    if (fetchingRef.current) {
-      return;
-    }
-
-    fetchingRef.current = true;
-    
     try {
       setLoading(true);
       
@@ -146,15 +136,8 @@ export default function ScrapPage() {
       }
     } finally {
       setLoading(false);
-      fetchingRef.current = false; // 완료 후 플래그 리셋
     }
-  }, [
-    selectedSegment, 
-    filterState.types.join(','), // 배열을 문자열로 변환하여 안정적인 의존성 생성
-    filterState.includePast, 
-    filterState.hasExplicitDateFilter, 
-    navigate
-  ]);
+  }, [selectedSegment, filterState, navigate]);
 
   // API: 스크랩 토글 (스크랩 해제만 가능)
   const handleToggleScrap = async (id: string) => {

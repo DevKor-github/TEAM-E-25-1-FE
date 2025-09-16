@@ -69,28 +69,22 @@ export default function ArticleListPage() {
 
       const articles = Array.isArray(response.data) ? response.data : [];
 
-      // 2. 스크랩 목록 조회 (백엔드에서 isScrapped를 제공하지 않는 경우에만)
+      // 2. 스크랩 목록 조회 (로그인된 경우에만)
       let scrapIds: string[] = [];
-      const backendProvidesScrapStatus = articles.length > 0 && 'isScrapped' in articles[0];
-      
-      if (!backendProvidesScrapStatus) {
-        try {
-          const scrapResponse = await api.get("/scrap");
-          const scrapList = Array.isArray(scrapResponse.data)
-            ? scrapResponse.data
-            : scrapResponse.data.articles || scrapResponse.data.data || [];
-          scrapIds = scrapList.map((item: any) => item.articleId);
-        } catch (scrapError) {
-          // 스크랩 목록 조회 실패 시 (비로그인 등) 빈 배열로 처리
-        }
+      try {
+        const scrapResponse = await api.get("/scrap");
+        const scrapList = Array.isArray(scrapResponse.data)
+          ? scrapResponse.data
+          : scrapResponse.data.articles || scrapResponse.data.data || [];
+        scrapIds = scrapList.map((item: any) => item.articleId);
+      } catch (scrapError) {
+        // 스크랩 목록 조회 실패 시 (비로그인 등) 빈 배열로 처리
       }
 
       // 3. 각 게시글에 isScrapped 상태 처리
       const articlesWithScrapStatus = articles.map((article: Article) => ({
         ...article,
-        isScrapped: backendProvidesScrapStatus 
-          ? article.isScrapped 
-          : scrapIds.includes(article.id),
+        isScrapped: scrapIds.includes(article.id),
       }));
 
       // 클라이언트 사이드 필터링: 지난 행사 제외가 설정된 경우
