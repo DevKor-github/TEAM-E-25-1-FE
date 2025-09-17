@@ -114,16 +114,26 @@ export default function ArticleDetailPage() {
 
   // article 데이터 가져오기
   useEffect(() => {
-    if (!articleId || fetchingArticleRef.current) return;
+    if (!articleId) return;
+
+    // 이미 진행 중이면 중복 방지
+    if (fetchingArticleRef.current) {
+      return;
+    }
 
     const fetchArticle = async () => {
-      if (fetchingArticleRef.current) return;
+      // double-check: 함수 시작 시점에서 다시 확인
+      if (fetchingArticleRef.current) {
+        return;
+      }
+
       fetchingArticleRef.current = true;
 
       try {
         setLoading(true);
 
         const { data } = await api.get(`/article/${articleId}`);
+        
         setArticle({
           ...data,
           tags: Array.isArray(data.tags)
@@ -146,7 +156,7 @@ export default function ArticleDetailPage() {
     };
 
     fetchArticle();
-  }, [articleId]);
+  }, [articleId, navigate]);
 
   useEffect(() => {
     fetchScrapStatus();
