@@ -53,6 +53,10 @@ export default function ArticleDetailPage() {
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
 
+  // 중복 API 호출 방지를 위한 ref
+  const fetchingArticleRef = useRef(false);
+  const fetchingScrapRef = useRef(false);
+
   const TAB_HEIGHT = 40; // sticky tabbed control의 height(px)
   const datePlaceRef = useRef<HTMLDivElement>(null);
   const orgRef = useRef<HTMLDivElement>(null);
@@ -88,7 +92,9 @@ export default function ArticleDetailPage() {
 
   // 스크랩 여부 가져오는 함수
   const fetchScrapStatus = async () => {
-    if (!articleId) return;
+    if (!articleId || fetchingScrapRef.current) return;
+    
+    fetchingScrapRef.current = true;
 
     try {
       const res = await api.get(`/scrap/article/${articleId}`);
@@ -101,14 +107,19 @@ export default function ArticleDetailPage() {
       } else {
         alert("스크랩 상태를 불러오는 중 오류가 발생했습니다.");
       }
+    } finally {
+      fetchingScrapRef.current = false;
     }
   };
 
   // article 데이터 가져오기
   useEffect(() => {
-    if (!articleId) return;
+    if (!articleId || fetchingArticleRef.current) return;
 
     const fetchArticle = async () => {
+      if (fetchingArticleRef.current) return;
+      fetchingArticleRef.current = true;
+
       try {
         setLoading(true);
 
@@ -130,6 +141,7 @@ export default function ArticleDetailPage() {
         navigate("/", { replace: true });
       } finally {
         setLoading(false);
+        fetchingArticleRef.current = false;
       }
     };
 

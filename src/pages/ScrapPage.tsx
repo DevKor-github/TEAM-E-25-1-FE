@@ -69,34 +69,23 @@ export default function ScrapPage() {
         return;
       }
 
-      // 2. 각 스크랩된 게시글의 상세 정보 가져오기
-      const articlePromises = scrapList.map(async (scrapItem: any) => {
-        try {
-          const articleId = scrapItem.articleId || scrapItem.id;
-          const detailResponse = await api.get(`/article/${articleId}`);
-          return {
-            ...detailResponse.data,
-            id: articleId,
-            isScrapped: true,
-          };
-        } catch (error) {
-          console.error(`게시글 ${scrapItem.articleId} 상세 정보 조회 실패:`, error);
-          // 상세 정보 조회 실패 시 스크랩 목록의 기본 정보 사용
-          return {
-            ...scrapItem,
-            id: scrapItem.articleId || scrapItem.id,
-            startAt: "", // 날짜 정보가 없을 경우 빈 문자열
-            endAt: "",
-            description: "",
-            location: "",
-            imagePaths: [],
-            registrationUrl: "",
-            isScrapped: true,
-          };
-        }
-      });
-
-      const articlesWithDetails = await Promise.all(articlePromises);
+      // 2. 스크랩 응답 데이터를 Article 타입에 맞게 변환 (개별 API 호출 제거)
+      const articlesWithDetails = scrapList.map((scrapItem: any) => ({
+        id: scrapItem.articleId, // 백엔드에서 articleId 필드로 제공
+        title: scrapItem.title,
+        organization: scrapItem.organization,
+        thumbnailPath: scrapItem.thumbnailPath,
+        scrapCount: scrapItem.scrapCount,
+        viewCount: scrapItem.viewCount,
+        tags: Array.isArray(scrapItem.tags) ? scrapItem.tags : [scrapItem.tags].filter(Boolean),
+        description: scrapItem.description || "",
+        location: scrapItem.location || "",
+        startAt: scrapItem.startAt,
+        endAt: scrapItem.endAt,
+        imagePaths: Array.isArray(scrapItem.imagePaths) ? scrapItem.imagePaths : [],
+        registrationUrl: scrapItem.registrationUrl || "",
+        isScrapped: true,
+      }));
 
       // 필터링 적용
       let filteredArticles = [...articlesWithDetails];
@@ -304,9 +293,9 @@ export default function ScrapPage() {
               </button>
             </div>
           ) : (
-            articleList.map((article) => (
+            articleList.map((article, index) => (
               <EventCard
-                key={article.id}
+                key={article.id || `scrap-article-${index}`}
                 {...article}
                 isScrapped={article.isScrapped !== false} // 동적으로 처리, 기본값은 true (스크랩 페이지이므로)
                 onCardClick={() => {
