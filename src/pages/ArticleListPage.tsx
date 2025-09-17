@@ -73,7 +73,12 @@ export default function ArticleListPage() {
       let scrapIds: string[] = [];
       const backendProvidesScrapStatus = articles.length > 0 && 'isScrapped' in articles[0];
       
-      if (!backendProvidesScrapStatus) {
+      // 로그인 상태 확인
+      const isLoggedIn = JSON.parse(
+        localStorage.getItem("user-auth-storage") || "{}"
+      ).state?.isLoggedIn;
+      
+      if (!backendProvidesScrapStatus && isLoggedIn) {
         try {
           const scrapResponse = await api.get("/scrap");
           const scrapList = Array.isArray(scrapResponse.data)
@@ -81,6 +86,7 @@ export default function ArticleListPage() {
             : scrapResponse.data.articles || scrapResponse.data.data || [];
           scrapIds = scrapList.map((item: any) => item.articleId);
         } catch (scrapError) {
+          console.error("스크랩 목록 조회 실패:", scrapError);
           // 스크랩 목록 조회 실패 시 (비로그인 등) 빈 배열로 처리
         }
       }
