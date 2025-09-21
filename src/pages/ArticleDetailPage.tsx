@@ -254,6 +254,7 @@ export default function ArticleDetailPage() {
               <EventDateIndicator
                 startAt={article.registrationStartAt}
                 endAt={article.registrationEndAt}
+                isRegistration={true}
               />
             ) : (
               <EventDateIndicator

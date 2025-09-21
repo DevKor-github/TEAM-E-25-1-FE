@@ -5,12 +5,14 @@ type DateStatus = "upcoming" | "imminent" | "critical" | "ongoing" | "ended";
 interface EventDateIndicatorProps {
   startAt: string;
   endAt: string;
+  isRegistration?: boolean;
   className?: string;
 }
 
 export default function EventDateIndicator({
   startAt,
   endAt,
+  isRegistration = false,
   className = "",
 }: EventDateIndicatorProps) {
   // diff, status 계산
@@ -72,10 +74,16 @@ export default function EventDateIndicator({
 
   const getDateText = () => {
     if (typeof diff !== "number") return "";
-    if (status === "ongoing" || diff === 0) return "행사중";
-    if (status === "ended" || diff < 0) return "종료";
-    if (diff === 1) return "내일 시작";
-    return `D-${diff}`;
+    if (status === "ended") return "종료";
+
+    if (isRegistration) {
+      if (status === "ongoing") return "신청중";
+      return `신청 D-${diff}`;
+    } else {
+      if (status === "ongoing") return "행사중";
+      if (diff === 1) return "내일 시작";
+      return `D-${diff}`;
+    }
   };
 
   return (
@@ -86,7 +94,7 @@ export default function EventDateIndicator({
       {status === "ongoing" ? (
         <div className="inline-flex items-center gap-[6px]">
           <span>{getDateText()}</span>
-          <img src={liveIndicator} alt="행사중" className="w-[6px] h-[6px]" />
+          <img src={liveIndicator} alt="진행중" className="w-[6px] h-[6px]" />
         </div>
       ) : (
         getDateText()
