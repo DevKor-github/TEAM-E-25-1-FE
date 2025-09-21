@@ -28,18 +28,30 @@ export default function EventDateIndicator({
     const end = new Date(endAt);
     end.setHours(23, 59, 59, 999); // 종료일의 마지막 시간
 
-    diff = Math.ceil(
-      (start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
     // status 계산 - startAt과 endAt 모두 고려
     const todayTime = today.getTime();
     const startTime = start.getTime();
     const endTime = end.getTime();
 
+    if (!isRegistration) {
+      // 행사 시작일 기준
+      diff = Math.ceil(
+        (start.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+    } else {
+      // 신청 마감일 기준
+      diff = Math.floor(
+        (end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      );
+    }
+
     if (endTime < todayTime) {
       status = "ended"; // 종료일이 지난 경우만 종료
-    } else if (startTime <= todayTime && endTime >= todayTime) {
+    } else if (
+      !isRegistration &&
+      startTime <= todayTime &&
+      endTime >= todayTime
+    ) {
       status = "ongoing"; // 시작일과 종료일 사이에 현재 날짜가 있는 경우 진행중
     } else if (diff === 0) {
       status = "ongoing"; // 시작일이 오늘인 경우 진행중
@@ -77,7 +89,7 @@ export default function EventDateIndicator({
     if (status === "ended") return "종료";
 
     if (isRegistration) {
-      if (status === "ongoing") return "신청중";
+      if (status === "ongoing") return "신청 D-DAY";
       return `신청 D-${diff}`;
     } else {
       if (status === "ongoing") return "행사중";
