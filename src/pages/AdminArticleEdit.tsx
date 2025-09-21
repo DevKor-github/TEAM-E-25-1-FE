@@ -111,6 +111,14 @@ export default function AdminArticleEdit() {
     remainingThumbnailUrl?: string
   ) => {
     try {
+      // registrationStartAt, registrationEndAt 빈 문자열("")이면 null로 변환
+      const fixedRegistrationStartAt = data.registrationStartAt
+        ? new Date(data.registrationStartAt).toISOString()
+        : null;
+      const fixedRegistrationEndAt = data.registrationEndAt
+        ? new Date(data.registrationEndAt).toISOString()
+        : null;
+
       // 새로 업로드할 이미지 파일 추출
       const newThumbnailFile = data.thumbnailPath?.[0] ?? null;
       const newImageFiles = data.imagePaths
@@ -136,8 +144,8 @@ export default function AdminArticleEdit() {
           location: data.location,
           startAt: new Date(data.startAt).toISOString(),
           endAt: new Date(data.endAt).toISOString(),
-          registrationStartAt: new Date(data.registrationStartAt).toISOString(),
-          registrationEndAt: new Date(data.registrationEndAt).toISOString(),
+          registrationStartAt: fixedRegistrationStartAt,
+          registrationEndAt: fixedRegistrationEndAt,
           registrationUrl: data.registrationUrl,
           tags: data.tags,
         });

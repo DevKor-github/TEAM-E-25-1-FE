@@ -122,6 +122,7 @@ export default function EventCard({
           <EventDateIndicator
             startAt={registrationStartAt}
             endAt={registrationEndAt}
+            isRegistration={true}
           />
         ) : (
           <EventDateIndicator startAt={startAt} endAt={endAt} />
