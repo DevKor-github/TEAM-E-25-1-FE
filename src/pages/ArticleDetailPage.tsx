@@ -11,6 +11,12 @@ import EventDateIndicator from "@/components/ui/EventDateIndicator";
 import EventImage from "@/components/ui/EventImage";
 import { Button } from "@/components/ui/buttons";
 import { BottomButtonsCombo3 } from "@components/ui/bottomButtonsCombo";
+import {
+  trackEventDetailViewed,
+  trackScrapToggled,
+  trackShareClicked,
+  trackAttemptedScrap,
+} from "@/amplitude/track";
 import closeIcon from "../assets/closeIcon.svg";
 import heartGray from "@/assets/heart_gray.svg";
 import copyIcon from "@/assets/copyIcon.svg";
@@ -117,6 +123,16 @@ export default function ArticleDetailPage() {
         const { data } = await api.get(`/article/${articleId}`);
         setArticle({
           ...data,
+          tags: Array.isArray(data.tags)
+            ? data.tags
+            : typeof data.tags === "string"
+              ? [data.tags]
+              : [],
+        });
+
+        // 앰플리튜드 - 행사 상세 진입 트래킹 (정상적으로 article을 불러온 경우에만)
+        trackEventDetailViewed({
+          articleId,
           tags: Array.isArray(data.tags)
             ? data.tags
             : typeof data.tags === "string"
@@ -391,6 +407,10 @@ export default function ArticleDetailPage() {
               navigator.clipboard.writeText(window.location.href);
               setToastMessage("공유링크가 복사되었습니다");
               setTimeout(() => setToastMessage(null), 2000);
+              // 앰플리튜드 - 공유 버튼 클릭 트래킹
+              if (articleId) {
+                trackShareClicked({ articleId });
+              }
             }}
             label="바로가기"
             labelDisabled={!article.registrationUrl}
@@ -416,6 +436,8 @@ export default function ArticleDetailPage() {
                     // 스크랩 취소할 때 scrapCount가 음수가 되지 않도록 안전하게 처리
                     scrapCount: Math.max(0, article.scrapCount - 1),
                   });
+                  // 앰플리튜드 - 회원 스크랩 삭제 트래킹
+                  trackScrapToggled({ articleId, action: "remove" });
                 } else {
                   await api.post(`/scrap/${articleId}`);
                   setIsScrapped(true);
@@ -423,9 +445,13 @@ export default function ArticleDetailPage() {
                     ...article,
                     scrapCount: article.scrapCount + 1,
                   });
+                  // 앰플리튜드 - 회원 스크랩 추가 트래킹
+                  trackScrapToggled({ articleId, action: "add" });
                 }
               } catch (err: any) {
                 if (err.response?.status === 401) {
+                  // 앰플리튜드 - 비회원 스크랩 시도 트래킹
+                  trackAttemptedScrap({ articleId });
                   navigate("/login");
                 } else if (err.response?.status === 404) {
                   alert("해당 행사가 존재하지 않습니다.");

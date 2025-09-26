@@ -5,6 +5,11 @@ import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
+import {
+  trackEventListViewed,
+  trackScrapToggled,
+  trackAttemptedScrap,
+} from "@/amplitude/track";
 
 // Article 타입: 백엔드 스웨거 기준
 export type Article = {
@@ -71,8 +76,9 @@ export default function ArticleListPage() {
 
       // 2. 스크랩 목록 조회 (백엔드에서 isScrapped를 제공하지 않는 경우에만)
       let scrapIds: string[] = [];
-      const backendProvidesScrapStatus = articles.length > 0 && 'isScrapped' in articles[0];
-      
+      const backendProvidesScrapStatus =
+        articles.length > 0 && "isScrapped" in articles[0];
+
       if (!backendProvidesScrapStatus) {
         try {
           const scrapResponse = await api.get("/scrap");
@@ -88,8 +94,8 @@ export default function ArticleListPage() {
       // 3. 각 게시글에 isScrapped 상태 처리
       const articlesWithScrapStatus = articles.map((article: Article) => ({
         ...article,
-        isScrapped: backendProvidesScrapStatus 
-          ? article.isScrapped 
+        isScrapped: backendProvidesScrapStatus
+          ? article.isScrapped
           : scrapIds.includes(article.id),
       }));
 
@@ -119,6 +125,18 @@ export default function ArticleListPage() {
       }
 
       setArticleList(filteredArticles);
+
+      // 앰플리튜드 - 행사 목록 조회 트래킹 (정상적으로 데이터를 불러온 경우에만)
+      trackEventListViewed({
+        tab:
+          selectedSegment === "많이 본"
+            ? "viewCount"
+            : selectedSegment === "많이 찜한"
+              ? "scrapCount"
+              : "createdAt",
+        tags: filterState.types,
+        include_past: filterState.includePast,
+      });
     } catch (error) {
       console.error("게시글 목록 조회 실패:", error);
       alert("게시글 목록을 불러오는 중 오류가 발생했습니다.");
@@ -150,8 +168,12 @@ export default function ArticleListPage() {
       // API 호출
       if (article.isScrapped) {
         await api.delete(`/scrap/${id}`);
+        // 앰플리튜드 - 회원 스크랩 삭제 트래킹
+        trackScrapToggled({ articleId: id, action: "remove" });
       } else {
         await api.post(`/scrap/${id}`);
+        // 앰플리튜드 - 회원 스크랩 추가 트래킹
+        trackScrapToggled({ articleId: id, action: "add" });
       }
     } catch (error: any) {
       // 오류 발생 시 원래 상태로 되돌리기
@@ -170,6 +192,8 @@ export default function ArticleListPage() {
       console.error(`스크랩 토글 실패: ${id}`, error);
 
       if (error.response?.status === 401) {
+        // 앰플리튜드 - 비회원 스크랩 시도 트래킹
+        trackAttemptedScrap({ articleId: id });
         navigate("/login");
       } else if (error.response?.status === 404) {
         alert("해당 게시글이 존재하지 않습니다.");
