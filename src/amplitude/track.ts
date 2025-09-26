@@ -4,7 +4,7 @@ import * as amplitude from "@amplitude/analytics-browser";
 export function trackEventListViewed(params: {
   tab: "viewCount" | "scrapCount" | "createdAt";
   tags?: string[];
-  include_past?: boolean;
+  includePast?: boolean;
 }) {
   amplitude.track("event_list_viewed", params);
 }

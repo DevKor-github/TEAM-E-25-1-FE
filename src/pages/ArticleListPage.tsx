@@ -135,7 +135,7 @@ export default function ArticleListPage() {
               ? "scrapCount"
               : "createdAt",
         tags: filterState.types,
-        include_past: filterState.includePast,
+        includePast: filterState.includePast,
       });
     } catch (error) {
       console.error("게시글 목록 조회 실패:", error);
