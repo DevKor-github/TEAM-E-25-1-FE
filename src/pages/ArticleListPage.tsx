@@ -60,7 +60,7 @@ export default function ArticleListPage() {
             ? "viewCount"
             : selectedSegment === "많이 찜한"
               ? "scrapCount"
-              : "createdAt",
+              : "registrationEndAt",
         page: 1,
         limit: 10,
       };
@@ -111,14 +111,6 @@ export default function ArticleListPage() {
             return true; // 날짜 파싱 실패 시 포함
           }
         });
-      }
-
-      // 4. '임박한' 선택 시 클라이언트에서 startAt 기준 정렬
-      if (selectedSegment === "임박한") {
-        filteredArticles.sort(
-          (a, b) =>
-            new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
-        );
       }
 
       setArticleList(filteredArticles);
