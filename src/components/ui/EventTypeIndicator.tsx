@@ -5,6 +5,8 @@ const allowedTagTypes = [
   "박람회",
   "설명회",
   "축제",
+  "교육",
+  "취업·창업",
 ] as const; // 배열의 값을 변하지 않는 고정값(리터럴)으로 지정
 
 type AllowedTagType = (typeof allowedTagTypes)[number]; // "강연" | "공모전" | "대회" | "박람회" | "설명회" | "축제"
@@ -40,6 +42,10 @@ export default function EventTypeIndicator({
         return "bg-[#F5F0FF] text-[#8E51FF]";
       case "축제":
         return "bg-[#FFF7ED] text-[#FF6900]";
+      case "교육":
+        return "bg-[#F5F0FF] text-[#8E51FF]"; 
+      case "취업·창업":
+        return "bg-blue-50 text-blue-500"; 
       default:
         return "bg-blue-50 text-blue-500";
     }

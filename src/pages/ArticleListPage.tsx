@@ -19,6 +19,8 @@ export type Article = {
   location: string;
   startAt: string;
   endAt: string;
+  registrationStartAt?: string;
+  registrationEndAt?: string;
   imagePaths: string[];
   registrationUrl: string;
   isScrapped?: boolean;
@@ -58,7 +60,7 @@ export default function ArticleListPage() {
             ? "viewCount"
             : selectedSegment === "많이 찜한"
               ? "scrapCount"
-              : "createdAt",
+              : "registrationEndAt",
         page: 1,
         limit: 10,
       };
@@ -71,6 +73,7 @@ export default function ArticleListPage() {
 
       // 2. 스크랩 목록 조회 (백엔드에서 isScrapped를 제공하지 않는 경우에만)
       let scrapIds: string[] = [];
+
       const backendProvidesScrapStatus = articles.length > 0 && 'isScrapped' in articles[0];
       
       // 로그인 상태 확인
@@ -94,8 +97,8 @@ export default function ArticleListPage() {
       // 3. 각 게시글에 isScrapped 상태 처리
       const articlesWithScrapStatus = articles.map((article: Article) => ({
         ...article,
-        isScrapped: backendProvidesScrapStatus 
-          ? article.isScrapped 
+        isScrapped: backendProvidesScrapStatus
+          ? article.isScrapped
           : scrapIds.includes(article.id),
       }));
 
@@ -114,14 +117,6 @@ export default function ArticleListPage() {
             return true; // 날짜 파싱 실패 시 포함
           }
         });
-      }
-
-      // 4. '임박한' 선택 시 클라이언트에서 startAt 기준 정렬
-      if (selectedSegment === "임박한") {
-        filteredArticles.sort(
-          (a, b) =>
-            new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
-        );
       }
 
       setArticleList(filteredArticles);

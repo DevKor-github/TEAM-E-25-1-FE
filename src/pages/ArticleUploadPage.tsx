@@ -12,6 +12,14 @@ export default function ArticleUploadPage() {
     try {
       setError(null);
 
+      // registrationStartAt, registrationEndAt 빈 문자열("")이면 null로 변환
+      const fixedRegistrationStartAt = data.registrationStartAt
+        ? new Date(data.registrationStartAt).toISOString()
+        : null;
+      const fixedRegistrationEndAt = data.registrationEndAt
+        ? new Date(data.registrationEndAt).toISOString()
+        : null;
+
       // 새로 업로드할 이미지 파일 추출
       const newThumbnailFile = data.thumbnailPath?.[0] ?? null;
       const newImageFiles = data.imagePaths
@@ -23,7 +31,7 @@ export default function ArticleUploadPage() {
         setError("썸네일 이미지를 업로드해주세요.");
         return;
       }
-      
+
       // 썸네일 이미지 정보
       let thumbnailInfo = null;
       if (newThumbnailFile) {
@@ -41,26 +49,43 @@ export default function ArticleUploadPage() {
           mimeType: file.type,
         });
       });
-
-      // 1단계: POST /article로 게시글 생성 (이미지 제외)
-      const articleResponse = await api.post("/article", {
+      console.log("POST /article body:", {
         title: data.title,
         organization: data.organization,
         description: data.description || "",
         location: data.location,
         startAt: new Date(data.startAt).toISOString(),
         endAt: new Date(data.endAt).toISOString(),
+        registrationStartAt: fixedRegistrationStartAt,
+        registrationEndAt: fixedRegistrationEndAt,
         registrationUrl: data.registrationUrl || "",
         tags: data.tags || [],
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
+      // 1단계: POST /article로 게시글 생성 (이미지 제외)
+      const articleResponse = await api.post(
+        "/article",
+        {
+          title: data.title,
+          organization: data.organization,
+          description: data.description || "",
+          location: data.location,
+          startAt: new Date(data.startAt).toISOString(),
+          endAt: new Date(data.endAt).toISOString(),
+          registrationStartAt: fixedRegistrationStartAt,
+          registrationEndAt: fixedRegistrationEndAt,
+          registrationUrl: data.registrationUrl || "",
+          tags: data.tags || [],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      console.log("게시글 생성 API 응답:", articleResponse.data);
-      const articleId = articleResponse.data.articleId || articleResponse.data.id;
-      
+      const articleId =
+        articleResponse.data.articleId || articleResponse.data.id;
+
       // articleId 유효성 검사 추가
       if (!articleId) {
         throw new Error("게시글 ID가 생성되지 않았습니다.");
@@ -116,11 +141,13 @@ export default function ArticleUploadPage() {
         // 모든 파일 업로드 완료 대기
         if (uploadPromises.length > 0) {
           const uploadResults = await Promise.all(uploadPromises);
-          
+
           // 업로드 실패 확인
           uploadResults.forEach((result, index) => {
             if (!result.ok) {
-              throw new Error(`파일 업로드 실패 (${index + 1}번째 파일): ${result.status} ${result.statusText}`);
+              throw new Error(
+                `파일 업로드 실패 (${index + 1}번째 파일): ${result.status} ${result.statusText}`
+              );
             }
           });
         }
@@ -130,9 +157,10 @@ export default function ArticleUploadPage() {
           ? { imageUrl: presignedData.thumbnailPresignedUrl.imageUrl }
           : undefined;
 
-        const patchFileInfoList = imageUrls.length > 0
-          ? imageUrls.map((url) => ({ imageUrl: url }))
-          : [];
+        const patchFileInfoList =
+          imageUrls.length > 0
+            ? imageUrls.map((url) => ({ imageUrl: url }))
+            : [];
 
         try {
           await api.patch("/media", {
@@ -141,7 +169,9 @@ export default function ArticleUploadPage() {
             fileInfoList: patchFileInfoList,
           });
         } catch (mediaError: any) {
-          throw new Error(`미디어 정보 등록 실패: ${mediaError.response?.data?.message || mediaError.message}`);
+          throw new Error(
+            `미디어 정보 등록 실패: ${mediaError.response?.data?.message || mediaError.message}`
+          );
         }
       }
 
@@ -160,17 +190,22 @@ export default function ArticleUploadPage() {
       <div className="max-w-2xl mx-auto p-6 pt-20">
         <h2 className="text-2xl font-bold mb-4">행사 등록</h2>
         {error && <div className="text-red-600 mb-4">{error}</div>}
-        
+
         {/* 사용법 안내 */}
         <div className="mb-6 p-4 border border-blue-200 rounded-lg bg-blue-50">
-          <h3 className="font-semibold text-blue-800 mb-2">💡 상세 이미지 업로드 안내</h3>
+          <h3 className="font-semibold text-blue-800 mb-2">
+            💡 상세 이미지 업로드 안내
+          </h3>
           <p className="text-sm text-blue-700">
-            • 상세 이미지 선택 시 <strong>Ctrl+클릭</strong> 또는 <strong>Shift+클릭</strong>으로 여러 이미지를 한 번에 선택할 수 있습니다.<br/>
-            • 최대 10개까지 선택 가능합니다.<br/>
-            • 각 파일은 5MB 이하, JPG 또는 PNG 형식만 가능합니다.
+            • 상세 이미지 선택 시 <strong>Ctrl+클릭</strong> 또는{" "}
+            <strong>Shift+클릭</strong>으로 여러 이미지를 한 번에 선택할 수
+            있습니다.
+            <br />
+            • 최대 10개까지 선택 가능합니다.
+            <br />• 각 파일은 5MB 이하, JPG 또는 PNG 형식만 가능합니다.
           </p>
         </div>
-        
+
         <ArticleForm onSubmit={handleSubmit} />
       </div>
     </>

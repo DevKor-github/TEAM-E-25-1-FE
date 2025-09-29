@@ -15,6 +15,8 @@ export type Article = {
   location: string;
   startAt: string;
   endAt: string;
+  registrationStartAt?: string;
+  registrationEndAt?: string;
   imagePaths: string[];
   registrationUrl: string;
   isScrapped?: boolean; // 스크랩 여부
@@ -32,6 +34,8 @@ export default function EventCard({
   tags,
   startAt,
   endAt,
+  registrationStartAt,
+  registrationEndAt,
   isScrapped,
   onToggleScrap,
   onCardClick,
@@ -84,7 +88,7 @@ export default function EventCard({
         <img
           src={imageUrl}
           alt={`${title} 썸네일`}
-          className="rounded-xl w-full h-[188px] object-cover pointer-events-none"
+          className="rounded-lg w-full aspect-video object-cover pointer-events-none"
           loading="lazy"
         />
         <button
@@ -104,7 +108,7 @@ export default function EventCard({
           />
         </button>
       </div>
-      <div className="font-pretendard font-semibold text-[17px] leading-[24px] text-gray800 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">
+      <div className="font-pretendard font-semibold text-[17px] leading-[24px] text-gray800 mb-1">
         {title}
       </div>
       <div className="font-pretendard text-[16px] leading-[22px] text-gray-500 font-normal mb-3">
@@ -114,9 +118,16 @@ export default function EventCard({
         {safeTags.map((tag) => (
           <EventTypeIndicator key={tag} type={tag} />
         ))}
-        {startAt && endAt && (
+        {registrationStartAt && registrationEndAt ? (
+          <EventDateIndicator
+            startAt={registrationStartAt}
+            endAt={registrationEndAt}
+            isRegistration={true}
+          />
+        ) : (
           <EventDateIndicator startAt={startAt} endAt={endAt} />
         )}
+
         {/* D-day는 백엔드 데이터가 있을 때만 표시 */}
         <div className="flex items-center gap-1 ml-auto min-w-[52px] pr-1">
           <img src={heartGray} alt="like-count" className="w-5 h-5" />

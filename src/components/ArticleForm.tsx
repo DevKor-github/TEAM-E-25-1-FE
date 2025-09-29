@@ -41,7 +41,7 @@ const articleFormSchema = z
       .max(100, { message: "기관명은 100자를 초과할 수 없습니다." }),
 
     tags: z
-      .array(z.enum(["축제", "강연", "설명회", "박람회", "공모전", "대회"]))
+      .array(z.enum(["축제", "강연", "설명회", "박람회", "공모전", "대회", "교육", "취업·창업"]))
       .min(1, { message: "최소 1개의 행사 종류를 선택해주세요." }),
 
     location: z
@@ -62,6 +62,10 @@ const articleFormSchema = z
         required_error: "종료 일시를 입력하세요.",
       })
       .min(1, { message: "종료 일시를 입력하세요." }),
+
+    registrationStartAt: z.string().optional(),
+
+    registrationEndAt: z.string().optional(),
 
     description: z
       .string()
@@ -112,6 +116,29 @@ const articleFormSchema = z
     {
       message: "시작일은 종료일보다 앞서야 합니다.",
       path: ["endAt"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.registrationStartAt || !data.registrationEndAt) return true;
+      const regStart = new Date(data.registrationStartAt);
+      const regEnd = new Date(data.registrationEndAt);
+      return regStart <= regEnd;
+    },
+    {
+      message: "신청 시작일은 신청 종료일보다 앞서야 합니다.",
+      path: ["registrationEndAt"],
+    }
+  )
+  .refine(
+    (data) => {
+      const bothEmpty = !data.registrationStartAt && !data.registrationEndAt;
+      const bothFilled = !!data.registrationStartAt && !!data.registrationEndAt;
+      return bothEmpty || bothFilled;
+    },
+    {
+      message: "신청 시작일과 종료일을 모두 입력하거나 모두 비워두세요.",
+      path: ["registrationEndAt"],
     }
   );
 
@@ -219,6 +246,8 @@ export function ArticleForm({
       location: defaultValues?.location ?? "",
       startAt: defaultValues?.startAt ?? "",
       endAt: defaultValues?.endAt ?? "",
+      registrationStartAt: defaultValues?.registrationStartAt ?? "",
+      registrationEndAt: defaultValues?.registrationEndAt ?? "",
       description: defaultValues?.description ?? "",
       registrationUrl: defaultValues?.registrationUrl ?? "",
       thumbnailPath: defaultValues?.thumbnailPath ?? undefined,
@@ -278,6 +307,8 @@ export function ArticleForm({
                     "박람회",
                     "공모전",
                     "대회",
+                    "교육",
+                    "취업·창업",
                   ] as const
                 ).map((tag) => (
                   <label
@@ -325,7 +356,7 @@ export function ArticleForm({
           name="startAt"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>시작 일시</FormLabel>
+              <FormLabel>행사 시작 일시</FormLabel>
               <FormControl>
                 <Input type="datetime-local" {...field} />
               </FormControl>
@@ -339,7 +370,35 @@ export function ArticleForm({
           name="endAt"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>종료 일시</FormLabel>
+              <FormLabel>행사 종료 일시</FormLabel>
+              <FormControl>
+                <Input type="datetime-local" {...field} />
+              </FormControl>
+              <FormMessage>{fieldState.error?.message}</FormMessage>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="registrationStartAt"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel>신청 시작 일시 (선택)</FormLabel>
+              <FormControl>
+                <Input type="datetime-local" {...field} />
+              </FormControl>
+              <FormMessage>{fieldState.error?.message}</FormMessage>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="registrationEndAt"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel>신청 종료 일시 (선택)</FormLabel>
               <FormControl>
                 <Input type="datetime-local" {...field} />
               </FormControl>
