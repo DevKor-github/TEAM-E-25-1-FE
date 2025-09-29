@@ -36,6 +36,8 @@ export default function AdminArticleEdit() {
     "박람회",
     "설명회",
     "축제",
+    "교육",
+    "취업·창업",
   ] as const; // 배열의 값을 변하지 않는 고정값(리터럴)으로 지정
 
   // UTC 날짜를 로컬 datetime input 값으로 변환하는 함수

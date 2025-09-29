@@ -41,7 +41,7 @@ const articleFormSchema = z
       .max(100, { message: "기관명은 100자를 초과할 수 없습니다." }),
 
     tags: z
-      .array(z.enum(["축제", "강연", "설명회", "박람회", "공모전", "대회"]))
+      .array(z.enum(["축제", "강연", "설명회", "박람회", "공모전", "대회", "교육", "취업·창업"]))
       .min(1, { message: "최소 1개의 행사 종류를 선택해주세요." }),
 
     location: z
@@ -307,6 +307,8 @@ export function ArticleForm({
                     "박람회",
                     "공모전",
                     "대회",
+                    "교육",
+                    "취업·창업",
                   ] as const
                 ).map((tag) => (
                   <label
