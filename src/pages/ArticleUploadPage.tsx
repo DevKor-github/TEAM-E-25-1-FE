@@ -83,7 +83,6 @@ export default function ArticleUploadPage() {
         }
       );
 
-      console.log("게시글 생성 API 응답:", articleResponse.data);
       const articleId =
         articleResponse.data.articleId || articleResponse.data.id;
 
