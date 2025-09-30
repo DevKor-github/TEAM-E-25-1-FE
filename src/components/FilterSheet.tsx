@@ -12,7 +12,7 @@ export type FilterState = {
 };
 
 const ALL_TYPES: EventType[] = [
-  "축제", "강연", "설명회", "박람회", "대회", "공모전"
+  "축제", "강연", "설명회", "박람회", "대회", "공모전", "교육", "취업·창업"
 ];
 
 interface FilterSheetProps {

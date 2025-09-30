@@ -27,6 +27,8 @@ type Article = {
   location: string;
   startAt: string;
   endAt: string;
+  registrationStartAt?: string;
+  registrationEndAt?: string;
   imagePaths?: string[];
   registrationUrl?: string;
 };
@@ -198,11 +200,11 @@ export default function ArticleDetailPage() {
           <img
             src={article.thumbnailPath}
             alt="썸네일 이미지"
-            className="w-full h-[188px] min-w-[240px] min-h-[135px] rounded-lg border border-gray-200 flex flex-col gap-[10px]"
+            className="w-full aspect-video object-cover rounded-lg border border-gray-200 flex flex-col gap-[10px]"
           />
 
-          <div className="flex flex-col w-full h-[94px] gap-3">
-            <div className="w-full h-full font-semibold text-title4 text-gray-800 font-pretendard">
+          <div className="flex flex-col w-full gap-3">
+            <div className="w-full h-full break-words font-semibold text-title4 text-gray-800 font-pretendard">
               {article.title}
             </div>
             <div className="flex flex-row w-full h-[26px]">
@@ -255,11 +257,33 @@ export default function ArticleDetailPage() {
           <div className="font-normal text-body1 text-gray-800 font-pretendard">
             {formatDate(article.startAt, article.endAt)}
           </div>
+          {article.registrationStartAt && article.registrationEndAt && (
+            <>
+              <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1"></div>
+              <div className="font-medium text-body3 text-gray-500 font-pretendard">
+                신청 일시
+              </div>
+              <div className="font-normal text-body1 text-gray-800 font-pretendard">
+                {formatDate(
+                  article.registrationStartAt,
+                  article.registrationEndAt
+                )}
+              </div>
+            </>
+          )}
           <div>
-            <EventDateIndicator
-              startAt={article.startAt}
-              endAt={article.endAt}
-            />
+            {article.registrationStartAt && article.registrationEndAt ? (
+              <EventDateIndicator
+                startAt={article.registrationStartAt}
+                endAt={article.registrationEndAt}
+                isRegistration={true}
+              />
+            ) : (
+              <EventDateIndicator
+                startAt={article.startAt}
+                endAt={article.endAt}
+              />
+            )}
           </div>
         </div>
         <div className="flex flex-col pt-4 pr-5 pb-4 pl-5 gap-1">
@@ -379,7 +403,7 @@ export default function ArticleDetailPage() {
           </div>
         )}
         <div ref={descRef} className="pt-8 pr-5 pb-10 pl-5 gap-2.5">
-          <div className="whitespace-pre-line font-normal text-body1 text-gray-800 font-pretendard">
+          <div className="whitespace-pre-line break-words font-normal text-body1 text-gray-800 font-pretendard">
             {article.description}
           </div>
         </div>
