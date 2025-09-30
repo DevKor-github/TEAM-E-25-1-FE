@@ -74,11 +74,9 @@ export default function ArticleListPage() {
       // 2. 스크랩 목록 조회 (백엔드에서 isScrapped를 제공하지 않는 경우에만)
       let scrapIds: string[] = [];
       const backendProvidesScrapStatus =
-       articles.length > 0 && "isScrapped" in articles[0];
+        articles.length > 0 && "isScrapped" in articles[0];
 
-      // 스크랩 상태 확인 
       if (!backendProvidesScrapStatus) {
-
         try {
           const scrapResponse = await api.get("/scrap");
           const scrapList = Array.isArray(scrapResponse.data)
