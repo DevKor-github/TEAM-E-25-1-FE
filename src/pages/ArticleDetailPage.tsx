@@ -96,6 +96,15 @@ export default function ArticleDetailPage() {
   const fetchScrapStatus = async () => {
     if (!articleId || fetchingScrapRef.current) return;
     
+    // 로그인 상태 확인
+    const authStorage = localStorage.getItem("user-auth-storage");
+    const isLoggedIn = authStorage ? JSON.parse(authStorage).state?.isLoggedIn : false;
+    
+    if (!isLoggedIn) {
+      setIsScrapped(false);
+      return;
+    }
+    
     fetchingScrapRef.current = true;
 
     try {
