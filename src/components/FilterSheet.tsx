@@ -36,6 +36,16 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
     }
   }, [open, filterState]);
 
+  // FilterSheet가 열렸을 때 body 스크롤 방지
+  React.useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [open]);
+
   const toggleType = (type: EventType) => {
     setTempFilterState({
       ...tempFilterState,
@@ -69,7 +79,7 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-end justify-center z-50 p-[10px]">
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-end justify-center z-50 p-[10px] overflow-hidden">
       <div className="w-[375px] min-h-[132px] bg-white rounded-[24px] flex flex-col items-center">
         <div className="w-full flex flex-col items-center">
           <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4" />
