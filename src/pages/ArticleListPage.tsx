@@ -37,11 +37,35 @@ export default function ArticleListPage() {
 
   // 필터 상태
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
-  const [filterState, setFilterState] = React.useState<FilterState>({
-    types: [],
-    includePast: false, // 기본값을 '지난행사제외'로 변경
-    hasExplicitDateFilter: false,
-  });
+  
+  // localStorage에서 필터 상태 복원
+  const getInitialFilterState = (): FilterState => {
+    try {
+      const saved = localStorage.getItem('articleListFilter');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.error('필터 상태 복원 실패:', error);
+    }
+    return {
+      types: [],
+      includePast: false,
+      hasExplicitDateFilter: false,
+    };
+  };
+
+  const [filterState, setFilterState] = React.useState<FilterState>(getInitialFilterState());
+
+  // 필터 상태 변경 시 localStorage에 저장
+  const updateFilterState = (newFilterState: FilterState) => {
+    setFilterState(newFilterState);
+    try {
+      localStorage.setItem('articleListFilter', JSON.stringify(newFilterState));
+    } catch (error) {
+      console.error('필터 상태 저장 실패:', error);
+    }
+  };
 
   // API: 게시글 목록 조회
   const fetchArticles = async () => {
@@ -221,7 +245,7 @@ export default function ArticleListPage() {
             selectedSegment={selectedSegment}
             onSegmentChange={setSelectedSegment}
             onReset={() => {
-              setFilterState({
+              updateFilterState({
                 types: [],
                 includePast: false, // 리셋할 때도 '지난행사제외'로
                 hasExplicitDateFilter: false,
@@ -259,7 +283,7 @@ export default function ArticleListPage() {
             open={filterSheetOpen}
             onClose={handleCloseFilter}
             filterState={filterState}
-            setFilterState={setFilterState}
+            setFilterState={updateFilterState}
             onApply={handleApplyFilter}
           />
           <div className="flex flex-col gap-4 mt-4 w-full items-center">
