@@ -61,6 +61,10 @@ export default function ArticleDetailPage() {
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
 
+  // 중복 API 호출 방지를 위한 ref
+  const fetchingArticleRef = useRef(false);
+  const fetchingScrapRef = useRef(false);
+
   const TAB_HEIGHT = 40; // sticky tabbed control의 height(px)
   const datePlaceRef = useRef<HTMLDivElement>(null);
   const orgRef = useRef<HTMLDivElement>(null);
@@ -96,7 +100,18 @@ export default function ArticleDetailPage() {
 
   // 스크랩 여부 가져오는 함수
   const fetchScrapStatus = async () => {
-    if (!articleId) return;
+    if (!articleId || fetchingScrapRef.current) return;
+    
+    // 로그인 상태 확인
+    const authStorage = localStorage.getItem("user-auth-storage");
+    const isLoggedIn = authStorage ? JSON.parse(authStorage).state?.isLoggedIn : false;
+    
+    if (!isLoggedIn) {
+      setIsScrapped(false);
+      return;
+    }
+    
+    fetchingScrapRef.current = true;
 
     try {
       const res = await api.get(`/scrap/article/${articleId}`);
@@ -109,6 +124,8 @@ export default function ArticleDetailPage() {
       } else {
         alert("스크랩 상태를 불러오는 중 오류가 발생했습니다.");
       }
+    } finally {
+      fetchingScrapRef.current = false;
     }
   };
 
@@ -116,11 +133,24 @@ export default function ArticleDetailPage() {
   useEffect(() => {
     if (!articleId) return;
 
+    // 이미 진행 중이면 중복 방지
+    if (fetchingArticleRef.current) {
+      return;
+    }
+
     const fetchArticle = async () => {
+      // double-check: 함수 시작 시점에서 다시 확인
+      if (fetchingArticleRef.current) {
+        return;
+      }
+
+      fetchingArticleRef.current = true;
+
       try {
         setLoading(true);
 
         const { data } = await api.get(`/article/${articleId}`);
+        
         setArticle({
           ...data,
           tags: Array.isArray(data.tags)
@@ -148,11 +178,12 @@ export default function ArticleDetailPage() {
         navigate("/", { replace: true });
       } finally {
         setLoading(false);
+        fetchingArticleRef.current = false;
       }
     };
 
     fetchArticle();
-  }, [articleId]);
+  }, [articleId, navigate]);
 
   useEffect(() => {
     fetchScrapStatus();
@@ -273,10 +304,10 @@ export default function ArticleDetailPage() {
                 isRegistration={true}
               />
             ) : (
-              <EventDateIndicator
-                startAt={article.startAt}
-                endAt={article.endAt}
-              />
+            <EventDateIndicator
+              startAt={article.startAt}
+              endAt={article.endAt}
+            />
             )}
           </div>
         </div>
