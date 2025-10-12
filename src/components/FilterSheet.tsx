@@ -82,7 +82,7 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-end justify-center z-50 p-[10px] overflow-hidden">
       <div className="w-[375px] min-h-[132px] bg-white rounded-[24px] flex flex-col items-center">
         <div className="w-full flex flex-col items-center">
-          <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4" />
+          {/* <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4" /> */} {/*grabber 삭제*/}
           <div className="w-full px-5">
             <div className="font-bold text-[20px] leading-[28px] text-[var(--Grays-Gray-900)] font-pretendard mb-4 mt-1">필터 설정</div>
             <div className="mb-5 w-full">
