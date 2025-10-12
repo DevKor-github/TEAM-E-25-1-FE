@@ -64,7 +64,12 @@ export default function EventCard({
     const formattedStart = formatDate(startAt);
     const formattedEnd = formatDate(endAt);
     if (formattedStart && formattedEnd) {
-      date = `${formattedStart} ~ ${formattedEnd}`;
+      // 시작일과 종료일이 같으면 하나의 날짜만 표시
+      if (formattedStart === formattedEnd) {
+        date = formattedStart;
+      } else {
+        date = `${formattedStart} ~ ${formattedEnd}`;
+      }
     }
   }
 
