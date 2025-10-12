@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/axios";
+import { usePreviousPageStore } from "@/stores/previousPageStore";
 import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";
+
 import chevronLeft from "../assets/chevronLeft.svg";
 import logo from "../assets/logo.svg";
 import KakaoLoginBtn from "@/components/ui/kakaoLoginBtn";
@@ -23,6 +25,16 @@ export default function LoginPage() {
 
     checkLoginStatus();
   }, [navigate]);
+
+  const previousPage = usePreviousPageStore((state) => state.previousPage);
+
+  // 앰플리튜드 - 페이지 조회 트래킹
+  useEffect(() => {
+    trackPageViewed({
+      pageName: "login_page",
+      previousPage: previousPage,
+    });
+  }, [previousPage]);
 
   const handleKakaoLogin = () => {
     window.location.href = `${import.meta.env.VITE_BASE_URL}auth/oauth/authorization`;

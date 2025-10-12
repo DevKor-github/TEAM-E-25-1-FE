@@ -5,6 +5,7 @@ import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
+import { usePreviousPageStore } from "@/stores/previousPageStore";
 import {
   trackButtonClicked,
   trackPageViewed,
@@ -218,13 +219,15 @@ export default function ArticleListPage() {
     fetchArticles();
   }, [selectedSegment, filterState]);
 
+  const previousPage = usePreviousPageStore((state) => state.previousPage);
+
   // 앰플리튜드 - 페이지 조회 트래킹
   React.useEffect(() => {
     trackPageViewed({
       pageName: "article_list",
-      previousPage: "",
+      previousPage: previousPage,
     });
-  }, []);
+  }, [previousPage]);
 
   // 필터 버튼 클릭
   const handleOpenFilter = () => {

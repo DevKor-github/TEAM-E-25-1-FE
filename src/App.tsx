@@ -1,11 +1,8 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import { useEffect } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useRef, useEffect } from "react";
+import { usePreviousPageStore } from "@/stores/previousPageStore";
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
+import { PageName } from "@/types/pageName";
 
 import LoginPage from "./pages/LoginPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
@@ -33,55 +30,77 @@ function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const location = useLocation();
+  const setPreviousPage = usePreviousPageStore(
+    (state) => state.setPreviousPage
+  );
+  const prevPath = useRef<string | null>(null);
+
+  // 페이지 이동 시 이전 페이지 경로 저장
+  useEffect(() => {
+    const pathToPageName = (pathname: string): PageName | null => {
+      if (pathname.startsWith("/event/") && pathname !== "/event")
+        return "article_detail";
+      if (pathname === "/event") return "article_list";
+      if (pathname === "/scrap") return "scrap_list";
+      if (pathname === "/mypage") return "my_page";
+      if (pathname === "/login") return "login_page";
+      return null;
+    };
+
+    const prevPageName = pathToPageName(prevPath.current || "");
+    if (prevPageName) setPreviousPage(prevPageName);
+
+    prevPath.current = location.pathname;
+  }, [location.pathname, setPreviousPage]);
+
   return (
-    <Router>
-      <main>
-        <Routes>
-          {/* 기본 경로 설정 */}
-          <Route path="/" element={<Navigate to="/event" replace />} />
-          {/* 사용자 라우트 */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/event" element={<ArticleListPage />} />
-          <Route path="/event/:articleId" element={<ArticleDetailPage />} />
-          <Route path="/scrap" element={<ScrapPage />} />
-          <Route path="/error" element={<ErrorPage />} />
-          <Route path="/mypage" element={<MyPage />} />
-          {/* 관리자 라우트 */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route
-            path="/admin/home"
-            element={
-              <AdminPrivateRoute>
-                <AdminHome />
-              </AdminPrivateRoute>
-            }
-          />
-          <Route
-            path="/admin/event/:articleId"
-            element={
-              <AdminPrivateRoute>
-                <AdminArticleDetail />
-              </AdminPrivateRoute>
-            }
-          />
-          <Route
-            path="/admin/event/:articleId/edit"
-            element={
-              <AdminPrivateRoute>
-                <AdminArticleEdit />
-              </AdminPrivateRoute>
-            }
-          />
-          <Route
-            path="/admin/event/upload"
-            element={
-              <AdminPrivateRoute>
-                <ArticleUploadPage />
-              </AdminPrivateRoute>
-            }
-          />
-        </Routes>
-      </main>
-    </Router>
+    <main>
+      <Routes>
+        {/* 기본 경로 설정 */}
+        <Route path="/" element={<Navigate to="/event" replace />} />
+        {/* 사용자 라우트 */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/event" element={<ArticleListPage />} />
+        <Route path="/event/:articleId" element={<ArticleDetailPage />} />
+        <Route path="/scrap" element={<ScrapPage />} />
+        <Route path="/error" element={<ErrorPage />} />
+        <Route path="/mypage" element={<MyPage />} />
+        {/* 관리자 라우트 */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/home"
+          element={
+            <AdminPrivateRoute>
+              <AdminHome />
+            </AdminPrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/event/:articleId"
+          element={
+            <AdminPrivateRoute>
+              <AdminArticleDetail />
+            </AdminPrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/event/:articleId/edit"
+          element={
+            <AdminPrivateRoute>
+              <AdminArticleEdit />
+            </AdminPrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/event/upload"
+          element={
+            <AdminPrivateRoute>
+              <ArticleUploadPage />
+            </AdminPrivateRoute>
+          }
+        />
+      </Routes>
+    </main>
   );
 }

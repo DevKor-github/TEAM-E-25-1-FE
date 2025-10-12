@@ -1,10 +1,12 @@
 import React from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
+import { usePreviousPageStore } from "@/stores/previousPageStore";
 import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";
 
 export type Article = {
@@ -236,6 +238,16 @@ export default function ScrapPage() {
       pageName: "scrap_list",
     });
   };
+
+  const previousPage = usePreviousPageStore((state) => state.previousPage);
+
+  // 앰플리튜드 - 페이지 조회 트래킹
+  useEffect(() => {
+    trackPageViewed({
+      pageName: "scrap_list",
+      previousPage: previousPage,
+    });
+  }, [previousPage]);
 
   if (loading) {
     return (

@@ -4,14 +4,7 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { api } from "@/lib/axios";
-import HeaderFrame from "@/components/HeaderFrame";
-import EventTypeIndicator from "@/components/ui/EventTypeIndicator";
-import TabbedControl from "@/components/ui/tabbedControl";
-import Toast from "@/components/ui/toast";
-import EventDateIndicator from "@/components/ui/EventDateIndicator";
-import EventImage from "@/components/ui/EventImage";
-import { Button } from "@/components/ui/buttons";
-import { BottomButtonsCombo3 } from "@components/ui/bottomButtonsCombo";
+import { usePreviousPageStore } from "@/stores/previousPageStore";
 import {
   trackButtonClicked,
   trackPageViewed,
@@ -21,6 +14,15 @@ import {
   trackRegistrationUrlOpened,
   trackAttemptedScrap,
 } from "@/amplitude/track";
+
+import HeaderFrame from "@/components/HeaderFrame";
+import EventTypeIndicator from "@/components/ui/EventTypeIndicator";
+import TabbedControl from "@/components/ui/tabbedControl";
+import Toast from "@/components/ui/toast";
+import EventDateIndicator from "@/components/ui/EventDateIndicator";
+import EventImage from "@/components/ui/EventImage";
+import { Button } from "@/components/ui/buttons";
+import { BottomButtonsCombo3 } from "@components/ui/bottomButtonsCombo";
 import closeIcon from "../assets/closeIcon.svg";
 import heartGray from "@/assets/heart_gray.svg";
 import copyIcon from "@/assets/copyIcon.svg";
@@ -108,7 +110,7 @@ export default function ArticleDetailPage() {
     // 앰플리튜드 - 버튼 클릭 트래킹
     trackButtonClicked({
       buttonName: "close_article_image_view",
-      pageName: "article_image_view",
+      pageName: "article_detail",
     });
   };
 
@@ -195,9 +197,12 @@ export default function ArticleDetailPage() {
     fetchScrapStatus();
   }, [articleId]);
 
-  // 앰플리튜드 - 행사 상세 진입 트래킹 (정상적으로 article을 불러온 경우에만)
+  const previousPage = usePreviousPageStore((state) => state.previousPage);
+
   useEffect(() => {
     if (!article) return;
+
+    // 앰플리튜드 - 행사 상세 진입 트래킹 (정상적으로 article을 불러온 경우에만)
     trackArticleDetailViewed({
       tag: article.tags,
       detailImage: article.imagePaths?.length ?? 0,
@@ -205,11 +210,12 @@ export default function ArticleDetailPage() {
       hasLink: !!article.registrationUrl,
       fromLink: from === "share",
     });
+    // 앰플리튜드 - 페이지 조회 트래킹
     trackPageViewed({
       pageName: "article_detail",
-      previousPage: "",
+      previousPage: previousPage,
     });
-  }, [article, from]);
+  }, [article, from, previousPage]);
 
   if (loading) {
     return (
@@ -433,7 +439,7 @@ export default function ArticleDetailPage() {
                         // 앰플리튜드 - 버튼 클릭 트래킹
                         trackButtonClicked({
                           buttonName: "previous_image",
-                          pageName: "article_image_view",
+                          pageName: "article_detail",
                         });
                       }}
                     />
@@ -455,7 +461,7 @@ export default function ArticleDetailPage() {
                         // 앰플리튜드 - 버튼 클릭 트래킹
                         trackButtonClicked({
                           buttonName: "next_image",
-                          pageName: "article_image_view",
+                          pageName: "article_detail",
                         });
                       }}
                     />

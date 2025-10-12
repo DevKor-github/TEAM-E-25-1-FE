@@ -1,4 +1,5 @@
 import * as amplitude from "@amplitude/analytics-browser";
+import { PageName } from "@/types/pageName";
 
 // 버튼 클릭
 export function trackButtonClicked(params: {
@@ -14,27 +15,15 @@ export function trackButtonClicked(params: {
     | "previous_image"
     | "next_image"
     | "close_article_image_view";
-  pageName:
-    | "article_list"
-    | "article_detail"
-    | "article_image_view"
-    | "scrap_list"
-    | "my_page"
-    | "login_page";
+  pageName: PageName;
 }) {
   amplitude.track("Button Clicked", params);
 }
 
 // 페이지 조회
 export function trackPageViewed(params: {
-  pageName:
-    | "article_list"
-    | "article_detail"
-    | "article_image_view"
-    | "scrap_list"
-    | "my_page"
-    | "login_page";
-  previousPage: string;
+  pageName: PageName;
+  previousPage?: PageName | null;
 }) {
   amplitude.track("Page Viewed", params);
 }
