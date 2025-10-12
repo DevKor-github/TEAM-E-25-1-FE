@@ -3,6 +3,7 @@ import EventDateIndicator from "./EventDateIndicator";
 import heartRed from "@/assets/heart_red500.svg";
 import heartGray from "@/assets/heart_gray.svg";
 import heartNothing from "@/assets/heart_nothing.svg";
+import eyeIcon from "@/assets/eye.svg";
 export type Article = {
   id: string;
   title: string;
@@ -136,8 +137,9 @@ export default function EventCard({
 
         <div className="flex items-center gap-3 ml-auto pr-1">
           <div className="flex items-center gap-1">
+            <img src={eyeIcon} alt="view-count" className="w-5 h-5" />
             <span className="font-pretendard text-sm font-body-3 text-gray-500">
-              조회 {viewCount > 999 ? "999+" : viewCount}
+              {viewCount > 999 ? "999+" : viewCount}
             </span>
           </div>
           <div className="flex items-center gap-1">
