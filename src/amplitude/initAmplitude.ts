@@ -7,7 +7,6 @@ export const initAmplitude = () => {
     amplitude.init(AMPLITUDE_API_KEY, undefined, {
       defaultTracking: true,
     });
-    console.log("앰플리튜드 초기화 완료");
   } else {
     console.error("앰플리튜드 API 키가 없습니다.");
   }

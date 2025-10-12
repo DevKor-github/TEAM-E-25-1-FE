@@ -6,7 +6,9 @@ import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
 import {
-  trackEventListViewed,
+  trackButtonClicked,
+  trackPageViewed,
+  trackArticleListViewed,
   trackScrapToggled,
   trackAttemptedScrap,
 } from "@/amplitude/track";
@@ -127,14 +129,14 @@ export default function ArticleListPage() {
       setArticleList(filteredArticles);
 
       // 앰플리튜드 - 행사 목록 조회 트래킹 (정상적으로 데이터를 불러온 경우에만)
-      trackEventListViewed({
-        tab:
+      trackArticleListViewed({
+        currentTab:
           selectedSegment === "많이 본"
-            ? "viewCount"
+            ? "view_count"
             : selectedSegment === "많이 찜한"
-              ? "scrapCount"
-              : "createdAt",
-        tags: filterState.types,
+              ? "scrap_count"
+              : "created_at",
+        filteredTag: filterState.types,
         includePast: filterState.includePast,
       });
     } catch (error) {
@@ -147,6 +149,12 @@ export default function ArticleListPage() {
 
   // API: 스크랩 토글
   const handleToggleScrap = async (id: string) => {
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "scrap_article",
+      pageName: "article_list",
+    });
+
     try {
       const article = articleList.find((a) => a.id === id);
       if (!article) return;
@@ -210,11 +218,35 @@ export default function ArticleListPage() {
     fetchArticles();
   }, [selectedSegment, filterState]);
 
+  // 앰플리튜드 - 페이지 조회 트래킹
+  React.useEffect(() => {
+    trackPageViewed({
+      pageName: "article_list",
+      previousPage: "",
+    });
+  }, []);
+
   // 필터 버튼 클릭
-  const handleOpenFilter = () => setFilterSheetOpen(true);
-  const handleCloseFilter = () => setFilterSheetOpen(false);
+  const handleOpenFilter = () => {
+    setFilterSheetOpen(true);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({ buttonName: "open_filter", pageName: "article_list" });
+  };
+  const handleCloseFilter = () => {
+    setFilterSheetOpen(false);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "close_filter",
+      pageName: "article_list",
+    });
+  };
   const handleApplyFilter = () => {
     setFilterSheetOpen(false);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "apply_filter",
+      pageName: "article_list",
+    });
   };
 
   if (loading) {

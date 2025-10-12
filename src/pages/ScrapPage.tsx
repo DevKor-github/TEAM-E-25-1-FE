@@ -5,7 +5,7 @@ import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
-
+import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";
 
 export type Article = {
   id: string;
@@ -19,6 +19,8 @@ export type Article = {
   location: string;
   startAt: string;
   endAt: string;
+  registrationStartAt?: string;
+  registrationEndAt?: string;
   imagePaths: string[];
   registrationUrl: string;
   isScrapped?: boolean;
@@ -52,10 +54,10 @@ export default function ScrapPage() {
     }
 
     fetchingRef.current = true;
-    
+
     try {
       setLoading(true);
-      
+
       // 1. 스크랩 목록 조회
       const response = await api.get("/scrap");
 
@@ -77,12 +79,16 @@ export default function ScrapPage() {
         thumbnailPath: scrapItem.thumbnailPath,
         scrapCount: scrapItem.scrapCount,
         viewCount: scrapItem.viewCount,
-        tags: Array.isArray(scrapItem.tags) ? scrapItem.tags : [scrapItem.tags].filter(Boolean),
+        tags: Array.isArray(scrapItem.tags)
+          ? scrapItem.tags
+          : [scrapItem.tags].filter(Boolean),
         description: scrapItem.description || "",
         location: scrapItem.location || "",
         startAt: scrapItem.startAt,
         endAt: scrapItem.endAt,
-        imagePaths: Array.isArray(scrapItem.imagePaths) ? scrapItem.imagePaths : [],
+        imagePaths: Array.isArray(scrapItem.imagePaths)
+          ? scrapItem.imagePaths
+          : [],
         registrationUrl: scrapItem.registrationUrl || "",
         isScrapped: true,
       }));
@@ -138,15 +144,20 @@ export default function ScrapPage() {
       fetchingRef.current = false; // 완료 후 플래그 리셋
     }
   }, [
-    selectedSegment, 
-    filterState.types.join(','), // 배열을 문자열로 변환하여 안정적인 의존성 생성
-    filterState.includePast, 
-    filterState.hasExplicitDateFilter, 
-    navigate
+    selectedSegment,
+    filterState.types.join(","), // 배열을 문자열로 변환하여 안정적인 의존성 생성
+    filterState.includePast,
+    filterState.hasExplicitDateFilter,
+    navigate,
   ]);
 
   // API: 스크랩 토글 (스크랩 해제만 가능)
   const handleToggleScrap = async (id: string) => {
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "scrap_article",
+      pageName: "scrap_list",
+    });
     try {
       const article = articleList.find((a) => a.id === id);
       if (!article) return;
@@ -156,7 +167,7 @@ export default function ScrapPage() {
         ? article.scrapCount - 1
         : article.scrapCount + 1;
 
-      // 즉시 UI 업데이트 
+      // 즉시 UI 업데이트
       setArticleList((prev) =>
         prev.map((a) =>
           a.id === id
@@ -204,10 +215,26 @@ export default function ScrapPage() {
   }, [fetchScrapedArticles]);
 
   // 필터 버튼 클릭
-  const handleOpenFilter = () => setFilterSheetOpen(true);
-  const handleCloseFilter = () => setFilterSheetOpen(false);
+  const handleOpenFilter = () => {
+    setFilterSheetOpen(true);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({ buttonName: "open_filter", pageName: "scrap_list" });
+  };
+  const handleCloseFilter = () => {
+    setFilterSheetOpen(false);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "close_filter",
+      pageName: "scrap_list",
+    });
+  };
   const handleApplyFilter = () => {
     setFilterSheetOpen(false);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "apply_filter",
+      pageName: "scrap_list",
+    });
   };
 
   if (loading) {
@@ -282,33 +309,33 @@ export default function ScrapPage() {
             onApply={handleApplyFilter}
           />
           <div className="flex flex-col gap-4 mt-4 w-full items-center">
-          {articleList.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="text-gray-500">스크랩한 게시글이 없습니다.</div>
-              <button
-                onClick={() => navigate("/")}
-                className="mt-4 px-4 py-2 bg-sky-500 font-pretendard text-white rounded-lg"
-              >
-                홈으로 돌아가기
-              </button>
-            </div>
-          ) : (
-            articleList.map((article, index) => (
-              <EventCard
-                key={article.id || `scrap-article-${index}`}
-                {...article}
-                isScrapped={article.isScrapped !== false} // 동적으로 처리, 기본값은 true (스크랩 페이지이므로)
-                onCardClick={() => {
-                  if (article.id) {
-                    navigate(`/event/${article.id}`);
-                  }
-                }}
-                onToggleScrap={() => {
-                  handleToggleScrap(article.id);
-                }}
-              />
-            ))
-          )}
+            {articleList.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="text-gray-500">스크랩한 게시글이 없습니다.</div>
+                <button
+                  onClick={() => navigate("/")}
+                  className="mt-4 px-4 py-2 bg-sky-500 font-pretendard text-white rounded-lg"
+                >
+                  홈으로 돌아가기
+                </button>
+              </div>
+            ) : (
+              articleList.map((article, index) => (
+                <EventCard
+                  key={article.id || `scrap-article-${index}`}
+                  {...article}
+                  isScrapped={article.isScrapped !== false} // 동적으로 처리, 기본값은 true (스크랩 페이지이므로)
+                  onCardClick={() => {
+                    if (article.id) {
+                      navigate(`/event/${article.id}`);
+                    }
+                  }}
+                  onToggleScrap={() => {
+                    handleToggleScrap(article.id);
+                  }}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>

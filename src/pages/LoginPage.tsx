@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/axios";
+import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";
 import chevronLeft from "../assets/chevronLeft.svg";
 import logo from "../assets/logo.svg";
 import KakaoLoginBtn from "@/components/ui/kakaoLoginBtn";
@@ -25,6 +26,11 @@ export default function LoginPage() {
 
   const handleKakaoLogin = () => {
     window.location.href = `${import.meta.env.VITE_BASE_URL}auth/oauth/authorization`;
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "start_with_kakao",
+      pageName: "login_page",
+    });
   };
 
   return (
