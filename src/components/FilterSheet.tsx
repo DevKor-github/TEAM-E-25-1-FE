@@ -1,7 +1,6 @@
 import React from "react";
 import AllToggleButton from "./ui/AllToggleButton";
 import ToggleButton from "./ui/ToggleButton";
-import SegmentedControl from "./ui/SegmentedControl";
 import { BottomButtonsCombo2 } from "./ui/bottomButtonsCombo";
 import { EventType } from "./ui/EventTypeIndicator";
 
@@ -111,15 +110,36 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
               <div className="font-medium text-[14px] leading-[20px] text-[var(--Grays-Gray-400,#99A1B3)] font-pretendard mb-2">행사일정</div>
               <div className="flex justify-center">
                 <div className="w-[315px]">
-                  <SegmentedControl
-                    segments={["지난 행사 포함", "지난 행사 제외"]}
-                    selected={tempFilterState.includePast ? "지난 행사 포함" : "지난 행사 제외"}
-                    onChange={(val: string) => setTempFilterState({ 
-                      ...tempFilterState, 
-                      includePast: val === "지난 행사 포함",
-                      hasExplicitDateFilter: true // 사용자가 명시적으로 선택했음을 표시
+                  {/* FilterSheet 전용 SegmentedControl */}
+                  <div className="flex p-[2px] bg-gray-50 rounded-[12px] w-full" style={{ minHeight: 40 }}>
+                    {["지난 행사 포함", "지난 행사 제외"].map((label) => {
+                      const isSelected = tempFilterState.includePast ? label === "지난 행사 포함" : label === "지난 행사 제외";
+                      return (
+                        <button
+                          key={label}
+                          type="button"
+                          className={`
+                            flex-1 h-9 px-[12px] py-[8px]
+                            text-[17px] font-pretendard leading-[24px]
+                            flex items-center justify-center
+                            transition-colors duration-150
+                            focus-visible:outline-none focus-visible:ring-0
+                            ${isSelected
+                              ? "bg-sky-50 text-sky-500 font-medium shadow-[0_2px_8px_0_rgba(3,0,40,0.04)] rounded-[10px]"
+                              : "bg-transparent text-[var(--Grays-Gray-500)] hover:bg-[var(--Grays-Gray-100)] font-normal rounded-[10px]"
+                            }
+                          `}
+                          onClick={() => setTempFilterState({ 
+                            ...tempFilterState, 
+                            includePast: label === "지난 행사 포함",
+                            hasExplicitDateFilter: true
+                          })}
+                        >
+                          {label}
+                        </button>
+                      );
                     })}
-                  />
+                  </div>
                 </div>
               </div>
             </div>

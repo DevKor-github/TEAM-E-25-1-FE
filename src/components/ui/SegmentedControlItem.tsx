@@ -19,8 +19,8 @@ export default function SegmentedControlItem({
         transition-colors duration-150
         focus-visible:outline-none focus-visible:ring-0
         ${isSelected
-          ? "bg-sky-50 text-sky-500 font-medium shadow-[0_2px_8px_0_rgba(3,0,40,0.04)] rounded-[10px]"
-          : "bg-transparent text-[var(--Grays-Gray-500)] hover:bg-[var(--Grays-Gray-100)] font-normal rounded-[10px]"
+          ? "bg-white text-[var(--Grays-Gray-700)] font-medium shadow-[0_2px_8px_0_rgba(3,0,40,0.04)] rounded-[10px]"
+          : "bg-gray-50 text-[var(--Grays-Gray-500)] hover:bg-[var(--Grays-Gray-100)] font-normal rounded-[10px]"
         }
       `}
       onClick={onClick}
