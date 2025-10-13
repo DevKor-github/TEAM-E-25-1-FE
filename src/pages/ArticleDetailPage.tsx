@@ -416,7 +416,7 @@ export default function ArticleDetailPage() {
             {article.description}
           </div>
         </div>
-        <div>
+        <div className="sticky bottom-0 z-20">
           <BottomButtonsCombo3
             onShareClick={() => {
               navigator.clipboard.writeText(window.location.href);
@@ -470,7 +470,7 @@ export default function ArticleDetailPage() {
 
         {/* Toast 메시지 띄우기 */}
         {toastMessage && (
-          <div className="w-screen flex justify-center max-w-[300px] fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+          <div className="w-screen flex justify-center max-w-[300px] fixed bottom-20 left-1/2 -translate-x-1/2 z-50">
             <Toast message={toastMessage} />
           </div>
         )}
