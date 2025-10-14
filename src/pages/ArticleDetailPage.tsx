@@ -9,10 +9,8 @@ import {
   trackButtonClicked,
   trackPageViewed,
   trackArticleDetailViewed,
-  trackScrapToggled,
   trackArticleShared,
   trackRegistrationUrlOpened,
-  trackAttemptedScrap,
 } from "@/amplitude/track";
 
 import HeaderFrame from "@/components/HeaderFrame";
@@ -534,8 +532,6 @@ export default function ArticleDetailPage() {
                     // 스크랩 취소할 때 scrapCount가 음수가 되지 않도록 안전하게 처리
                     scrapCount: Math.max(0, article.scrapCount - 1),
                   });
-                  // 앰플리튜드 - 회원 스크랩 삭제 트래킹
-                  trackScrapToggled({ articleId, action: "remove" });
                 } else {
                   await api.post(`/scrap/${articleId}`);
                   setIsScrapped(true);
@@ -543,13 +539,9 @@ export default function ArticleDetailPage() {
                     ...article,
                     scrapCount: article.scrapCount + 1,
                   });
-                  // 앰플리튜드 - 회원 스크랩 추가 트래킹
-                  trackScrapToggled({ articleId, action: "add" });
                 }
               } catch (err: any) {
                 if (err.response?.status === 401) {
-                  // 앰플리튜드 - 비회원 스크랩 시도 트래킹
-                  trackAttemptedScrap({ articleId });
                   navigate("/login");
                 } else if (err.response?.status === 404) {
                   alert("해당 행사가 존재하지 않습니다.");

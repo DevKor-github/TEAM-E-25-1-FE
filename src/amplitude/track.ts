@@ -48,19 +48,6 @@ export function trackArticleDetailViewed(params: {
   amplitude.track("Article Detail Viewed", params);
 }
 
-// 비회원 스크랩 시도
-export function trackAttemptedScrap(params: { articleId: string }) {
-  amplitude.track("attempted_scrap", params);
-}
-
-// 회원 스크랩 추가/삭제
-export function trackScrapToggled(params: {
-  articleId: string;
-  action: "add" | "remove";
-}) {
-  amplitude.track("scrap_toggled", params);
-}
-
 // 공유 버튼 클릭
 export function trackArticleShared(params: {
   articleId: string;

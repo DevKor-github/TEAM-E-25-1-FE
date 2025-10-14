@@ -10,8 +10,6 @@ import {
   trackButtonClicked,
   trackPageViewed,
   trackArticleListViewed,
-  trackScrapToggled,
-  trackAttemptedScrap,
 } from "@/amplitude/track";
 
 // Article 타입: 백엔드 스웨거 기준
@@ -177,12 +175,8 @@ export default function ArticleListPage() {
       // API 호출
       if (article.isScrapped) {
         await api.delete(`/scrap/${id}`);
-        // 앰플리튜드 - 회원 스크랩 삭제 트래킹
-        trackScrapToggled({ articleId: id, action: "remove" });
       } else {
         await api.post(`/scrap/${id}`);
-        // 앰플리튜드 - 회원 스크랩 추가 트래킹
-        trackScrapToggled({ articleId: id, action: "add" });
       }
     } catch (error: any) {
       // 오류 발생 시 원래 상태로 되돌리기
@@ -201,8 +195,6 @@ export default function ArticleListPage() {
       console.error(`스크랩 토글 실패: ${id}`, error);
 
       if (error.response?.status === 401) {
-        // 앰플리튜드 - 비회원 스크랩 시도 트래킹
-        trackAttemptedScrap({ articleId: id });
         navigate("/login");
       } else if (error.response?.status === 404) {
         alert("해당 게시글이 존재하지 않습니다.");
