@@ -1,7 +1,9 @@
-import FilterButton from "./ui/FilterButton";
-import Divider from "./ui/Divider";
-import SegmentedControl from "./ui/SegmentedControl";
-import dotIcon from "../assets/Dot.svg";
+import { useState } from "react";
+import FilterButton from "@/components/ui/FilterButton";
+import Divider from "@/components/ui/Divider";
+import SegmentedControl from "@/components/ui/SegmentedControl";
+import { SearchBar } from "@/components/ui/SearchBar";
+import dotIcon from "@/assets/Dot.svg";
 
 interface MobileHeaderSectionProps {
   eventCount: number;
@@ -26,23 +28,24 @@ export default function MobileHeaderSection({
   title = "행사", // 기본값을 "행사"로 설정
   hasActiveFilters = false,
 }: MobileHeaderSectionProps) {
+  const [searchValue, setSearchValue] = useState("");
+
   return (
-    <div className="w-full bg-white rounded-2xl p-0 flex flex-col gap-4">
+    <div className="w-full bg-white rounded-2xl p-0 flex flex-col gap-2">
       {/* 상단: 행사, 개수, dot, 필터 */}
       <div className="flex items-center justify-between pt-5">
-        <span className="text-[23px] font-pretendard font-semibold text-black">{title}</span>
+        <span className="text-[23px] font-pretendard font-semibold text-black">
+          {title}
+        </span>
         <div className="flex items-center">
           <span className="text-[17px] font-pretendard font-medium text-gray-400 pr-2">
             {eventCount}개
           </span>
           <img src={dotIcon} alt="dot" className="w-1.5 h-1.5 mr-3" />
-          <FilterButton 
-            label="필터" 
-            onClick={onFilter || onReset} 
-          />
+          <FilterButton label="필터" onClick={onFilter || onReset} />
         </div>
       </div>
-      
+
       {/* chips과 초기화 버튼: hasActiveFilters가 true일 때만 렌더링 */}
       {hasActiveFilters && (
         <>
@@ -50,22 +53,19 @@ export default function MobileHeaderSection({
           <div className="flex items-center justify-between gap-2">
             {/* chips: selectedChips가 있을 때만 렌더링 */}
             <div className="flex gap-2 flex-wrap flex-1">
-              {selectedChips && selectedChips.length > 0 && 
+              {selectedChips &&
+                selectedChips.length > 0 &&
                 selectedChips.map((chip, index) => (
-                  <span 
+                  <span
                     key={index}
                     className="inline-flex items-center px-2 py-1 rounded-[6px] bg-sky-50 text-sky-500 text-[15px] font-pretendard font-medium"
                   >
                     {chip}
                   </span>
-                ))
-              }
+                ))}
             </div>
             {/* 초기화 버튼 */}
-            <FilterButton 
-              label="초기화" 
-              onClick={onReset} 
-            />
+            <FilterButton label="초기화" onClick={onReset} />
           </div>
           {/* Divider */}
           <div>
@@ -73,11 +73,16 @@ export default function MobileHeaderSection({
           </div>
         </>
       )}
-      
-      {/* SegmentedControl */}
-      <div className="pb-5 flex justify-center">
-        <SegmentedControl segments={segments} selected={selectedSegment} onChange={onSegmentChange} />
-      </div>
+
+      <SegmentedControl
+        segments={segments}
+        selected={selectedSegment}
+        onChange={onSegmentChange}
+      />
+
+      <Divider />
+
+      <SearchBar value={searchValue} onChange={setSearchValue} />
     </div>
   );
 }
