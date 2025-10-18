@@ -82,13 +82,8 @@ export default function ArticleListPage() {
       const backendProvidesScrapStatus =
         articles.length > 0 && "isScrapped" in articles[0];
 
-      // 로그인 상태 확인
-      const authStorage = localStorage.getItem("user-auth-storage");
-      const isLoggedIn = authStorage
-        ? JSON.parse(authStorage).state?.isLoggedIn
-        : false;
-
-      if (!backendProvidesScrapStatus && isLoggedIn) {
+      // 스크랩 상태 확인
+      if (!backendProvidesScrapStatus) {
         try {
           const scrapResponse = await api.get("/scrap");
           const scrapList = Array.isArray(scrapResponse.data)
