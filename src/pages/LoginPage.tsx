@@ -50,7 +50,7 @@ export default function LoginPage() {
     <div className="w-full min-h-screen bg-gray-100">
       {/* 중앙 컨텐츠 프레임 */}
       <div className="relative w-full max-w-[460px] mx-auto bg-white min-h-screen">
-        <div className="w-[375px] h-[60px] flex flex-row items-center px-[20px] py-[10px] gap-[10px]">
+        <div className="w-full h-[60px] flex flex-row items-center px-[20px] py-[10px] gap-[10px]">
           <img
             src={chevronLeft}
             alt="이전으로 돌아가기"

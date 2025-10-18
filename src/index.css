@@ -65,12 +65,16 @@
     @apply bg-background text-foreground;
   }
 }
-
-html,
+html {
+  /* 스크롤바 공간을 항상 예약하여 레이아웃 흔들림 방지 */
+  scrollbar-gutter: stable;
+  /* fallback: 모든 브라우저에서 수직 스크롤바 영역 확보 */
+  overflow-y: scroll;
+}
 body {
   margin: 0;
   padding: 0;
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
   background: #fff;
 }
