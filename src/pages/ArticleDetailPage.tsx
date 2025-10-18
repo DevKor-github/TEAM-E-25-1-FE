@@ -396,7 +396,7 @@ export default function ArticleDetailPage() {
 
         {/* 상세이미지 모달 */}
         {modalOpen && modalImage && (
-          <div className="min-h-[100vh] fixed inset-0 bg-gray-100 flex items-center justify-center">
+          <div className="min-h-[100vh] fixed z-30 inset-0 bg-gray-100 flex items-center justify-center">
             <div className="relative bg-white overflow-y-scroll scrollbar-hide w-full max-w-[460px] h-screen flex flex-col items-center">
               {/* 상단 바: 닫기 버튼 + 인덱스 */}
               <div className="relative flex items-center w-full h-[60px] min-h-[60px] pt-[10px] pr-[20px] pb-[10px] pl-[20px] gap-[10px]">
