@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/axios";
+import { usePreviousPageStore } from "@/stores/previousPageStore";
+import { trackPageViewed } from "@/amplitude/track";
 import { Button } from "@/components/ui/buttons";
 import HeaderFrame from "@/components/HeaderFrame";
 
@@ -59,6 +61,16 @@ export default function MyPage() {
 
     fetchUser();
   }, []);
+
+  const previousPage = usePreviousPageStore((state) => state.previousPage);
+
+  // 앰플리튜드 - 페이지 조회 트래킹
+  useEffect(() => {
+    trackPageViewed({
+      pageName: "my_page",
+      previousPage: previousPage,
+    });
+  }, [previousPage]);
 
   return (
     // 바깥 프레임

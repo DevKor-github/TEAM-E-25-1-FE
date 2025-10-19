@@ -5,6 +5,12 @@ import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
+import { usePreviousPageStore } from "@/stores/previousPageStore";
+import {
+  trackButtonClicked,
+  trackPageViewed,
+  trackArticleListViewed,
+} from "@/amplitude/track";
 
 // Article 타입: 백엔드 스웨거 기준
 export type Article = {
@@ -76,11 +82,8 @@ export default function ArticleListPage() {
       const backendProvidesScrapStatus =
         articles.length > 0 && "isScrapped" in articles[0];
 
-      // 로그인 상태 확인
-      const authStorage = localStorage.getItem("user-auth-storage");
-      const isLoggedIn = authStorage ? JSON.parse(authStorage).state?.isLoggedIn : false;
-
-      if (!backendProvidesScrapStatus && isLoggedIn) {
+      // 스크랩 상태 확인
+      if (!backendProvidesScrapStatus) {
         try {
           const scrapResponse = await api.get("/scrap");
           const scrapList = Array.isArray(scrapResponse.data)
@@ -118,6 +121,18 @@ export default function ArticleListPage() {
       }
 
       setArticleList(filteredArticles);
+
+      // 앰플리튜드 - 행사 목록 조회 트래킹 (정상적으로 데이터를 불러온 경우에만)
+      trackArticleListViewed({
+        currentTab:
+          selectedSegment === "많이 본"
+            ? "view_count"
+            : selectedSegment === "많이 찜한"
+              ? "scrap_count"
+              : "created_at",
+        filteredTag: filterState.types,
+        includePast: filterState.includePast,
+      });
     } catch (error) {
       console.error("게시글 목록 조회 실패:", error);
       alert("게시글 목록을 불러오는 중 오류가 발생했습니다.");
@@ -128,6 +143,12 @@ export default function ArticleListPage() {
 
   // API: 스크랩 토글
   const handleToggleScrap = async (id: string) => {
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "scrap_article",
+      pageName: "article_list",
+    });
+
     try {
       const article = articleList.find((a) => a.id === id);
       if (!article) return;
@@ -185,11 +206,37 @@ export default function ArticleListPage() {
     fetchArticles();
   }, [selectedSegment, filterState]);
 
+  const previousPage = usePreviousPageStore((state) => state.previousPage);
+
+  // 앰플리튜드 - 페이지 조회 트래킹
+  React.useEffect(() => {
+    trackPageViewed({
+      pageName: "article_list",
+      previousPage: previousPage,
+    });
+  }, [previousPage]);
+
   // 필터 버튼 클릭
-  const handleOpenFilter = () => setFilterSheetOpen(true);
-  const handleCloseFilter = () => setFilterSheetOpen(false);
+  const handleOpenFilter = () => {
+    setFilterSheetOpen(true);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({ buttonName: "open_filter", pageName: "article_list" });
+  };
+  const handleCloseFilter = () => {
+    setFilterSheetOpen(false);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "close_filter",
+      pageName: "article_list",
+    });
+  };
   const handleApplyFilter = () => {
     setFilterSheetOpen(false);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "apply_filter",
+      pageName: "article_list",
+    });
   };
 
   if (loading) {
