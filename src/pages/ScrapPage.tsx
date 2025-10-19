@@ -6,6 +6,12 @@ import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
 
+const SCRAP_FILTER_DEFAULT: FilterState = {
+  types: [],
+  includePast: false,
+  hasExplicitDateFilter: false,
+};
+
 
 export type Article = {
   id: string;
@@ -38,11 +44,44 @@ export default function ScrapPage() {
 
   // 필터 상태
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
-  const [filterState, setFilterState] = React.useState<FilterState>({
-    types: [],
-    includePast: false, // 기본값을 '지난행사제외'로 변경
-    hasExplicitDateFilter: false,
-  });
+
+  const getInitialFilterState = React.useCallback((): FilterState => {
+    if (typeof window === "undefined") {
+      return SCRAP_FILTER_DEFAULT;
+    }
+
+    try {
+      const saved = sessionStorage.getItem("scrapPageFilter");
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.error("스크랩 필터 상태 복원 실패:", error);
+    }
+
+    return SCRAP_FILTER_DEFAULT;
+  }, []);
+
+  const [filterState, setFilterState] = React.useState<FilterState>(() =>
+    getInitialFilterState()
+  );
+
+  const updateFilterState = React.useCallback((newFilterState: FilterState) => {
+    setFilterState(newFilterState);
+
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      sessionStorage.setItem(
+        "scrapPageFilter",
+        JSON.stringify(newFilterState)
+      );
+    } catch (error) {
+      console.error("스크랩 필터 상태 저장 실패:", error);
+    }
+  }, []);
 
   // API: 스크랩한 게시글 목록 조회
   const fetchScrapedArticles = React.useCallback(async () => {
@@ -138,10 +177,10 @@ export default function ScrapPage() {
       fetchingRef.current = false; // 완료 후 플래그 리셋
     }
   }, [
-    selectedSegment, 
-    filterState.types.join(','), // 배열을 문자열로 변환하여 안정적인 의존성 생성
-    filterState.includePast, 
-    filterState.hasExplicitDateFilter, 
+    selectedSegment,
+    filterState.types.join(','),
+    filterState.includePast,
+    filterState.hasExplicitDateFilter,
     navigate
   ]);
 
@@ -240,9 +279,9 @@ export default function ScrapPage() {
             selectedSegment={selectedSegment}
             onSegmentChange={setSelectedSegment}
             onReset={() => {
-              setFilterState({
+              updateFilterState({
                 types: [],
-                includePast: false, // 리셋할 때도 '지난행사제외'로
+                includePast: false,
                 hasExplicitDateFilter: false,
               });
             }}
@@ -278,7 +317,7 @@ export default function ScrapPage() {
             open={filterSheetOpen}
             onClose={handleCloseFilter}
             filterState={filterState}
-            setFilterState={setFilterState}
+            setFilterState={updateFilterState}
             onApply={handleApplyFilter}
           />
           <div className="flex flex-col gap-4 mt-4 w-full items-center">

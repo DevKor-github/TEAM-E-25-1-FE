@@ -6,6 +6,12 @@ import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
 
+const ARTICLE_LIST_FILTER_DEFAULT: FilterState = {
+  types: [],
+  includePast: false,
+  hasExplicitDateFilter: false,
+};
+
 // Article 타입: 백엔드 스웨거 기준
 export type Article = {
   id: string;
@@ -37,35 +43,47 @@ export default function ArticleListPage() {
 
   // 필터 상태
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
-  
-  // localStorage에서 필터 상태 복원
-  const getInitialFilterState = (): FilterState => {
+
+  const getInitialFilterState = React.useCallback((): FilterState => {
+    if (typeof window === "undefined") {
+      return ARTICLE_LIST_FILTER_DEFAULT;
+    }
+
     try {
-      const saved = localStorage.getItem('articleListFilter');
+      const saved = sessionStorage.getItem("articleListFilter");
       if (saved) {
         return JSON.parse(saved);
       }
     } catch (error) {
-      console.error('필터 상태 복원 실패:', error);
+      console.error("필터 상태 복원 실패:", error);
     }
-    return {
-      types: [],
-      includePast: false,
-      hasExplicitDateFilter: false,
-    };
-  };
 
-  const [filterState, setFilterState] = React.useState<FilterState>(getInitialFilterState());
+    return ARTICLE_LIST_FILTER_DEFAULT;
+  }, []);
 
-  // 필터 상태 변경 시 localStorage에 저장
-  const updateFilterState = (newFilterState: FilterState) => {
-    setFilterState(newFilterState);
-    try {
-      localStorage.setItem('articleListFilter', JSON.stringify(newFilterState));
-    } catch (error) {
-      console.error('필터 상태 저장 실패:', error);
-    }
-  };
+  const [filterState, setFilterState] = React.useState<FilterState>(() =>
+    getInitialFilterState()
+  );
+
+  const updateFilterState = React.useCallback(
+    (newFilterState: FilterState) => {
+      setFilterState(newFilterState);
+
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      try {
+        sessionStorage.setItem(
+          "articleListFilter",
+          JSON.stringify(newFilterState)
+        );
+      } catch (error) {
+        console.error("필터 상태 저장 실패:", error);
+      }
+    },
+    []
+  );
 
   // API: 게시글 목록 조회
   const fetchArticles = async () => {
