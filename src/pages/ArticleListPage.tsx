@@ -6,6 +6,7 @@ import EventCard from "../components/ui/EventCard";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
+import { useScrapSyncStore } from "@/stores/scrapSyncStore";
 import {
   trackButtonClicked,
   trackPageViewed,
@@ -48,6 +49,8 @@ export default function ArticleListPage() {
     includePast: false, // 기본값을 '지난행사제외'로 변경
     hasExplicitDateFilter: false,
   });
+  const scrapUpdates = useScrapSyncStore((state) => state.updates);
+  const setScrapStatus = useScrapSyncStore((state) => state.setScrapStatus);
 
   // API: 게시글 목록 조회
   const fetchArticles = async () => {
@@ -120,7 +123,23 @@ export default function ArticleListPage() {
         });
       }
 
-      setArticleList(filteredArticles);
+      const overrides = useScrapSyncStore.getState().updates;
+      const articlesWithOverrides = filteredArticles.map((article: Article) => {
+        const override = overrides[article.id];
+        if (!override) {
+          return article;
+        }
+        return {
+          ...article,
+          isScrapped: override.isScrapped,
+          scrapCount:
+            typeof override.scrapCount === "number"
+              ? override.scrapCount
+              : article.scrapCount,
+        };
+      });
+
+      setArticleList(articlesWithOverrides);
 
       // 앰플리튜드 - 행사 목록 조회 트래킹 (정상적으로 데이터를 불러온 경우에만)
       trackArticleListViewed({
@@ -149,15 +168,17 @@ export default function ArticleListPage() {
       pageName: "article_list",
     });
 
+    const currentArticle = articleList.find((a) => a.id === id);
+    if (!currentArticle) return;
+
+    const previousScrapStatus = currentArticle.isScrapped ?? false;
+    const previousScrapCount = currentArticle.scrapCount;
+    const newScrapStatus = !previousScrapStatus;
+    const newScrapCount = previousScrapStatus
+      ? previousScrapCount - 1
+      : previousScrapCount + 1;
+
     try {
-      const article = articleList.find((a) => a.id === id);
-      if (!article) return;
-
-      const newScrapStatus = !article.isScrapped;
-      const newScrapCount = article.isScrapped
-        ? article.scrapCount - 1
-        : article.scrapCount + 1;
-
       // 즉시 UI 업데이트 (Optimistic Update)
       setArticleList((prev) =>
         prev.map((a) =>
@@ -168,11 +189,17 @@ export default function ArticleListPage() {
       );
 
       // API 호출
-      if (article.isScrapped) {
+      if (previousScrapStatus) {
         await api.delete(`/scrap/${id}`);
       } else {
         await api.post(`/scrap/${id}`);
       }
+
+      setScrapStatus({
+        articleId: id,
+        isScrapped: newScrapStatus,
+        scrapCount: Math.max(0, newScrapCount),
+      });
     } catch (error: any) {
       // 오류 발생 시 원래 상태로 되돌리기
       setArticleList((prev) =>
@@ -186,6 +213,12 @@ export default function ArticleListPage() {
             : a
         )
       );
+
+      setScrapStatus({
+        articleId: id,
+        isScrapped: previousScrapStatus,
+        scrapCount: previousScrapCount,
+      });
 
       console.error(`스크랩 토글 실패: ${id}`, error);
 
@@ -205,6 +238,28 @@ export default function ArticleListPage() {
   React.useEffect(() => {
     fetchArticles();
   }, [selectedSegment, filterState]);
+
+  React.useEffect(() => {
+    setArticleList((prev) =>
+      prev.length === 0
+        ? prev
+        : prev.map((article) => {
+            const override = scrapUpdates[article.id];
+            if (!override) {
+              return article;
+            }
+
+            return {
+              ...article,
+              isScrapped: override.isScrapped,
+              scrapCount:
+                typeof override.scrapCount === "number"
+                  ? override.scrapCount
+                  : article.scrapCount,
+            };
+          })
+    );
+  }, [scrapUpdates]);
 
   const previousPage = usePreviousPageStore((state) => state.previousPage);
 

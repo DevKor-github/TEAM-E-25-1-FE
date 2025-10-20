@@ -8,6 +8,7 @@ import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
 import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";
+import { useScrapSyncStore } from "@/stores/scrapSyncStore";
 
 export type Article = {
   id: string;
@@ -36,6 +37,8 @@ export default function ScrapPage() {
   const [articleList, setArticleList] = React.useState<Article[]>([]);
   const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
+  const scrapUpdates = useScrapSyncStore((state) => state.updates);
+  const setScrapStatus = useScrapSyncStore((state) => state.setScrapStatus);
 
   // API 중복 호출 방지를 위한 ref
   const fetchingRef = React.useRef(false);
@@ -133,7 +136,23 @@ export default function ScrapPage() {
         );
       }
 
-      setArticleList(filteredArticles);
+      const overrides = useScrapSyncStore.getState().updates;
+      const articlesWithOverrides = filteredArticles.map((article) => {
+        const override = overrides[article.id];
+        if (!override) {
+          return article;
+        }
+        return {
+          ...article,
+          isScrapped: override.isScrapped,
+          scrapCount:
+            typeof override.scrapCount === "number"
+              ? override.scrapCount
+              : article.scrapCount,
+        };
+      });
+
+      setArticleList(articlesWithOverrides);
     } catch (err: any) {
       if (err.response?.status === 401) {
         navigate("/login", { replace: true });
@@ -160,15 +179,17 @@ export default function ScrapPage() {
       buttonName: "scrap_article",
       pageName: "scrap_list",
     });
+    const article = articleList.find((a) => a.id === id);
+    if (!article) return;
+
+    const previousScrapStatus = article.isScrapped ?? false;
+    const previousScrapCount = article.scrapCount;
+    const newScrapStatus = !previousScrapStatus;
+    const newScrapCount = previousScrapStatus
+      ? previousScrapCount - 1
+      : previousScrapCount + 1;
+
     try {
-      const article = articleList.find((a) => a.id === id);
-      if (!article) return;
-
-      const newScrapStatus = !article.isScrapped;
-      const newScrapCount = article.isScrapped
-        ? article.scrapCount - 1
-        : article.scrapCount + 1;
-
       // 즉시 UI 업데이트
       setArticleList((prev) =>
         prev.map((a) =>
@@ -179,12 +200,17 @@ export default function ScrapPage() {
       );
 
       // API 호출
-      if (article.isScrapped) {
+      if (previousScrapStatus) {
         await api.delete(`/scrap/${id}`);
-        // 스크랩 해제 시에는 즉시 목록에서 제거하지 않음 (UI에서만 하트 상태 변경)
       } else {
         await api.post(`/scrap/${id}`);
       }
+
+      setScrapStatus({
+        articleId: id,
+        isScrapped: newScrapStatus,
+        scrapCount: Math.max(0, newScrapCount),
+      });
     } catch (error: any) {
       // 오류 발생 시 원래 상태로 되돌리기
       setArticleList((prev) =>
@@ -198,6 +224,12 @@ export default function ScrapPage() {
             : a
         )
       );
+
+      setScrapStatus({
+        articleId: id,
+        isScrapped: previousScrapStatus,
+        scrapCount: previousScrapCount,
+      });
 
       if (error.response?.status === 401) {
         navigate("/login");
@@ -215,6 +247,28 @@ export default function ScrapPage() {
   React.useEffect(() => {
     fetchScrapedArticles();
   }, [fetchScrapedArticles]);
+
+  React.useEffect(() => {
+    setArticleList((prev) =>
+      prev.length === 0
+        ? prev
+        : prev.map((article) => {
+            const override = scrapUpdates[article.id];
+            if (!override) {
+              return article;
+            }
+
+            return {
+              ...article,
+              isScrapped: override.isScrapped,
+              scrapCount:
+                typeof override.scrapCount === "number"
+                  ? override.scrapCount
+                  : article.scrapCount,
+            };
+          })
+    );
+  }, [scrapUpdates]);
 
   // 필터 버튼 클릭
   const handleOpenFilter = () => {

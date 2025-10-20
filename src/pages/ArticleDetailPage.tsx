@@ -21,6 +21,7 @@ import EventDateIndicator from "@/components/ui/EventDateIndicator";
 import EventImage from "@/components/ui/EventImage";
 import { Button } from "@/components/ui/buttons";
 import { BottomButtonsCombo3 } from "@components/ui/bottomButtonsCombo";
+import { useScrapSyncStore } from "@/stores/scrapSyncStore";
 import closeIcon from "../assets/closeIcon.svg";
 import heartGray from "@/assets/heart_gray.svg";
 import copyIcon from "@/assets/copyIcon.svg";
@@ -64,6 +65,12 @@ export default function ArticleDetailPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
+  const [scrapLoading, setScrapLoading] = useState(false);
+  const scrapInFlightRef = useRef(false);
+  const latestScrapStateRef = useRef<boolean | null>(null);
+  const latestArticleRef = useRef<Article | null>(null);
+  const setScrapStatus = useScrapSyncStore((state) => state.setScrapStatus);
+  const scrapOverrides = useScrapSyncStore((state) => state.updates);
 
   // 쿼리 파라미터로 진입 경로 파악 (공유 링크인지)
   const location = useLocation();
@@ -116,22 +123,16 @@ export default function ArticleDetailPage() {
   const fetchScrapStatus = async () => {
     if (!articleId || fetchingScrapRef.current) return;
 
-    // 로그인 상태 확인
-    const authStorage = localStorage.getItem("user-auth-storage");
-    const isLoggedIn = authStorage
-      ? JSON.parse(authStorage).state?.isLoggedIn
-      : false;
-
-    if (!isLoggedIn) {
-      setIsScrapped(false);
-      return;
-    }
-
     fetchingScrapRef.current = true;
 
     try {
       const res = await api.get(`/scrap/article/${articleId}`);
-      setIsScrapped(res.data.isScrapped);
+      const override = useScrapSyncStore.getState().updates[articleId];
+      if (typeof override?.isScrapped === "boolean") {
+        setIsScrapped(override.isScrapped);
+      } else {
+        setIsScrapped(res.data.isScrapped);
+      }
     } catch (err: any) {
       setIsScrapped(false);
       if (err.response?.status === 401) {
@@ -167,6 +168,8 @@ export default function ArticleDetailPage() {
 
         const { data } = await api.get(`/article/${articleId}`);
 
+        const overrides = useScrapSyncStore.getState().updates;
+        const override = overrides[data.id];
         setArticle({
           ...data,
           tags: Array.isArray(data.tags)
@@ -174,7 +177,14 @@ export default function ArticleDetailPage() {
             : typeof data.tags === "string"
               ? [data.tags]
               : [],
+          scrapCount:
+            typeof override?.scrapCount === "number"
+              ? override.scrapCount
+              : data.scrapCount,
         });
+        if (typeof override?.isScrapped === "boolean") {
+          setIsScrapped(override.isScrapped);
+        }
       } catch (err: any) {
         if (err.response?.status === 404) {
           alert("해당 행사를 찾을 수 없습니다.");
@@ -194,6 +204,30 @@ export default function ArticleDetailPage() {
   useEffect(() => {
     fetchScrapStatus();
   }, [articleId]);
+
+  useEffect(() => {
+    latestScrapStateRef.current = isScrapped;
+  }, [isScrapped]);
+
+  useEffect(() => {
+    latestArticleRef.current = article;
+  }, [article]);
+
+  useEffect(() => {
+    if (!articleId) return;
+    const override = scrapOverrides[articleId];
+    if (!override) return;
+
+    setArticle((prev) =>
+      prev && typeof override.scrapCount === "number"
+        ? { ...prev, scrapCount: override.scrapCount }
+        : prev
+    );
+
+    if (typeof override.isScrapped === "boolean") {
+      setIsScrapped(override.isScrapped);
+    }
+  }, [articleId, scrapOverrides]);
 
   const previousPage = usePreviousPageStore((state) => state.previousPage);
 
@@ -514,8 +548,19 @@ export default function ArticleDetailPage() {
               }
             }}
             heartScrapped={isScrapped ?? false} // isScrapped 값이 올 때까지 false로 처리
+            heartDisabled={scrapLoading}
             onHeartClick={async () => {
-              if (!articleId || !article) return;
+              const currentArticle = latestArticleRef.current;
+              const currentScrapState = latestScrapStateRef.current;
+
+              if (
+                !articleId ||
+                !currentArticle ||
+                currentScrapState === null ||
+                scrapInFlightRef.current
+              ) {
+                return;
+              }
 
               // 앰플리튜드 - 버튼 클릭 트래킹
               trackButtonClicked({
@@ -523,24 +568,47 @@ export default function ArticleDetailPage() {
                 pageName: "article_detail",
               });
 
+              scrapInFlightRef.current = true;
+              setScrapLoading(true);
+
+              const nextScrapState = !currentScrapState;
+              const delta = nextScrapState ? 1 : -1;
+              const previousScrapCount = currentArticle.scrapCount;
+              const nextScrapCount = Math.max(0, previousScrapCount + delta);
+
+              setIsScrapped(nextScrapState);
+              setArticle((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      scrapCount: nextScrapCount,
+                    }
+                  : prev
+              );
+
               try {
-                if (isScrapped) {
-                  await api.delete(`/scrap/${articleId}`);
-                  setIsScrapped(false);
-                  setArticle({
-                    ...article,
-                    // 스크랩 취소할 때 scrapCount가 음수가 되지 않도록 안전하게 처리
-                    scrapCount: Math.max(0, article.scrapCount - 1),
-                  });
-                } else {
+                if (nextScrapState) {
                   await api.post(`/scrap/${articleId}`);
-                  setIsScrapped(true);
-                  setArticle({
-                    ...article,
-                    scrapCount: article.scrapCount + 1,
-                  });
+                } else {
+                  await api.delete(`/scrap/${articleId}`);
                 }
+
+                setScrapStatus({
+                  articleId,
+                  isScrapped: nextScrapState,
+                  scrapCount: nextScrapCount,
+                });
               } catch (err: any) {
+                setIsScrapped(currentScrapState);
+                setArticle((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        scrapCount: previousScrapCount,
+                      }
+                    : prev
+                );
+
                 if (err.response?.status === 401) {
                   navigate("/login");
                 } else if (err.response?.status === 404) {
@@ -548,6 +616,9 @@ export default function ArticleDetailPage() {
                 } else {
                   alert("스크랩 처리 중 오류가 발생했습니다.");
                 }
+              } finally {
+                setScrapLoading(false);
+                scrapInFlightRef.current = false;
               }
             }}
           />
