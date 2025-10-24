@@ -5,8 +5,8 @@ import * as amplitude from "@amplitude/analytics-browser";
 
 export default function Redirection() {
   const navigate = useNavigate();
-
   const code = new URL(document.location.toString()).searchParams.get("code");
+  const state = new URL(document.location.toString()).searchParams.get("state");
 
   useEffect(() => {
     if (!code) {
@@ -21,7 +21,7 @@ export default function Redirection() {
           "/auth/login/oauth/callback",
           {},
           {
-            params: { code },
+            params: { code, state },
           }
         );
 
@@ -42,7 +42,7 @@ export default function Redirection() {
     };
 
     sendCode();
-  }, [code, navigate]);
+  }, [code, state, navigate]);
 
   return (
     <div className="w-full min-h-screen bg-gray-100">
