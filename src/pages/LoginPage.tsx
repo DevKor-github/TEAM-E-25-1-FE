@@ -1,20 +1,25 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { api } from "@/lib/axios";
+import { usePreviousPageStore } from "@/stores/previousPageStore";
+import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";
+
 import chevronLeft from "../assets/chevronLeft.svg";
 import logo from "../assets/logo.svg";
 import KakaoLoginBtn from "@/components/ui/kakaoLoginBtn";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnPath = location.state?.currentPath || "/";
 
   // 로그인 상태 확인
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         await api.get("/user/me");
-        // 로그인 상태면 메인으로 리다이렉트
-        navigate("/", { replace: true });
+        // 로그인 상태면 returnPath로 이동
+        navigate(returnPath, { replace: true });
       } catch (err: any) {
         return;
       }
@@ -23,8 +28,31 @@ export default function LoginPage() {
     checkLoginStatus();
   }, [navigate]);
 
-  const handleKakaoLogin = () => {
-    window.location.href = `${import.meta.env.VITE_BASE_URL}auth/oauth/authorization`;
+  const previousPage = usePreviousPageStore((state) => state.previousPage);
+
+  // 앰플리튜드 - 페이지 조회 트래킹
+  useEffect(() => {
+    trackPageViewed({
+      pageName: "login_page",
+      previousPage: previousPage,
+    });
+  }, [previousPage]);
+
+  const handleKakaoLogin = async () => {
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "start_with_kakao",
+      pageName: "login_page",
+    });
+
+    try {
+      const res = await api.get("/auth/oauth/authorization", {
+        params: { returnPath },
+      });
+      window.location.href = res.data.authUrl;
+    } catch (err) {
+      alert("카카오 로그인 요청에 실패했습니다.");
+    }
   };
 
   return (
@@ -32,7 +60,7 @@ export default function LoginPage() {
     <div className="w-full min-h-screen bg-gray-100">
       {/* 중앙 컨텐츠 프레임 */}
       <div className="relative w-full max-w-[460px] mx-auto bg-white min-h-screen">
-        <div className="w-[375px] h-[60px] flex flex-row items-center px-[20px] py-[10px] gap-[10px]">
+        <div className="w-full h-[60px] flex flex-row items-center px-[20px] py-[10px] gap-[10px]">
           <img
             src={chevronLeft}
             alt="이전으로 돌아가기"
@@ -47,7 +75,7 @@ export default function LoginPage() {
         </div>
 
         <div className="absolute top-[184px] left-[58px] right-[58px] flex justify-center items-center max-w-[344px] h-[140px] rounded-[20px] py-[40px] gap-[10px] bg-gradient-to-b from-[#EFFAFF] to-[#DEF3FF]">
-          <img src={logo} alt="univent logo" className="-[60px] h-[60px]" />
+          <img src={logo} alt="univent logo" className="w-[60px] h-[60px]" />
         </div>
 
         <div className="absolute w-full max-w-[460px] top-[364px] px-[20px]">

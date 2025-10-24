@@ -1,8 +1,16 @@
 import { useRef } from "react";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { api } from "@/lib/axios";
+import { usePreviousPageStore } from "@/stores/previousPageStore";
+import {
+  trackButtonClicked,
+  trackPageViewed,
+  trackArticleDetailViewed,
+  trackArticleShared,
+  trackRegistrationUrlOpened,
+} from "@/amplitude/track";
+
 import HeaderFrame from "@/components/HeaderFrame";
 import EventTypeIndicator from "@/components/ui/EventTypeIndicator";
 import TabbedControl from "@/components/ui/tabbedControl";
@@ -11,6 +19,7 @@ import EventDateIndicator from "@/components/ui/EventDateIndicator";
 import EventImage from "@/components/ui/EventImage";
 import { Button } from "@/components/ui/buttons";
 import { BottomButtonsCombo3 } from "@components/ui/bottomButtonsCombo";
+import { useScrapSyncStore } from "@/stores/scrapSyncStore";
 import closeIcon from "../assets/closeIcon.svg";
 import heartGray from "@/assets/heart_gray.svg";
 import copyIcon from "@/assets/copyIcon.svg";
@@ -54,6 +63,17 @@ export default function ArticleDetailPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [modalIndex, setModalIndex] = useState<number>(0);
+  const [scrapLoading, setScrapLoading] = useState(false);
+  const scrapInFlightRef = useRef(false);
+  const latestScrapStateRef = useRef<boolean | null>(null);
+  const latestArticleRef = useRef<Article | null>(null);
+  const setScrapStatus = useScrapSyncStore((state) => state.setScrapStatus);
+  const scrapOverrides = useScrapSyncStore((state) => state.updates);
+
+  // 쿼리 파라미터로 진입 경로 파악 (공유 링크인지)
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const from = params.get("from"); // 'share'면 공유 링크로 진입
 
   // 중복 API 호출 방지를 위한 ref
   const fetchingArticleRef = useRef(false);
@@ -90,26 +110,27 @@ export default function ArticleDetailPage() {
   const handleModalClose = () => {
     setModalOpen(false);
     setModalImage(null);
+    // 앰플리튜드 - 버튼 클릭 트래킹
+    trackButtonClicked({
+      buttonName: "close_article_image_view",
+      pageName: "article_detail",
+    });
   };
 
   // 스크랩 여부 가져오는 함수
   const fetchScrapStatus = async () => {
     if (!articleId || fetchingScrapRef.current) return;
-    
-    // 로그인 상태 확인
-    const authStorage = localStorage.getItem("user-auth-storage");
-    const isLoggedIn = authStorage ? JSON.parse(authStorage).state?.isLoggedIn : false;
-    
-    if (!isLoggedIn) {
-      setIsScrapped(false);
-      return;
-    }
-    
+
     fetchingScrapRef.current = true;
 
     try {
       const res = await api.get(`/scrap/article/${articleId}`);
-      setIsScrapped(res.data.isScrapped);
+      const override = useScrapSyncStore.getState().updates[articleId];
+      if (typeof override?.isScrapped === "boolean") {
+        setIsScrapped(override.isScrapped);
+      } else {
+        setIsScrapped(res.data.isScrapped);
+      }
     } catch (err: any) {
       setIsScrapped(false);
       if (err.response?.status === 401) {
@@ -144,7 +165,9 @@ export default function ArticleDetailPage() {
         setLoading(true);
 
         const { data } = await api.get(`/article/${articleId}`);
-        
+
+        const overrides = useScrapSyncStore.getState().updates;
+        const override = overrides[data.id];
         setArticle({
           ...data,
           tags: Array.isArray(data.tags)
@@ -152,7 +175,14 @@ export default function ArticleDetailPage() {
             : typeof data.tags === "string"
               ? [data.tags]
               : [],
+          scrapCount:
+            typeof override?.scrapCount === "number"
+              ? override.scrapCount
+              : data.scrapCount,
         });
+        if (typeof override?.isScrapped === "boolean") {
+          setIsScrapped(override.isScrapped);
+        }
       } catch (err: any) {
         if (err.response?.status === 404) {
           alert("해당 행사를 찾을 수 없습니다.");
@@ -172,6 +202,50 @@ export default function ArticleDetailPage() {
   useEffect(() => {
     fetchScrapStatus();
   }, [articleId]);
+
+  useEffect(() => {
+    latestScrapStateRef.current = isScrapped;
+  }, [isScrapped]);
+
+  useEffect(() => {
+    latestArticleRef.current = article;
+  }, [article]);
+
+  useEffect(() => {
+    if (!articleId) return;
+    const override = scrapOverrides[articleId];
+    if (!override) return;
+
+    setArticle((prev) =>
+      prev && typeof override.scrapCount === "number"
+        ? { ...prev, scrapCount: override.scrapCount }
+        : prev
+    );
+
+    if (typeof override.isScrapped === "boolean") {
+      setIsScrapped(override.isScrapped);
+    }
+  }, [articleId, scrapOverrides]);
+
+  const previousPage = usePreviousPageStore((state) => state.previousPage);
+
+  useEffect(() => {
+    if (!article) return;
+
+    // 앰플리튜드 - 행사 상세 진입 트래킹 (정상적으로 article을 불러온 경우에만)
+    trackArticleDetailViewed({
+      tag: article.tags,
+      detailImage: article.imagePaths?.length ?? 0,
+      viewCount: article.viewCount,
+      hasLink: !!article.registrationUrl,
+      fromLink: from === "share",
+    });
+    // 앰플리튜드 - 페이지 조회 트래킹
+    trackPageViewed({
+      pageName: "article_detail",
+      previousPage: previousPage,
+    });
+  }, [article, from, previousPage]);
 
   if (loading) {
     return (
@@ -288,10 +362,10 @@ export default function ArticleDetailPage() {
                 isRegistration={true}
               />
             ) : (
-            <EventDateIndicator
-              startAt={article.startAt}
-              endAt={article.endAt}
-            />
+              <EventDateIndicator
+                startAt={article.startAt}
+                endAt={article.endAt}
+              />
             )}
           </div>
         </div>
@@ -308,6 +382,12 @@ export default function ArticleDetailPage() {
                 navigator.clipboard.writeText(article.location);
                 setToastMessage("장소가 복사되었습니다");
                 setTimeout(() => setToastMessage(null), 2000);
+
+                // 앰플리튜드 - 버튼 클릭 트래킹
+                trackButtonClicked({
+                  buttonName: "copy_article_location",
+                  pageName: "article_detail",
+                });
               }}
             />
           </div>
@@ -348,7 +428,7 @@ export default function ArticleDetailPage() {
 
         {/* 상세이미지 모달 */}
         {modalOpen && modalImage && (
-          <div className="min-h-[100vh] fixed inset-0 bg-gray-100 flex items-center justify-center">
+          <div className="min-h-[100vh] fixed z-30 inset-0 bg-gray-100 flex items-center justify-center">
             <div className="relative bg-white overflow-y-scroll scrollbar-hide w-full max-w-[460px] h-screen flex flex-col items-center">
               {/* 상단 바: 닫기 버튼 + 인덱스 */}
               <div className="relative flex items-center w-full h-[60px] min-h-[60px] pt-[10px] pr-[20px] pb-[10px] pl-[20px] gap-[10px]">
@@ -386,6 +466,11 @@ export default function ArticleDetailPage() {
                           );
                           setModalIndex(modalIndex - 1);
                         }
+                        // 앰플리튜드 - 버튼 클릭 트래킹
+                        trackButtonClicked({
+                          buttonName: "previous_image",
+                          pageName: "article_detail",
+                        });
                       }}
                     />
                   </div>
@@ -403,6 +488,11 @@ export default function ArticleDetailPage() {
                           setModalImage(article.imagePaths[modalIndex + 1]);
                           setModalIndex(modalIndex + 1);
                         }
+                        // 앰플리튜드 - 버튼 클릭 트래킹
+                        trackButtonClicked({
+                          buttonName: "next_image",
+                          pageName: "article_detail",
+                        });
                       }}
                     />
                   </div>
@@ -419,9 +509,20 @@ export default function ArticleDetailPage() {
         <div className="sticky bottom-0 z-20">
           <BottomButtonsCombo3
             onShareClick={() => {
-              navigator.clipboard.writeText(window.location.href);
+              const shareUrl = `${window.location.origin}/event/${articleId}?from=share`;
+              navigator.clipboard.writeText(shareUrl);
               setToastMessage("공유링크가 복사되었습니다");
               setTimeout(() => setToastMessage(null), 2000);
+
+              // 앰플리튜드 - 버튼 클릭 트래킹
+              trackButtonClicked({
+                buttonName: "share_article",
+                pageName: "article_detail",
+              });
+              // 앰플리튜드 - 공유 버튼 클릭 트래킹
+              if (articleId) {
+                trackArticleShared({ articleId, tag: article.tags });
+              }
             }}
             label="바로가기"
             labelDisabled={!article.registrationUrl}
@@ -433,36 +534,95 @@ export default function ArticleDetailPage() {
                   ? article.registrationUrl
                   : `https://${article.registrationUrl}`;
               window.open(url, "_blank");
+
+              // 앰플리튜드 - 버튼 클릭 트래킹
+              trackButtonClicked({
+                buttonName: "open_registrationUrl",
+                pageName: "article_detail",
+              });
+              // 앰플리튜드 - 바로가기 버튼 링크 접속 트래킹
+              if (articleId) {
+                trackRegistrationUrlOpened({ articleId, tag: article.tags });
+              }
             }}
             heartScrapped={isScrapped ?? false} // isScrapped 값이 올 때까지 false로 처리
+            heartDisabled={scrapLoading}
             onHeartClick={async () => {
-              if (!articleId || !article) return;
+              const currentArticle = latestArticleRef.current;
+              const currentScrapState = latestScrapStateRef.current;
+
+              if (
+                !articleId ||
+                !currentArticle ||
+                currentScrapState === null ||
+                scrapInFlightRef.current
+              ) {
+                return;
+              }
+
+              // 앰플리튜드 - 버튼 클릭 트래킹
+              trackButtonClicked({
+                buttonName: "scrap_article",
+                pageName: "article_detail",
+              });
+
+              scrapInFlightRef.current = true;
+              setScrapLoading(true);
+
+              const nextScrapState = !currentScrapState;
+              const delta = nextScrapState ? 1 : -1;
+              const previousScrapCount = currentArticle.scrapCount;
+              const nextScrapCount = Math.max(0, previousScrapCount + delta);
+
+              setIsScrapped(nextScrapState);
+              setArticle((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      scrapCount: nextScrapCount,
+                    }
+                  : prev
+              );
 
               try {
-                if (isScrapped) {
-                  await api.delete(`/scrap/${articleId}`);
-                  setIsScrapped(false);
-                  setArticle({
-                    ...article,
-                    // 스크랩 취소할 때 scrapCount가 음수가 되지 않도록 안전하게 처리
-                    scrapCount: Math.max(0, article.scrapCount - 1),
-                  });
-                } else {
+                if (nextScrapState) {
                   await api.post(`/scrap/${articleId}`);
-                  setIsScrapped(true);
-                  setArticle({
-                    ...article,
-                    scrapCount: article.scrapCount + 1,
-                  });
+                } else {
+                  await api.delete(`/scrap/${articleId}`);
                 }
+
+                setScrapStatus({
+                  articleId,
+                  isScrapped: nextScrapState,
+                  scrapCount: nextScrapCount,
+                });
               } catch (err: any) {
+                setIsScrapped(currentScrapState);
+                setArticle((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        scrapCount: previousScrapCount,
+                      }
+                    : prev
+                );
+
                 if (err.response?.status === 401) {
-                  navigate("/login");
+                  // 로그인 페이지로 이동할 때 state에 인증 전 마지막 탐색 경로를 담아 전달
+                  const currentPath = location.pathname + location.search;
+                  navigate("/login", {
+                    state: {
+                      currentPath,
+                    },
+                  });
                 } else if (err.response?.status === 404) {
                   alert("해당 행사가 존재하지 않습니다.");
                 } else {
                   alert("스크랩 처리 중 오류가 발생했습니다.");
                 }
+              } finally {
+                setScrapLoading(false);
+                scrapInFlightRef.current = false;
               }
             }}
           />
