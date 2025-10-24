@@ -61,7 +61,7 @@ export default function App() {
         {/* 기본 경로 설정 */}
         <Route path="/" element={<Navigate to="/event" replace />} />
         {/* 사용자 라우트 */}
-        <Route path="auth/login/oauth/callback" element={<Redirection />} />
+        <Route path="/auth/login/oauth/callback" element={<Redirection />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/event" element={<ArticleListPage />} />
         <Route path="/event/:articleId" element={<ArticleDetailPage />} />

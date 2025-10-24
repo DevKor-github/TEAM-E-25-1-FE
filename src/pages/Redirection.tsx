@@ -17,9 +17,13 @@ export default function Redirection() {
 
     const sendCode = async () => {
       try {
-        const res = await api.post("/auth/login/oauth/callback", null, {
-          params: { code },
-        });
+        const res = await api.post(
+          "/auth/login/oauth/callback",
+          {},
+          {
+            params: { code },
+          }
+        );
 
         const { userId, redirectUrl } = res.data;
         if (userId) {
