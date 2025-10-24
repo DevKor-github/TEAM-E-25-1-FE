@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { api } from "@/lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
 import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";
@@ -10,14 +10,16 @@ import KakaoLoginBtn from "@/components/ui/kakaoLoginBtn";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnPath = location.state?.currentPath || "/";
 
   // 로그인 상태 확인
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         await api.get("/user/me");
-        // 로그인 상태면 메인으로 리다이렉트
-        navigate("/", { replace: true });
+        // 로그인 상태면 returnPath로 이동
+        navigate(returnPath, { replace: true });
       } catch (err: any) {
         return;
       }
@@ -36,13 +38,21 @@ export default function LoginPage() {
     });
   }, [previousPage]);
 
-  const handleKakaoLogin = () => {
-    window.location.href = `${import.meta.env.VITE_BASE_URL}auth/oauth/authorization`;
+  const handleKakaoLogin = async () => {
     // 앰플리튜드 - 버튼 클릭 트래킹
     trackButtonClicked({
       buttonName: "start_with_kakao",
       pageName: "login_page",
     });
+
+    try {
+      const res = await api.get("/auth/oauth/authorization", {
+        params: { returnPath },
+      });
+      window.location.href = res.data.authUrl;
+    } catch (err) {
+      alert("카카오 로그인 요청에 실패했습니다.");
+    }
   };
 
   return (
@@ -65,7 +75,7 @@ export default function LoginPage() {
         </div>
 
         <div className="absolute top-[184px] left-[58px] right-[58px] flex justify-center items-center max-w-[344px] h-[140px] rounded-[20px] py-[40px] gap-[10px] bg-gradient-to-b from-[#EFFAFF] to-[#DEF3FF]">
-          <img src={logo} alt="univent logo" className="-[60px] h-[60px]" />
+          <img src={logo} alt="univent logo" className="w-[60px] h-[60px]" />
         </div>
 
         <div className="absolute w-full max-w-[460px] top-[364px] px-[20px]">

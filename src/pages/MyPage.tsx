@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
+import * as amplitude from "@amplitude/analytics-browser";
 import { trackPageViewed } from "@/amplitude/track";
 import { Button } from "@/components/ui/buttons";
 import HeaderFrame from "@/components/HeaderFrame";
@@ -13,6 +14,10 @@ export default function MyPage() {
   const handleLogout = async () => {
     try {
       await api.post("/auth/logout");
+
+      localStorage.removeItem("userId");
+      amplitude.setUserId("anonymous");
+
       navigate("/", { replace: true });
     } catch (err: any) {
       if (err.response?.status === 401) {
