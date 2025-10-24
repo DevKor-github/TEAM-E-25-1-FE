@@ -30,9 +30,7 @@ export default function Redirection() {
           localStorage.setItem("userId", String(userId));
           amplitude.setUserId(String(userId));
         }
-        if (redirectUrl) {
-          navigate(redirectUrl || "/", { replace: true });
-        }
+        navigate(redirectUrl || "/", { replace: true });
       } catch (err: any) {
         if (err.response?.status === 401) {
           alert("유효하지 않은 인증 코드입니다. 다시 로그인 해주세요.");
