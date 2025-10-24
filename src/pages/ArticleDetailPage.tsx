@@ -1,8 +1,6 @@
 import { useRef } from "react";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { api } from "@/lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
 import {
@@ -610,7 +608,13 @@ export default function ArticleDetailPage() {
                 );
 
                 if (err.response?.status === 401) {
-                  navigate("/login");
+                  // 로그인 페이지로 이동할 때 state에 인증 전 마지막 탐색 경로를 담아 전달
+                  const currentPath = location.pathname + location.search;
+                  navigate("/login", {
+                    state: {
+                      currentPath,
+                    },
+                  });
                 } else if (err.response?.status === 404) {
                   alert("해당 행사가 존재하지 않습니다.");
                 } else {
