@@ -1,8 +1,6 @@
-import { useState } from "react";
 import FilterButton from "@/components/ui/FilterButton";
 import Divider from "@/components/ui/Divider";
 import SegmentedControl from "@/components/ui/SegmentedControl";
-import { SearchBar } from "@/components/ui/SearchBar";
 import dotIcon from "@/assets/Dot.svg";
 
 interface MobileHeaderSectionProps {
@@ -28,8 +26,6 @@ export default function MobileHeaderSection({
   title = "행사", // 기본값을 "행사"로 설정
   hasActiveFilters = false,
 }: MobileHeaderSectionProps) {
-  const [searchValue, setSearchValue] = useState("");
-
   return (
     <div className="w-full bg-white rounded-2xl p-0 flex flex-col gap-2">
       {/* 상단: 행사, 개수, dot, 필터 */}
@@ -81,8 +77,6 @@ export default function MobileHeaderSection({
       />
 
       <Divider />
-
-      <SearchBar value={searchValue} onChange={setSearchValue} />
     </div>
   );
 }
