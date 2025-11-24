@@ -47,9 +47,9 @@ export default function OrgArticleUpload() {
         });
       });
 
-      // 1단계: POST /article로 게시글 생성
+      // 1단계: POST /organization/article로 게시글 생성
       const articleResponse = await api.post(
-        "/article",
+        "/organization/article",
         {
           title: data.title,
           organization: data.organization,
@@ -69,6 +69,10 @@ export default function OrgArticleUpload() {
           },
         }
       );
+
+      if (articleResponse.status !== 201) {
+        throw new Error("게시글 생성 응답 코드가 올바르지 않습니다.");
+      }
 
       const articleId =
         articleResponse.data.articleId || articleResponse.data.id;
@@ -171,9 +175,14 @@ export default function OrgArticleUpload() {
       navigate("/org/home");
     } catch (err: any) {
       console.error("등록 오류:", err);
-      setError(
-        err.response?.data?.message || "행사 등록 중 오류가 발생했습니다."
-      );
+      
+      if (err.response?.status === 500) {
+        setError("게시글 생성 실패. 서버 오류가 발생했습니다. 다시 시도해주세요.");
+      } else {
+        setError(
+          err.response?.data?.message || "행사 등록 중 오류가 발생했습니다."
+        );
+      }
     }
   };
 
