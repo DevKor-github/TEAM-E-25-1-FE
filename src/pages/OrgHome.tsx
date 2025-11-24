@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LoadingCard } from "@/components/LoadingPlaceholder";
+import { OrgInfoEditForm } from "@/components/OrgInfoEditForm";
 import { api } from "@/lib/axios";
 import { useOrgAuthStore } from "@/stores/orgAuthStore";
 
@@ -65,6 +66,7 @@ export default function OrgHome() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   const navigate = useNavigate();
   const accessToken = useOrgAuthStore((state) => state.accessToken);
 
@@ -78,6 +80,11 @@ export default function OrgHome() {
         },
       });
 
+      // 200 응답 확인
+      if (!data) {
+        throw new Error("행사 목록 응답이 비어있습니다.");
+      }
+
       // API 응답 구조에 따라 배열 추출
       const articlesArray = Array.isArray(data)
         ? data
@@ -88,10 +95,15 @@ export default function OrgHome() {
       setArticles(articlesArray);
     } catch (error: any) {
       console.error("Failed to fetch articles:", error);
-      setError(
-        error.response?.data?.message ||
-          "행사 목록을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-      );
+      
+      if (error.response?.status === 401) {
+        setError("인증이 만료되었습니다. 다시 로그인해주세요.");
+      } else {
+        setError(
+          error.response?.data?.message ||
+            "행사 목록을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -107,10 +119,28 @@ export default function OrgHome() {
       <div className="container mx-auto py-8 pt-20">
         <div className="mb-6 flex justify-between items-center">
           <h1 className="text-2xl font-bold">내 행사 관리</h1>
-          <Button onClick={() => navigate("/org/event/upload")}>
-            행사 등록
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowEditForm(true)}
+            >
+              기관 정보 수정
+            </Button>
+            <Button onClick={() => navigate("/org/event/upload")}>
+              행사 등록
+            </Button>
+          </div>
         </div>
+
+        {showEditForm && (
+          <OrgInfoEditForm
+            onSuccess={() => {
+              setShowEditForm(false);
+              fetchArticles();
+            }}
+            onCancel={() => setShowEditForm(false)}
+          />
+        )}
 
         {error ? (
           <ErrorAlert message={error} retry={fetchArticles} />
