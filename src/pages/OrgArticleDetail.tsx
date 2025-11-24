@@ -64,7 +64,7 @@ export default function OrgArticleDetail() {
     if (!window.confirm("정말로 이 행사를 삭제하시겠습니까?")) return;
 
     try {
-      await api.delete(`/article/${articleId}`, {
+      await api.delete(`/organization/article/${articleId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
