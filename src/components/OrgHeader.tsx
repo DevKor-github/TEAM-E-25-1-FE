@@ -9,8 +9,25 @@ export function OrgHeader() {
   const isLoggedIn = useOrgAuthStore((state) => state.isLoggedIn);
   const logout = useOrgAuthStore((state) => state.logout);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (window.confirm("로그아웃하시겠습니까?")) {
+      try {
+        // POST /auth/organization/logout 호출
+        await api.post("/auth/organization/logout", {}, {
+          headers: {
+            Authorization: `Bearer ${useOrgAuthStore.getState().accessToken}`,
+          },
+        });
+      } catch (error: any) {
+        console.error("로그아웃 API 호출 실패:", error);
+        
+        // 401 (유효하지 않은 토큰) 또는 기타 에러도 로컬 로그아웃 진행
+        if (error.response?.status === 401) {
+          console.warn("토큰이 만료되었습니다. 로컬 로그아웃을 진행합니다.");
+        }
+        // API 실패해도 로컬 로그아웃 진행
+      }
+
       logout();
       // axios 헤더에서 토큰 제거
       delete api.defaults.headers.common["Authorization"];
