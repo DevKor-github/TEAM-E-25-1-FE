@@ -27,29 +27,34 @@ export function OrgLoginForm() {
     setIsLoading(true);
 
     try {
-      const response = await api.post("/organization/login", {
-        username,
+      await api.post("/auth/organization/login", {
+        accountId: username,
         password,
       });
 
-      const { accessToken, organizationId } = response.data;
+      // HttpOnly 쿠키는 JavaScript에서 접근할 수 없으므로,
+      // 로그인 성공 시 임시 토큰과 organizationId를 저장
+      // 실제 토큰은 브라우저가 자동으로 쿠키에 저장하고 관리함
+      
+      // username (accountId)을 organizationId로 사용
+      const organizationId = username;
+      
+      // 임시 토큰 (실제로는 쿠키에 저장된 토큰 사용)
+      const tempToken = `temp_${Date.now()}`;
 
-      if (!accessToken || !organizationId) {
-        throw new Error("로그인 응답이 올바르지 않습니다.");
-      }
+      console.log("로그인 성공 - organizationId:", organizationId);
 
       // Zustand store에 로그인 정보 저장
-      login(accessToken, organizationId);
-
-      // axios 기본 헤더에 토큰 설정
-      api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+      login(tempToken, organizationId);
 
       alert("로그인 성공!");
       navigate("/org/home");
     } catch (err: any) {
       console.error("로그인 오류:", err);
       
-      if (err.response?.status === 401) {
+      if (err.response?.status === 404) {
+        setError("아이디 또는 비밀번호가 잘못되었습니다.");
+      } else if (err.response?.status === 401) {
         setError("아이디 또는 비밀번호가 잘못되었습니다.");
       } else {
         setError(
