@@ -70,20 +70,27 @@ export function OrgSignupForm({ onSubmit }: OrgSignupFormProps) {
 
     setIsCheckingUsername(true);
     try {
-      await api.get(`/organization/check-username`, {
-        params: { username: formData.username },
+      const response = await api.post(`/auth/organization/check-account-id`, {
+        accountId: formData.username,
       });
-      setIsUsernameAvailable(true);
-      setIsUsernameChecked(true);
-      setErrors({ ...errors, username: undefined });
-    } catch (err: any) {
-      if (err.response?.status === 409) {
+      
+      // isDuplicated: true = 아이디 중복, false = 사용 가능
+      const { isDuplicated } = response.data;
+      
+      if (isDuplicated) {
+        // 중복 아이디
         setIsUsernameAvailable(false);
         setIsUsernameChecked(true);
         setErrors({ ...errors, username: "이미 사용 중인 아이디입니다." });
       } else {
-        setErrors({ ...errors, username: "아이디 중복 확인에 실패했습니다." });
+        // 사용 가능
+        setIsUsernameAvailable(true);
+        setIsUsernameChecked(true);
+        setErrors({ ...errors, username: undefined });
       }
+    } catch (err: any) {
+      console.error("아이디 중복 체크 에러:", err);
+      setErrors({ ...errors, username: "아이디 중복 확인에 실패했습니다." });
     } finally {
       setIsCheckingUsername(false);
     }

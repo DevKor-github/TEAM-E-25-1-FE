@@ -19,21 +19,26 @@ export default function OrgSignup() {
     try {
       setError(null);
       
-      await api.post("/organization/signup", {
-        username: data.username,
+      await api.post("/auth/organization/register", {
+        accountId: data.username,
         password: data.password,
-        organizationName: data.organizationName,
-        phoneNumber: data.phoneNumber,
+        name: data.organizationName,
+        contact: data.phoneNumber,
       });
 
       alert("회원가입이 완료되었습니다! 로그인 페이지로 이동합니다.");
       navigate("/org/login");
     } catch (err: any) {
       console.error("회원가입 오류:", err);
-      setError(
-        err.response?.data?.message || 
-        "회원가입 중 오류가 발생했습니다. 다시 시도해주세요."
-      );
+      
+      if (err.response?.status === 409) {
+        setError("이미 존재하는 계정입니다.");
+      } else {
+        setError(
+          err.response?.data?.message || 
+          "회원가입 중 오류가 발생했습니다. 다시 시도해주세요."
+        );
+      }
     }
   };
 
