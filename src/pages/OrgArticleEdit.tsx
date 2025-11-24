@@ -135,7 +135,7 @@ export default function OrgArticleEdit() {
 
       // 이미지 변경사항 없는 경우 PATCH /organization/article만 요청
       if (isThumbnailUnchanged && isImageUnchanged) {
-        await api.patch(
+        const patchResponse = await api.patch(
           `/organization/article/${articleId}`,
           {
             title: data.title,
@@ -155,6 +155,10 @@ export default function OrgArticleEdit() {
             },
           }
         );
+
+        if (patchResponse.status !== 200) {
+          throw new Error("게시글 수정 응답 코드가 올바르지 않습니다.");
+        }
 
         alert("행사가 성공적으로 수정되었습니다!");
         navigate(`/org/event/${articleId}`);
@@ -293,9 +297,16 @@ export default function OrgArticleEdit() {
       navigate(`/org/event/${articleId}`);
     } catch (err: any) {
       console.error("수정 오류:", err);
-      setError(
-        err.response?.data?.message || "행사 수정 중 오류가 발생했습니다."
-      );
+      
+      if (err.response?.status === 404) {
+        setError("수정할 행사를 찾을 수 없습니다.");
+      } else if (err.response?.status === 500) {
+        setError("게시글 수정 실패. 서버 오류가 발생했습니다. 다시 시도해주세요.");
+      } else {
+        setError(
+          err.response?.data?.message || "행사 수정 중 오류가 발생했습니다."
+        );
+      }
     }
   };
 
