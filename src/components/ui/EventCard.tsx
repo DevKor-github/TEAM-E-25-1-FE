@@ -3,6 +3,7 @@ import EventDateIndicator from "./EventDateIndicator";
 import heartRed from "@/assets/heart_red500.svg";
 import heartGray from "@/assets/heart_gray.svg";
 import heartNothing from "@/assets/heart_nothing.svg";
+import eyeIcon from "@/assets/eye.svg";
 export type Article = {
   id: string;
   title: string;
@@ -31,6 +32,7 @@ export default function EventCard({
   title,
   thumbnailPath,
   scrapCount,
+  viewCount,
   tags,
   startAt,
   endAt,
@@ -64,7 +66,12 @@ export default function EventCard({
     const formattedStart = formatDate(startAt);
     const formattedEnd = formatDate(endAt);
     if (formattedStart && formattedEnd) {
-      date = `${formattedStart} ~ ${formattedEnd}`;
+      // 시작일과 종료일이 같으면 하나의 날짜만 표시
+      if (formattedStart === formattedEnd) {
+        date = formattedStart;
+      } else {
+        date = `${formattedStart} ~ ${formattedEnd}`;
+      }
     }
   }
 
@@ -128,12 +135,19 @@ export default function EventCard({
           <EventDateIndicator startAt={startAt} endAt={endAt} />
         )}
 
-        {/* D-day는 백엔드 데이터가 있을 때만 표시 */}
-        <div className="flex items-center gap-1 ml-auto min-w-[52px] pr-1">
-          <img src={heartGray} alt="like-count" className="w-5 h-5" />
-          <span className="font-pretendard text-sm font-body-3 text-gray-500">
-            {likeCount > 999 ? "999+" : likeCount}
-          </span>
+        <div className="flex items-center gap-3 ml-auto pr-1">
+          <div className="flex items-center gap-1">
+            <img src={eyeIcon} alt="view-count" className="w-5 h-5" />
+            <span className="font-pretendard text-sm font-body-3 text-gray-500">
+              {viewCount > 999 ? "999+" : viewCount}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <img src={heartGray} alt="like-count" className="w-5 h-5" />
+            <span className="font-pretendard text-sm font-body-3 text-gray-500">
+              {likeCount > 999 ? "999+" : likeCount}
+            </span>
+          </div>
         </div>
       </div>
     </div>
