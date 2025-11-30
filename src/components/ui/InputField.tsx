@@ -43,11 +43,6 @@ export const InputField: React.FC<InputFieldProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const hasValue = Boolean(value && value.length > 0);
 
-  // state 결정 (초기값 enabled)
-  let state: "enabled" | "hovered" | "focused" | "errored";
-  if (isFocused) state = "focused";
-  else if (isHovered) state = "hovered";
-
   // errored 판단 (외부 aria/data prop으로 제어 가능)
   const isErrored =
     stateProp === "errored" ||
