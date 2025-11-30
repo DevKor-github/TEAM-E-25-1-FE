@@ -1,5 +1,7 @@
 export default function Divider({ className = "" }: { className?: string }) {
   return (
-    <div className={`h-[1px] w-full bg-gray-100 ${className}`} />
+    <div className="flex w-full p-1 gap-2.5">
+      <div className={`w-full h-[1px] bg-gray-100 ${className}`} />
+    </div>
   );
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
+import { Button } from "@/components/ui/buttons";
 import FilterSheet, { FilterState } from "../components/FilterSheet";
 import { api } from "../lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
@@ -12,6 +13,7 @@ import {
   trackPageViewed,
   trackArticleListViewed,
 } from "@/amplitude/track";
+import searchIcon_white from "@/assets/searchIcon_white.svg";
 
 // Article 타입: 백엔드 스웨거 기준
 export type Article = {
@@ -69,7 +71,7 @@ export default function ArticleListPage() {
             ? "viewCount"
             : selectedSegment === "많이 찜한"
               ? "scrapCount"
-              : "registrationStartAt",
+              : "registrationEndAt",
         page: 1,
         limit: 10,
       };
@@ -383,6 +385,30 @@ export default function ArticleListPage() {
                 />
               ))
             )}
+          </div>
+        </div>
+
+        {/* 검색 플로팅 버튼 - 항상 표시 */}
+        <div className="fixed inset-0 z-50 pointer-events-none">
+          <div className="relative w-full max-w-[460px] h-full mx-auto">
+            <div className="absolute bottom-5 right-5 pointer-events-auto">
+              <Button
+                buttonType="text"
+                styleType="brand"
+                className="flex items-center rounded-full px-4 py-3 gap-1"
+                onClick={() => {
+                  navigate("/event/search");
+                }}
+              >
+                <img
+                  src={searchIcon_white}
+                  width={24}
+                  height={24}
+                  alt="search"
+                />
+                검색
+              </Button>
+            </div>
           </div>
         </div>
       </div>

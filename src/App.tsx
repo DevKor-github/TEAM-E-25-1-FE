@@ -11,6 +11,7 @@ import ArticleDetailPage from "./pages/ArticleDetailPage";
 import MyPage from "./pages/MyPage";
 import ErrorPage from "./pages/ErrorPage";
 import ScrapPage from "./pages/ScrapPage";
+import ArticleListSearch from "./pages/ArticleListSearch";
 
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
@@ -84,6 +85,7 @@ export default function App() {
         <Route path="/auth/login/oauth/callback" element={<Redirection />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/event" element={<ArticleListPage />} />
+        <Route path="/event/search" element={<ArticleListSearch />} />
         <Route path="/event/:articleId" element={<ArticleDetailPage />} />
         <Route path="/scrap" element={<ScrapPage />} />
         <Route path="/error" element={<ErrorPage />} />
