@@ -19,21 +19,36 @@ api.interceptors.response.use(
     const originalRequest = err.config;
     const status = err.response?.status;
 
-    // 로그인 상태 확인 (useUserAuthStore는 훅이므로 컴포넌트 밖에서는 직접 접근해야 함)
-    const isLoggedIn = JSON.parse(
+    // 사용자 로그인 상태 확인
+    const userAuthState = JSON.parse(
       localStorage.getItem("user-auth-storage") || "{}"
     ).state?.isLoggedIn;
 
-    if (status === 401 && isLoggedIn && !originalRequest._retry) {
+    // 기관 로그인 상태 확인
+    const orgAuthState = JSON.parse(
+      localStorage.getItem("org-auth-storage") || "{}"
+    ).state?.isLoggedIn;
+
+    // 401 에러 시 토큰 갱신 로직
+    if (status === 401 && (userAuthState || orgAuthState) && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        await api.get("/auth/refresh");
-        return api(originalRequest);
+        // 기관 로그인인 경우
+        if (orgAuthState) {
+          await api.post("/auth/organization/refresh");
+          return api(originalRequest);
+        }
+        // 사용자 로그인인 경우
+        else if (userAuthState) {
+          await api.get("/auth/refresh");
+          return api(originalRequest);
+        }
       } catch (refreshErr: any) {
         if (!isRedirecting) {
           isRedirecting = true;
+          const redirectUrl = orgAuthState ? "/org/login" : "/login";
           alert("로그인 세션이 만료되었습니다. 다시 로그인 해주세요.");
-          window.location.href = "/login";
+          window.location.href = redirectUrl;
         }
         return Promise.reject(refreshErr);
       }
