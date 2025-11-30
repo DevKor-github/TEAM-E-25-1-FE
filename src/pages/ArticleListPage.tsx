@@ -71,7 +71,7 @@ export default function ArticleListPage() {
             ? "viewCount"
             : selectedSegment === "많이 찜한"
               ? "scrapCount"
-              : "registrationEndAt",
+              : "registrationStartAt",
         page: 1,
         limit: 10,
       };
