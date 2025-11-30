@@ -6,17 +6,18 @@ import { PageName } from "@/types/pageName";
 
 import Redirection from "./pages/Redirection";
 import LoginPage from "./pages/LoginPage";
+import ArticleListPage from "./pages/ArticleListPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
 import MyPage from "./pages/MyPage";
 import ErrorPage from "./pages/ErrorPage";
 import ScrapPage from "./pages/ScrapPage";
+import ArticleListSearch from "./pages/ArticleListSearch";
 
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
 import ArticleUploadPage from "./pages/ArticleUploadPage";
 import AdminArticleDetail from "./pages/AdminArticleDetail";
 import AdminArticleEdit from "./pages/AdminArticleEdit";
-import ArticleListPage from "./pages/ArticleListPage";
 
 // 관리자 페이지에서 인증된 사용자만 접근 가능한 라우트 컴포넌트
 function AdminPrivateRoute({ children }: { children: React.ReactNode }) {
@@ -64,6 +65,7 @@ export default function App() {
         <Route path="/auth/login/oauth/callback" element={<Redirection />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/event" element={<ArticleListPage />} />
+        <Route path="/event/search" element={<ArticleListSearch />} />
         <Route path="/event/:articleId" element={<ArticleDetailPage />} />
         <Route path="/scrap" element={<ScrapPage />} />
         <Route path="/error" element={<ErrorPage />} />
