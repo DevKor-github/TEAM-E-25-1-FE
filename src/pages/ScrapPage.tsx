@@ -9,6 +9,8 @@ import { api } from "../lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
 import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";
 import { useScrapSyncStore } from "@/stores/scrapSyncStore";
+import { Button } from "@/components/ui/buttons";
+import searchIcon_white from "@/assets/searchIcon_white.svg";
 
 export type Article = {
   id: string;
@@ -402,6 +404,30 @@ export default function ScrapPage() {
                 />
               ))
             )}
+          </div>
+        </div>
+
+        {/* 검색 플로팅 버튼 - 항상 표시 */}
+        <div className="fixed inset-0 z-50 pointer-events-none">
+          <div className="relative w-full max-w-[460px] h-full mx-auto">
+            <div className="absolute bottom-5 right-5 pointer-events-auto">
+              <Button
+                buttonType="text"
+                styleType="brand"
+                className="flex items-center rounded-full px-4 py-3 gap-1"
+                onClick={() => {
+                  navigate("/scrap/search");
+                }}
+              >
+                <img
+                  src={searchIcon_white}
+                  width={24}
+                  height={24}
+                  alt="search"
+                />
+                검색
+              </Button>
+            </div>
           </div>
         </div>
       </div>
