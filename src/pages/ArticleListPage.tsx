@@ -388,29 +388,31 @@ export default function ArticleListPage() {
           </div>
         </div>
 
-        {/* 검색 플로팅 버튼 - 항상 표시 */}
-        <div className="fixed inset-0 z-50 pointer-events-none">
-          <div className="relative w-full max-w-[460px] h-full mx-auto">
-            <div className="absolute bottom-5 right-5 pointer-events-auto">
-              <Button
-                buttonType="text"
-                styleType="brand"
-                className="flex items-center rounded-full px-4 py-3 gap-1"
-                onClick={() => {
-                  navigate("/event/search");
-                }}
-              >
-                <img
-                  src={searchIcon_white}
-                  width={24}
-                  height={24}
-                  alt="search"
-                />
-                검색
-              </Button>
+        {/* 검색 플로팅 버튼 - 필터 시트 닫혔을 때만 표시 */}
+        {!filterSheetOpen && (
+          <div className="fixed inset-0 z-50 pointer-events-none">
+            <div className="relative w-full max-w-[460px] h-full mx-auto">
+              <div className="absolute bottom-5 right-5 pointer-events-auto">
+                <Button
+                  buttonType="text"
+                  styleType="brand"
+                  className="flex items-center rounded-full px-4 py-3 gap-1"
+                  onClick={() => {
+                    navigate("/event/search");
+                  }}
+                >
+                  <img
+                    src={searchIcon_white}
+                    width={24}
+                    height={24}
+                    alt="search"
+                  />
+                  검색
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
