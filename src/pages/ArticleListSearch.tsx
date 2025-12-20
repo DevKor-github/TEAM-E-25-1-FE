@@ -36,6 +36,7 @@ export default function ArticleListSearch() {
 
   const [searchedArticles, setSearchedArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const scrapUpdates = useScrapSyncStore((state) => state.updates);
   const setScrapStatus = useScrapSyncStore((state) => state.setScrapStatus);
 
@@ -69,6 +70,7 @@ export default function ArticleListSearch() {
   const fetchSearchedArticles = async (keyword: string) => {
     try {
       setLoading(true);
+      setHasSearched(true);
 
       const apiParams = {
         keyword,
@@ -266,7 +268,7 @@ export default function ArticleListSearch() {
 
         <div className="mt-3 flex flex-col px-5">
           <div className="flex flex-col gap-4 mt-4 w-full items-center">
-            {searchedArticles.length === 0 ? (
+            {searchedArticles.length === 0 && hasSearched ? (
               <div className="flex flex-col w-full gap-3 items-center px-5 py-10">
                 <img
                   src={emptyFileIcon}
