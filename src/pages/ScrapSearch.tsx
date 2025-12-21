@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "@/lib/axios";
 import { useScrapSyncStore } from "@/stores/scrapSyncStore";
@@ -34,8 +34,11 @@ export default function ScrapSearch() {
   const initialQuery = searchParams.get("keyword") ?? "";
   const [searchValue, setSearchValue] = useState(initialQuery);
 
-  const [searchedArticles, setSearchedArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [searchedScrapedArticles, setSearchedScrapedArticles] = useState<
+    Article[]
+  >([]);
+  const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const scrapUpdates = useScrapSyncStore((state) => state.updates);
   const setScrapStatus = useScrapSyncStore((state) => state.setScrapStatus);
 
@@ -45,9 +48,9 @@ export default function ScrapSearch() {
     setSearchValue(keyword);
 
     if (keyword && keyword.length >= 2) {
-      fetchSearchedArticles(keyword);
+      fetchSearchedScrapedArticles(keyword);
     } else {
-      setSearchedArticles([]);
+      setSearchedScrapedArticles([]);
     }
   }, [searchParams]);
 
@@ -56,7 +59,7 @@ export default function ScrapSearch() {
     if (e.key === "Enter") {
       const trimmedKeyword = searchValue.trim();
       if (trimmedKeyword.length < 2) {
-        setSearchedArticles([]);
+        setSearchedScrapedArticles([]);
         alert("두 글자 이상 입력해주세요.");
         return;
       }
@@ -66,82 +69,65 @@ export default function ScrapSearch() {
   };
 
   // 스크랩 목록 게시글 검색 API
-  const fetchSearchedArticles = useCallback(
-    async (keyword: string) => {
-      try {
-        setLoading(true);
+  const fetchSearchedScrapedArticles = async (keyword: string) => {
+    try {
+      setLoading(true);
+      setHasSearched(true);
 
-        // 1. 스크랩 목록 조회
-        const response = await api.get("/scrap");
+      const apiParams = {
+        keyword,
+        page: 1,
+        limit: 10,
+      };
 
-        // API 응답 구조에 따라 배열 추출
-        const scrapList = Array.isArray(response.data)
-          ? response.data
-          : response.data.articles || response.data.data || [];
+      const response = await api.get("/scrap/search", {
+        params: apiParams,
+      });
 
-        if (scrapList.length === 0) {
-          setSearchedArticles([]);
-          return;
-        }
+      const articles = Array.isArray(response.data) ? response.data : [];
 
-        // 2. 스크랩 응답 데이터를 Article 타입에 맞게 변환 (개별 API 호출 제거)
-        const articlesWithDetails = scrapList.map((scrapItem: any) => ({
-          id: scrapItem.articleId, // 백엔드에서 articleId 필드로 제공
-          title: scrapItem.title,
-          organization: scrapItem.organization,
-          thumbnailPath: scrapItem.thumbnailPath,
-          scrapCount: scrapItem.scrapCount,
-          viewCount: scrapItem.viewCount,
-          tags: Array.isArray(scrapItem.tags)
-            ? scrapItem.tags
-            : [scrapItem.tags].filter(Boolean),
-          description: scrapItem.description || "",
-          location: scrapItem.location || "",
-          startAt: scrapItem.startAt,
-          endAt: scrapItem.endAt,
-          imagePaths: Array.isArray(scrapItem.imagePaths)
-            ? scrapItem.imagePaths
-            : [],
-          registrationUrl: scrapItem.registrationUrl || "",
-          isScrapped: true,
-        }));
+      // 스크랩 목록에서 검색한 게시글은 모두 isScrapped가 true이므로 간단히 매핑
+      const articlesWithScrapStatus = articles.map((article) => ({
+        ...article,
+        id: article.articleId, // 스크랩 API는 id가 articleId로 옴
+        isScrapped: true,
+      }));
 
-        const overrides = useScrapSyncStore.getState().updates;
-        const articlesWithOverrides = articlesWithDetails.map(
-          (article: Article) => {
-            const override = overrides[article.id];
-            if (!override) {
-              return article;
-            }
-            return {
-              ...article,
-              isScrapped: override.isScrapped,
-              scrapCount:
-                typeof override.scrapCount === "number"
-                  ? override.scrapCount
-                  : article.scrapCount,
-            };
+      const overrides = useScrapSyncStore.getState().updates;
+      const articlesWithOverrides = articlesWithScrapStatus.map(
+        (article: Article) => {
+          const override = overrides[article.id];
+          if (!override) {
+            return article;
           }
-        );
-
-        setSearchedArticles(articlesWithOverrides);
-      } catch (err: any) {
-        if (err.response?.status === 401) {
-          navigate("/login", { replace: true });
-        } else {
-          console.error("스크랩 게시글 목록 조회 실패:", err);
-          alert("스크랩한 게시글 목록을 불러오는 중 오류가 발생했습니다.");
+          return {
+            ...article,
+            isScrapped: override.isScrapped,
+            scrapCount:
+              typeof override.scrapCount === "number"
+                ? override.scrapCount
+                : article.scrapCount,
+          };
         }
-      } finally {
-        setLoading(false);
+      );
+
+      setSearchedScrapedArticles(articlesWithOverrides);
+    } catch (err: any) {
+      if (err.response?.status === 400) {
+        alert("잘못된 검색 요청입니다.");
+      } else if (err.response?.status === 500) {
+        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      } else {
+        alert("검색 결과를 불러오는 중 오류가 발생했습니다.");
       }
-    },
-    [navigate]
-  );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // API: 스크랩 토글 (스크랩 해제만 가능)
   const handleToggleScrap = async (id: string) => {
-    const article = searchedArticles.find((a) => a.id === id);
+    const article = searchedScrapedArticles.find((a) => a.id === id);
     if (!article) return;
 
     const previousScrapStatus = article.isScrapped ?? false;
@@ -153,7 +139,7 @@ export default function ScrapSearch() {
 
     try {
       // 즉시 UI 업데이트
-      setSearchedArticles((prev) =>
+      setSearchedScrapedArticles((prev) =>
         prev.map((a) =>
           a.id === id
             ? { ...a, isScrapped: newScrapStatus, scrapCount: newScrapCount }
@@ -175,7 +161,7 @@ export default function ScrapSearch() {
       });
     } catch (error: any) {
       // 오류 발생 시 원래 상태로 되돌리기
-      setSearchedArticles((prev) =>
+      setSearchedScrapedArticles((prev) =>
         prev.map((a) =>
           a.id === id
             ? {
@@ -206,7 +192,7 @@ export default function ScrapSearch() {
   };
 
   useEffect(() => {
-    setSearchedArticles((prev) =>
+    setSearchedScrapedArticles((prev) =>
       prev.length === 0
         ? prev
         : prev.map((article) => {
@@ -263,7 +249,7 @@ export default function ScrapSearch() {
 
         <div className="mt-3 flex flex-col px-5">
           <div className="flex flex-col gap-4 mt-4 w-full items-center">
-            {searchedArticles.length === 0 ? (
+            {searchedScrapedArticles.length === 0 && hasSearched ? (
               <div className="flex flex-col w-full gap-3 items-center px-5 py-10">
                 <img
                   src={emptyFileIcon}
@@ -276,7 +262,7 @@ export default function ScrapSearch() {
                 </div>
               </div>
             ) : (
-              searchedArticles.map((article, index) => (
+              searchedScrapedArticles.map((article, index) => (
                 <EventCard
                   key={article.id || `scrap-article-${index}`}
                   {...article}
@@ -285,6 +271,7 @@ export default function ScrapSearch() {
                     if (article.id) {
                       navigate(`/event/${article.id}`);
                     }
+                    console.log(article.id);
                   }}
                   onToggleScrap={() => {
                     handleToggleScrap(article.id);
