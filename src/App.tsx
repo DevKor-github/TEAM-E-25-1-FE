@@ -12,6 +12,7 @@ import MyPage from "./pages/MyPage";
 import ErrorPage from "./pages/ErrorPage";
 import ScrapPage from "./pages/ScrapPage";
 import ArticleListSearch from "./pages/ArticleListSearch";
+import ScrapSearch from "./pages/ScrapSearch";
 
 import AdminLogin from "./pages/AdminLogin";
 import AdminHome from "./pages/AdminHome";
@@ -88,6 +89,7 @@ export default function App() {
         <Route path="/event/search" element={<ArticleListSearch />} />
         <Route path="/event/:articleId" element={<ArticleDetailPage />} />
         <Route path="/scrap" element={<ScrapPage />} />
+        <Route path="/scrap/search" element={<ScrapSearch />} />
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/mypage" element={<MyPage />} />
         {/* 관리자 라우트 */}
