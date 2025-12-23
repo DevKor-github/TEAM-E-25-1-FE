@@ -41,10 +41,10 @@ export function OrgSignupForm({ onSubmit }: OrgSignupFormProps) {
     return null;
   };
 
-  // 비밀번호 유효성 검사 (8~30자, 영문/숫자 필수)
+  // 비밀번호 유효성 검사 (10~30자, 영문/숫자 필수)
   const validatePassword = (password: string): string | null => {
-    if (password.length < 8 || password.length > 30) {
-      return "비밀번호는 8~30자여야 합니다.";
+    if (password.length < 10 || password.length > 30) {
+      return "비밀번호는 10자 이상 30자 이하여야 합니다.";
     }
     if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
       return "비밀번호는 영문과 숫자를 모두 포함해야 합니다.";
@@ -193,7 +193,7 @@ export function OrgSignupForm({ onSubmit }: OrgSignupFormProps) {
         <Input
           id="password"
           type="password"
-          placeholder="8~30자, 영문/숫자 필수"
+          placeholder="10~30자, 영문/숫자 필수"
           value={formData.password}
           onChange={(e) => handleChange("password", e.target.value)}
           className={errors.password ? "border-red-500" : ""}
