@@ -188,7 +188,7 @@ export default function CalendarEvent({
   return (
     <div
       className={cn(
-        "flex h-[16px] w-[100px] items-center justify-center gap-[3px] rounded-[7px] py-0 pl-px pr-[4px]",
+        "flex h-[16px] w-[100px] items-center justify-center gap-[3px] rounded-[7px] py-0 pl-px pr-[4px] font-pretendard",
         styles.containerBg,
         className
       )}
