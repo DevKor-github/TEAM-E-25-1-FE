@@ -2,12 +2,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useOrgAuthStore } from "@/stores/orgAuthStore";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/axios";
+import { useState } from "react";
+import { OrgInfoSheet } from "./OrgInfoSheet";
 
 export function OrgHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const isLoggedIn = useOrgAuthStore((state) => state.isLoggedIn);
   const logout = useOrgAuthStore((state) => state.logout);
+  const [isInfoSheetOpen, setIsInfoSheetOpen] = useState(false);
 
   const handleLogout = async () => {
     if (window.confirm("로그아웃하시겠습니까?")) {
@@ -26,7 +29,7 @@ export function OrgHeader() {
           console.warn("토큰이 만료되었습니다. 로컬 로그아웃을 진행합니다.");
         }
         // API 실패해도 로컬 로그아웃 진행
-      }
+      } 
 
       logout();
       // axios 헤더에서 토큰 제거
@@ -45,15 +48,28 @@ export function OrgHeader() {
           UNIVENT - 기관
         </h1>
         {isLoggedIn && location.pathname !== "/org/login" && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLogout}
-          >
-            로그아웃
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsInfoSheetOpen(true)}
+            >
+              기관 정보 조회
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+            >
+              로그아웃
+            </Button>
+          </div>
         )}
       </div>
+      <OrgInfoSheet
+        open={isInfoSheetOpen}
+        onClose={() => setIsInfoSheetOpen(false)}
+      />
     </header>
   );
 }
