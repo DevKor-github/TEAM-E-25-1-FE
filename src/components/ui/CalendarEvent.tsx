@@ -45,13 +45,13 @@ const getEventStyles = (type: CalendarEventType, state: CalendarEventState) => {
   if (isMore) {
     if (state === "Deactivated") {
       return {
-        containerBg: "bg-[#eff6ff]",
+        containerBg: "",
         badgeBg: "", // No badge for more? Code shows conditional rendering
         labelColor: "text-[#d1d5dc]",
       };
     }
     return {
-      containerBg: "bg-[#eff6ff]",
+      containerBg: "",
       badgeBg: "",
       labelColor: "text-[#6a7282]",
     };
