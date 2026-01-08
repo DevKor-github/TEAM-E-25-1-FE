@@ -86,14 +86,15 @@ export default function EventDateIndicator({
 
   const getDateText = () => {
     if (typeof diff !== "number") return "";
-    if (status === "ended") return "종료";
 
     if (isRegistration) {
-      if (status === "ongoing") return "신청 D-DAY";
+      if (status === "ended") return "신청 종료";
+      else if (status === "ongoing") return "신청 D-DAY";
       return `신청 D-${diff}`;
     } else {
-      if (status === "ongoing") return "행사중";
-      if (diff === 1) return "내일 시작";
+      if (status === "ended") return "종료";
+      else if (status === "ongoing") return "행사중";
+      else if (diff === 1) return "내일 시작";
       return `D-${diff}`;
     }
   };
