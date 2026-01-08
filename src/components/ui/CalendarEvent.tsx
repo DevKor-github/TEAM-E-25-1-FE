@@ -20,17 +20,6 @@ interface CalendarEventProps extends React.HTMLAttributes<HTMLDivElement> {
   state?: CalendarEventState;
 }
 
-const typeMap: Record<string, string> = {
-  강연: "강",
-  "취업. 창업": "취",
-  공모전: "공",
-  대회: "대",
-  박람회: "박",
-  설명회: "설",
-  교육: "교",
-  축제: "축",
-  "...더보기": "+2개", // The code showed +2개 for "more"
-};
 
 const getEventStyles = (type: CalendarEventType, state: CalendarEventState) => {
   // Define base colors for each group
@@ -46,21 +35,18 @@ const getEventStyles = (type: CalendarEventType, state: CalendarEventState) => {
     if (state === "Deactivated") {
       return {
         containerBg: "",
-        badgeBg: "", // No badge for more? Code shows conditional rendering
-        labelColor: "text-[#d1d5dc]",
+        textColor: "text-[#d1d5dc]",
       };
     }
     return {
       containerBg: "",
-      badgeBg: "",
-      labelColor: "text-[#6a7282]",
+      textColor: "text-[#6a7282]",
     };
   }
 
   const styles = {
     containerBg: "",
-    badgeBg: "",
-    labelColor: "",
+    textColor: "",
   };
 
   switch (type) {
@@ -69,19 +55,16 @@ const getEventStyles = (type: CalendarEventType, state: CalendarEventState) => {
       switch (state) {
         case "Activated":
           styles.containerBg = "bg-[#2b7fff]";
-          styles.badgeBg = "bg-[rgba(255,255,255,0.2)]";
-          styles.labelColor = "text-white";
+          styles.textColor = "text-white";
           break;
         case "Deactivated":
           styles.containerBg = "bg-[#eff6ff]";
-          styles.badgeBg = "bg-[#8ec5ff]";
-          styles.labelColor = "text-[#8ec5ff]";
+          styles.textColor = "text-[#8ec5ff]";
           break;
         case "Enabled":
         default:
           styles.containerBg = "bg-[#eff6ff]";
-          styles.badgeBg = "bg-[#2b7fff]";
-          styles.labelColor = "text-[#2b7fff]";
+          styles.textColor = "text-[#2b7fff]";
           break;
       }
       break;
@@ -91,19 +74,16 @@ const getEventStyles = (type: CalendarEventType, state: CalendarEventState) => {
       switch (state) {
         case "Activated":
           styles.containerBg = "bg-[#6a7282]";
-          styles.badgeBg = "bg-[rgba(255,255,255,0.2)]"; // Assuming consistent pattern
-          styles.labelColor = "text-white";
+          styles.textColor = "text-white";
           break;
         case "Deactivated":
           styles.containerBg = "bg-[#f9fafb]";
-          styles.badgeBg = "bg-[#d1d5dc]";
-          styles.labelColor = "text-[#d1d5dc]";
+          styles.textColor = "text-[#d1d5dc]";
           break;
         case "Enabled":
         default:
           styles.containerBg = "bg-[#f9fafb]";
-          styles.badgeBg = "bg-[#6a7282]";
-          styles.labelColor = "text-[#6a7282]";
+          styles.textColor = "text-[#6a7282]";
           break;
       }
       break;
@@ -112,19 +92,16 @@ const getEventStyles = (type: CalendarEventType, state: CalendarEventState) => {
       switch (state) {
         case "Activated":
           styles.containerBg = "bg-[#00bba7]";
-          styles.badgeBg = "bg-[rgba(255,255,255,0.2)]";
-          styles.labelColor = "text-white";
+          styles.textColor = "text-white";
           break;
         case "Deactivated":
           styles.containerBg = "bg-[#f0fdfa]";
-          styles.badgeBg = "bg-[#46ecd5]";
-          styles.labelColor = "text-[#46ecd5]";
+          styles.textColor = "text-[#46ecd5]";
           break;
         case "Enabled":
         default:
           styles.containerBg = "bg-[#f0fdfa]";
-          styles.badgeBg = "bg-[#00bba7]";
-          styles.labelColor = "text-[#00bba7]";
+          styles.textColor = "text-[#00bba7]";
           break;
       }
       break;
@@ -134,19 +111,16 @@ const getEventStyles = (type: CalendarEventType, state: CalendarEventState) => {
       switch (state) {
         case "Activated":
           styles.containerBg = "bg-[#8e51ff]";
-          styles.badgeBg = "bg-[rgba(255,255,255,0.2)]";
-          styles.labelColor = "text-white";
+          styles.textColor = "text-white";
           break;
         case "Deactivated":
           styles.containerBg = "bg-[#f5f3ff]";
-          styles.badgeBg = "bg-[#c4b4ff]";
-          styles.labelColor = "text-[#c4b4ff]";
+          styles.textColor = "text-[#c4b4ff]";
           break;
         case "Enabled":
         default:
           styles.containerBg = "bg-[#f5f3ff]";
-          styles.badgeBg = "bg-[#8e51ff]";
-          styles.labelColor = "text-[#8e51ff]";
+          styles.textColor = "text-[#8e51ff]";
           break;
       }
       break;
@@ -155,19 +129,16 @@ const getEventStyles = (type: CalendarEventType, state: CalendarEventState) => {
       switch (state) {
         case "Activated":
           styles.containerBg = "bg-[#ff6900]";
-          styles.badgeBg = "bg-[rgba(255,255,255,0.2)]";
-          styles.labelColor = "text-white";
+          styles.textColor = "text-white";
           break;
         case "Deactivated":
           styles.containerBg = "bg-[#fff7ed]";
-          styles.badgeBg = "bg-[#ffb86a]";
-          styles.labelColor = "text-[#ffb86a]";
+          styles.textColor = "text-[#ffb86a]";
           break;
         case "Enabled":
         default:
           styles.containerBg = "bg-[#fff7ed]";
-          styles.badgeBg = "bg-[#ff6900]";
-          styles.labelColor = "text-[#ff6900]";
+          styles.textColor = "text-[#ff6900]";
           break;
       }
       break;
@@ -188,29 +159,17 @@ export default function CalendarEvent({
   return (
     <div
       className={cn(
-        "flex h-[16px] w-[100px] items-center justify-center gap-[3px] rounded-[7px] py-0 pl-px pr-[4px] font-pretendard",
+        "flex h-[16px] w-[100px] items-center justify-center rounded-[6px] px-[3px] py-0 font-pretendard",
         styles.containerBg,
         className
       )}
       {...props}
     >
-      {!isMore && (
-        <div
-          className={cn(
-            "flex size-[14px] shrink-0 flex-col items-center justify-center rounded-[6px]",
-            styles.badgeBg
-          )}
-        >
-          <span className="text-[9px] font-semibold leading-[13px] text-white">
-            {typeMap[eventType] || typeMap["강연"]}
-          </span>
-        </div>
-      )}
       <p
         className={cn(
-          "flex-[1_0_0] overflow-hidden overflow-ellipsis whitespace-nowrap text-[11px] font-medium leading-[16px]",
+          "flex-[1_0_0] overflow-hidden overflow-ellipsis whitespace-nowrap text-[11px] font-medium leading-none",
           isMore ? "text-center text-[10px]" : "",
-          styles.labelColor
+          styles.textColor
         )}
       >
         {isMore ? "+2개" : eventTitle}
