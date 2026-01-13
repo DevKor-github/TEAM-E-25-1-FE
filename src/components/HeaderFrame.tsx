@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
-import heartIcon from "../assets/heartIcon.svg";
+import heartIcon_gray700 from "../assets/heartIcon_gray700.svg";
 import userIcon from "../assets/userIcon.svg";
+import calendarIcon from "../assets/calendarIcon.svg";
 
 const HeaderFrame = () => {
   const navigate = useNavigate();
@@ -16,7 +17,13 @@ const HeaderFrame = () => {
       />
       <div className="flex flex-row items-center gap-4 w-fit h-fit min-w-[64px] min-h-[24px]">
         <img
-          src={heartIcon}
+          src={calendarIcon}
+          alt="calendar"
+          className="cursor-pointer"
+          onClick={() => navigate("/calendar")}
+        />
+        <img
+          src={heartIcon_gray700}
           alt="scrap"
           className="cursor-pointer"
           onClick={() => navigate("/scrap")}
