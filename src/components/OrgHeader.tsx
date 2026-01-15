@@ -33,7 +33,7 @@ export function OrgHeader() {
           console.warn("토큰이 만료되었습니다. 로컬 로그아웃을 진행합니다.");
         }
         // API 실패해도 로컬 로그아웃 진행
-      } 
+      }
 
       logout();
       // axios 헤더에서 토큰 제거
