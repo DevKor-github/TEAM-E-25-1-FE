@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
-import FilterSheet, { FilterState } from "../components/FilterSheet";
+import FilterSheet from "../components/FilterSheet";
 import { api } from "../lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
 import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";

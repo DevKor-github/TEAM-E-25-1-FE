@@ -4,7 +4,7 @@ import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import { Button } from "@/components/ui/buttons";
-import FilterSheet, { FilterState } from "../components/FilterSheet";
+import FilterSheet from "../components/FilterSheet";
 import { api } from "../lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
 import { useScrapSyncStore } from "@/stores/scrapSyncStore";
