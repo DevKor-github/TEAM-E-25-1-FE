@@ -55,8 +55,7 @@ export function OrgPasswordChangeForm({ onSuccess, onCancel }: OrgPasswordChange
       onSuccess();
     } catch (err: any) {
       console.error("비밀번호 변경 실패:", err);
-      // 401 error could mean password mismatch or invalid token (though token logic usually handled by axios interceptor)
-      // Since interceptor might not catch "password mismatch" specifically as logic error if it returns 401.
+      // Handle password mismatch (401) separately from general errors
       if (err.response?.status === 401) {
          setError("현재 비밀번호가 일치하지 않습니다.");
       } else {
