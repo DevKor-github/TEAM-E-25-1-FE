@@ -2,6 +2,7 @@ import { useState } from "react";
 import { api } from "@/lib/axios";
 import { useOrgAuthStore } from "@/stores/orgAuthStore";
 import { Button } from "@/components/ui/button";
+import { validatePassword } from "@/lib/validators";
 
 type OrgPasswordChangeFormProps = {
   onSuccess: () => void;
@@ -29,6 +30,13 @@ export function OrgPasswordChangeForm({ onSuccess, onCancel }: OrgPasswordChange
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Validate new password
+    const passwordError = validatePassword(formData.newPassword);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
 
     if (formData.newPassword !== formData.confirmNewPassword) {
       setError("새 비밀번호가 일치하지 않습니다.");
@@ -110,6 +118,9 @@ export function OrgPasswordChangeForm({ onSuccess, onCancel }: OrgPasswordChange
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            <p className="text-xs text-gray-500 mt-1">
+              10~30자, 영문/숫자 필수
+            </p>
           </div>
 
           <div>
