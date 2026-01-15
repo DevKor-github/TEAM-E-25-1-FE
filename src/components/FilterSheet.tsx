@@ -36,9 +36,21 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
     }
   }, [open, filterState]);
 
+  // FilterSheet가 열렸을 때 body 스크롤 방지
+  React.useEffect(() => {
+    // open 상태와 관계없이 컴포넌트가 마운트되면 스크롤을 막고, 언마운트 시 해제
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden"; // html 태그에도 적용
+    
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, []); // 의존성 배열 비움 (마운트 시 실행)
+
   const toggleType = (type: EventType) => {
     setTempFilterState({
-      ...tempFilterState,
+      ...tempFilterState, 
       types: tempFilterState.types.includes(type)
         ? tempFilterState.types.filter((t) => t !== type)
         : [...tempFilterState.types, type],
@@ -69,7 +81,7 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-end justify-center z-50 p-[10px]">
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-end justify-center z-50 p-[10px]  overflow-hidden">
       <div className="w-[375px] min-h-[132px] bg-white rounded-[24px] flex flex-col items-center">
         <div className="w-full flex flex-col items-center">
           <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-4" />
