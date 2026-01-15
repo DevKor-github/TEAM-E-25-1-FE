@@ -35,17 +35,24 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
     }
   }, [open, filterState]);
 
-  // FilterSheet가 열렸을 때 body 스크롤 방지
+  // FilterSheet가 열려 있는 동안에만 body 스크롤 방지
   React.useEffect(() => {
-    // open 상태와 관계없이 컴포넌트가 마운트되면 스크롤을 막고, 언마운트 시 해제
+    if (!open) {
+      // 닫혔을 때는 스크롤을 다시 허용
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      return;
+    }
+
+    // open 상태일 때 스크롤 막기
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden"; // html 태그에도 적용
-    
+
     return () => {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-  }, []); // 의존성 배열 비움 (마운트 시 실행)
+  }, [open]); // open 상태 변경 시 실행
 
   const toggleType = (type: EventType) => {
     setTempFilterState({
