@@ -11,6 +11,7 @@ import { trackButtonClicked, trackPageViewed } from "@/amplitude/track";
 import { useScrapSyncStore } from "@/stores/scrapSyncStore";
 import { Button } from "@/components/ui/buttons";
 import searchIcon_white from "@/assets/searchIcon_white.svg";
+import { useFilterPersistence } from "@/hooks/useFilterPersistence"; // Import custom hook
 
 export type Article = {
   id: string;
@@ -32,10 +33,12 @@ export type Article = {
 };
 
 export default function ScrapPage() {
-  const [selectedSegment, setSelectedSegment] = React.useState(() => {
-    const saved = sessionStorage.getItem("scrapPageSelectedSegment");
-    return saved || "많이 본";
-  });
+  const {
+    selectedSegment,
+    setSelectedSegment,
+    filterState,
+    setFilterState,
+  } = useFilterPersistence("scrapPage");
   const segments = ["많이 본", "많이 찜한", "임박한"];
 
   // articles를 useState로 관리
@@ -50,25 +53,6 @@ export default function ScrapPage() {
 
   // 필터 상태
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
-  const [filterState, setFilterState] = React.useState<FilterState>(() => {
-    const saved = sessionStorage.getItem("scrapPageFilterState");
-    return saved
-      ? JSON.parse(saved)
-      : {
-          types: [],
-          includePast: false, // 기본값을 '지난행사제외'로 변경
-          hasExplicitDateFilter: false,
-        };
-  });
-
-  // 세션 스토리지 저장
-  React.useEffect(() => {
-    sessionStorage.setItem("scrapPageSelectedSegment", selectedSegment);
-  }, [selectedSegment]);
-
-  React.useEffect(() => {
-    sessionStorage.setItem("scrapPageFilterState", JSON.stringify(filterState));
-  }, [filterState]);
 
   // API: 스크랩한 게시글 목록 조회
   const fetchScrapedArticles = React.useCallback(async () => {
