@@ -15,13 +15,18 @@ export function useFilterPersistence(storageKeyPrefix: string) {
   // Filter State Persistence
   const [filterState, setFilterState] = useState<FilterState>(() => {
     const saved = sessionStorage.getItem(`${storageKeyPrefix}FilterState`);
-    return saved
-      ? JSON.parse(saved)
-      : {
-          types: [],
-          includePast: false, // Default to excluding past events
-          hasExplicitDateFilter: false,
-        };
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse filter state from session storage", e);
+      }
+    }
+    return {
+      types: [],
+      includePast: false, // Default to excluding past events
+      hasExplicitDateFilter: false,
+    };
   });
 
   useEffect(() => {
