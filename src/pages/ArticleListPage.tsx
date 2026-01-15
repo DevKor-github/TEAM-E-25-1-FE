@@ -36,7 +36,10 @@ export type Article = {
 };
 
 export default function ArticleListPage() {
-  const [selectedSegment, setSelectedSegment] = React.useState("많이 본");
+  const [selectedSegment, setSelectedSegment] = React.useState(() => {
+    const saved = sessionStorage.getItem("articleListSelectedSegment");
+    return saved || "많이 본";
+  });
   const segments = ["많이 본", "많이 찜한", "임박한"];
 
   // articles를 useState로 관리
@@ -46,13 +49,27 @@ export default function ArticleListPage() {
 
   // 필터 상태
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
-  const [filterState, setFilterState] = React.useState<FilterState>({
-    types: [],
-    includePast: false, // 기본값을 '지난행사제외'로 변경
-    hasExplicitDateFilter: false,
+  const [filterState, setFilterState] = React.useState<FilterState>(() => {
+    const saved = sessionStorage.getItem("articleListFilterState");
+    return saved
+      ? JSON.parse(saved)
+      : {
+          types: [],
+          includePast: false, // 기본값을 '지난행사제외'로 변경
+          hasExplicitDateFilter: false,
+        };
   });
   const scrapUpdates = useScrapSyncStore((state) => state.updates);
   const setScrapStatus = useScrapSyncStore((state) => state.setScrapStatus);
+
+  // 세션 스토리지 저장
+  React.useEffect(() => {
+    sessionStorage.setItem("articleListSelectedSegment", selectedSegment);
+  }, [selectedSegment]);
+
+  React.useEffect(() => {
+    sessionStorage.setItem("articleListFilterState", JSON.stringify(filterState));
+  }, [filterState]);
 
   // API: 게시글 목록 조회
   const fetchArticles = async () => {
