@@ -2,12 +2,19 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useOrgAuthStore } from "@/stores/orgAuthStore";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/axios";
+import { useState } from "react";
+import { OrgInfoSheet } from "./OrgInfoSheet";
+import { OrgInfoEditForm } from "@/components/OrgInfoEditForm";
+import { OrgPasswordChangeForm } from "@/components/OrgPasswordChangeForm";
 
 export function OrgHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const isLoggedIn = useOrgAuthStore((state) => state.isLoggedIn);
   const logout = useOrgAuthStore((state) => state.logout);
+  const [isInfoSheetOpen, setIsInfoSheetOpen] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [showPasswordChangeForm, setShowPasswordChangeForm] = useState(false);
 
   const handleLogout = async () => {
     if (window.confirm("로그아웃하시겠습니까?")) {
@@ -45,15 +52,45 @@ export function OrgHeader() {
           UNIVENT - 기관
         </h1>
         {isLoggedIn && location.pathname !== "/org/login" && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLogout}
-          >
-            로그아웃
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsInfoSheetOpen(true)}
+            >
+              기관 정보 조회
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+            >
+              로그아웃
+            </Button>
+          </div>
         )}
       </div>
+      <OrgInfoSheet
+        open={isInfoSheetOpen}
+        onClose={() => setIsInfoSheetOpen(false)}
+        onEditInfo={() => setShowEditForm(true)}
+        onChangePassword={() => setShowPasswordChangeForm(true)}
+      />
+      {showEditForm && (
+        <OrgInfoEditForm
+          onSuccess={() => {
+            setShowEditForm(false);
+            // Optionally trigger a re-fetch or state update if needed
+          }}
+          onCancel={() => setShowEditForm(false)}
+        />
+      )}
+      {showPasswordChangeForm && (
+        <OrgPasswordChangeForm
+          onSuccess={() => setShowPasswordChangeForm(false)}
+          onCancel={() => setShowPasswordChangeForm(false)}
+        />
+      )}
     </header>
   );
 }
