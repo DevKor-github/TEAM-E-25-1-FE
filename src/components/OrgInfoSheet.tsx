@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 interface OrgInfoSheetProps {
   open: boolean;
   onClose: () => void;
+  onEditInfo: () => void;
+  onChangePassword: () => void;
 }
 
 interface OrgInfo {
@@ -15,7 +17,7 @@ interface OrgInfo {
   contact: string;
 }
 
-export function OrgInfoSheet({ open, onClose }: OrgInfoSheetProps) {
+export function OrgInfoSheet({ open, onClose, onEditInfo, onChangePassword }: OrgInfoSheetProps) {
   const [info, setInfo] = useState<OrgInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const logout = useOrgAuthStore((state) => state.logout);
@@ -85,6 +87,26 @@ export function OrgInfoSheet({ open, onClose }: OrgInfoSheetProps) {
         )}
 
         <div className="flex flex-col gap-3">
+            <Button 
+                variant="outline" 
+                onClick={() => {
+                    onClose();
+                    onEditInfo();
+                }} 
+                className="w-full py-6 text-base"
+            >
+                기관 정보 수정
+            </Button>
+            <Button 
+                variant="outline" 
+                onClick={() => {
+                    onClose();
+                    onChangePassword();
+                }} 
+                className="w-full py-6 text-base"
+            >
+                비밀번호 변경
+            </Button>
             <Button variant="outline" onClick={onClose} className="w-full py-6 text-base">
                 닫기
             </Button>

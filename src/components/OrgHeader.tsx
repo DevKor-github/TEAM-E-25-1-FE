@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/axios";
 import { useState } from "react";
 import { OrgInfoSheet } from "./OrgInfoSheet";
+import { OrgInfoEditForm } from "@/components/OrgInfoEditForm";
+import { OrgPasswordChangeForm } from "@/components/OrgPasswordChangeForm";
 
 export function OrgHeader() {
   const navigate = useNavigate();
@@ -11,6 +13,8 @@ export function OrgHeader() {
   const isLoggedIn = useOrgAuthStore((state) => state.isLoggedIn);
   const logout = useOrgAuthStore((state) => state.logout);
   const [isInfoSheetOpen, setIsInfoSheetOpen] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [showPasswordChangeForm, setShowPasswordChangeForm] = useState(false);
 
   const handleLogout = async () => {
     if (window.confirm("로그아웃하시겠습니까?")) {
@@ -69,7 +73,24 @@ export function OrgHeader() {
       <OrgInfoSheet
         open={isInfoSheetOpen}
         onClose={() => setIsInfoSheetOpen(false)}
+        onEditInfo={() => setShowEditForm(true)}
+        onChangePassword={() => setShowPasswordChangeForm(true)}
       />
+      {showEditForm && (
+        <OrgInfoEditForm
+          onSuccess={() => {
+            setShowEditForm(false);
+            // Optionally trigger a re-fetch or state update if needed
+          }}
+          onCancel={() => setShowEditForm(false)}
+        />
+      )}
+      {showPasswordChangeForm && (
+        <OrgPasswordChangeForm
+          onSuccess={() => setShowPasswordChangeForm(false)}
+          onCancel={() => setShowPasswordChangeForm(false)}
+        />
+      )}
     </header>
   );
 }
