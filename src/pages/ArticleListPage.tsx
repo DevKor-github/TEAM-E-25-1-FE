@@ -4,7 +4,7 @@ import HeaderFrame from "../components/HeaderFrame";
 import MobileHeaderSection from "../components/MobileHeaderSection";
 import EventCard from "../components/ui/EventCard";
 import { Button } from "@/components/ui/buttons";
-import FilterSheet, { FilterState } from "../components/FilterSheet";
+import FilterSheet from "../components/FilterSheet";
 import { api } from "../lib/axios";
 import { usePreviousPageStore } from "@/stores/previousPageStore";
 import { useScrapSyncStore } from "@/stores/scrapSyncStore";
@@ -14,6 +14,7 @@ import {
   trackArticleListViewed,
 } from "@/amplitude/track";
 import searchIcon_white from "@/assets/searchIcon_white.svg";
+import { useFilterPersistence } from "@/hooks/useFilterPersistence"; // Import custom hook
 
 // Article 타입: 백엔드 스웨거 기준
 export type Article = {
@@ -36,7 +37,12 @@ export type Article = {
 };
 
 export default function ArticleListPage() {
-  const [selectedSegment, setSelectedSegment] = React.useState("많이 본");
+  const {
+    selectedSegment,
+    setSelectedSegment,
+    filterState,
+    setFilterState,
+  } = useFilterPersistence("articleList");
   const segments = ["많이 본", "많이 찜한", "임박한"];
 
   // articles를 useState로 관리
@@ -46,11 +52,7 @@ export default function ArticleListPage() {
 
   // 필터 상태
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
-  const [filterState, setFilterState] = React.useState<FilterState>({
-    types: [],
-    includePast: false, // 기본값을 '지난행사제외'로 변경
-    hasExplicitDateFilter: false,
-  });
+
   const scrapUpdates = useScrapSyncStore((state) => state.updates);
   const setScrapStatus = useScrapSyncStore((state) => state.setScrapStatus);
 
