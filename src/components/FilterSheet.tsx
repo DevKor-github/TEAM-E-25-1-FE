@@ -23,8 +23,6 @@ interface FilterSheetProps {
 }
 
 export default function FilterSheet({ open, onClose, filterState, setFilterState, onApply }: FilterSheetProps) {
-  if (!open) return null;
-
   // 임시 필터 상태 (FilterSheet 내부에서만 사용)
   const [tempFilterState, setTempFilterState] = React.useState<FilterState>(filterState);
 
@@ -37,16 +35,15 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
 
   // FilterSheet가 열려 있는 동안에만 body 스크롤 방지
   React.useEffect(() => {
-    if (!open) {
+    if (open) {
+      // open 상태일 때 스크롤 막기
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden"; // html 태그에도 적용
+    } else {
       // 닫혔을 때는 스크롤을 다시 허용
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
-      return;
     }
-
-    // open 상태일 때 스크롤 막기
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden"; // html 태그에도 적용
 
     return () => {
       document.body.style.overflow = "";
@@ -85,6 +82,8 @@ export default function FilterSheet({ open, onClose, filterState, setFilterState
     setTempFilterState(filterState); // 원래 상태로 되돌림
     onClose();
   };
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-end justify-center z-50 p-[10px] overflow-hidden">
