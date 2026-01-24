@@ -20,16 +20,7 @@ interface CalendarEventProps extends React.HTMLAttributes<HTMLDivElement> {
   state?: CalendarEventState;
 }
 
-
 const getEventStyles = (type: CalendarEventType, state: CalendarEventState) => {
-  // Define base colors for each group
-  // Group 1: 강연, 취업. 창업 (Blue)
-  // Group 2: 공모전, 대회 (Gray)
-  // Group 3: 박람회 (Teal)
-  // Group 4: 설명회, 교육 (Purple)
-  // Group 5: 축제 (Orange)
-  // Group 6: 더보기 (Mixed)
-
   const isMore = type === "...더보기";
   if (isMore) {
     if (state === "Deactivated") {
@@ -159,7 +150,7 @@ export default function CalendarEvent({
   return (
     <div
       className={cn(
-        "flex h-[16px] w-[100px] items-center justify-center rounded-[6px] px-[3px] py-0 font-pretendard",
+        "flex h-[16px] items-center justify-center rounded-[6px] px-[3px] py-0 font-pretendard",
         styles.containerBg,
         className
       )}
