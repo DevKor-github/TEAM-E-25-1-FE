@@ -28,6 +28,24 @@ export default function CalendarMonthSheet({
     }
   }, [open]);
 
+  // CalendarMonthSheet가 열려 있는 동안 body 스크롤 방지
+  useEffect(() => {
+    if (open) {
+      // open 상태일 때 스크롤 막기
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden"; // html 태그에도 적용
+    } else {
+      // 닫혔을 때는 스크롤을 다시 허용
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, [open]); // open 상태 변경 시 실행
+
   if (!open) return null;
 
   // 2025년 1월 ~ 2026년 12월 생성
@@ -45,7 +63,7 @@ export default function CalendarMonthSheet({
 
   return (
     <div
-      className="fixed p-2.5 flex flex-col justify-end gap-2.5  inset-0 bg-black bg-opacity-30 z-50"
+      className="fixed p-2.5 flex flex-col justify-end gap-2.5 inset-0 bg-black bg-opacity-30 z-50"
       onClick={onClose}
     >
       <div
