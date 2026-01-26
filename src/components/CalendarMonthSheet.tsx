@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import Grabber from "@/components/ui/grabber";
 import checkIcon_sky500 from "@/assets/checkicon_sky500.svg";
 
 interface CalendarMonthSheetProps {
@@ -53,8 +52,7 @@ export default function CalendarMonthSheet({
         className="w-full max-w-[440px] max-h-[440px] mx-auto p-2.5 bg-white rounded-[24px] flex flex-col items-end"
         onClick={(e) => e.stopPropagation()}
       >
-        <Grabber onClick={onClose} />
-        <div className="flex flex-col w-full pt-2 pb-4 px-5 gap-1">
+        <div className="flex flex-col w-full py-4 px-5 gap-1">
           <div className="w-full text-gray-900 text-title4 font-bold font-pretendard">
             월 선택하기
           </div>
