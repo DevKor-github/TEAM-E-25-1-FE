@@ -11,6 +11,7 @@ import ArticleDetailPage from "./pages/ArticleDetailPage";
 import MyPage from "./pages/MyPage";
 import ErrorPage from "./pages/ErrorPage";
 import ScrapPage from "./pages/ScrapPage";
+import CalendarPage from "./pages/CalendarPage";
 import ArticleListSearch from "./pages/ArticleListSearch";
 import ScrapSearch from "./pages/ScrapSearch";
 
@@ -92,6 +93,7 @@ export default function App() {
         <Route path="/scrap/search" element={<ScrapSearch />} />
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
         {/* 관리자 라우트 */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
