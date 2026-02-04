@@ -18,7 +18,7 @@ const inputVariants = cva(
     defaultVariants: {
       state: "enabled",
     },
-  }
+  },
 );
 
 type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement> &
@@ -30,7 +30,7 @@ type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement> &
 
 export const InputField: React.FC<InputFieldProps> = ({
   className,
-  placeholder = "검색어를 입력하세요...",
+  placeholder = "제목이나 주관기관으로 검색해보세요.",
   state: stateProp,
   value,
   onValueChange,
@@ -64,7 +64,7 @@ export const InputField: React.FC<InputFieldProps> = ({
     inputVariants({
       state: computedState,
     }),
-    className
+    className,
   );
 
   return (
@@ -77,7 +77,7 @@ export const InputField: React.FC<InputFieldProps> = ({
       <input
         className={clsx(
           "flex w-full bg-transparent outline-none text-body1 font-normal font-pretendard",
-          { "text-gray-300": !hasValue, "text-gray-600": hasValue }
+          { "text-gray-300": !hasValue, "text-gray-600": hasValue },
         )}
         placeholder={placeholder}
         value={value}
